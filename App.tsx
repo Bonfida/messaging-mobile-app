@@ -1,21 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ThreadScreen } from "./screens/ThreadScreen";
+import EnterSeedScreen from "./screens/EnterSeedScreen";
+import SettingsScreen from "./screens/SettingsScreen";
+import MessageScreen from "./screens/MessageScreen";
+import EditFeeScreen from "./screens/EditFeeScreen";
+import { ConnectionProvider } from "./utils/connection";
+import { WalletProvider } from "./utils/wallet";
+import { NavigationContainer } from "@react-navigation/native";
 
-export default function App() {
+import "./global";
+
+import "react-native-url-polyfill/auto";
+
+const Stack = createNativeStackNavigator();
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <WalletProvider>
+      <ConnectionProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="Messages" component={ThreadScreen} />
+            <Stack.Screen name="Message" component={MessageScreen} />
+            <Stack.Screen name="Edit Fee" component={EditFeeScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Group screenOptions={{ presentation: "modal" }}>
+              <Stack.Screen name="Seed" component={EnterSeedScreen} />
+            </Stack.Group>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ConnectionProvider>
+    </WalletProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
