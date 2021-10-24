@@ -12,6 +12,8 @@ import { generateDiffieHelllman } from "./diffie-hellman";
 import { Buffer } from "buffer";
 import axios from "axios";
 import { useAsync, setCache, getCache } from "./utils";
+import { CachePrefix, useCache } from "./cache";
+import { cache } from "./ipfs";
 
 export enum MediaType {
   Image,
@@ -164,7 +166,8 @@ export const decryptMediaFromBuffer = async (
   wallet: Keypair | undefined,
   sender: PublicKey,
   mediaRef: React.MutableRefObject<string | null>,
-  typeRef: React.MutableRefObject<string | null>
+  typeRef: React.MutableRefObject<string | null>,
+  cache: React.MutableRefObject<{} | null>
 ) => {
   if (!wallet) return undefined;
 
@@ -196,6 +199,11 @@ export const decryptMediaFromBuffer = async (
     const len = decrypted[0];
     const type = decrypted.slice(1, 1 + len).toString();
     const file = decrypted.slice(len + 1).toString("base64");
+    // @ts-ignore
+    cache.current[CachePrefix.DecryptedMedia + msgAddress.toBase58()] = {
+      media: file,
+      type: type,
+    };
     mediaRef.current = file;
     typeRef.current = type;
   };
@@ -203,25 +211,31 @@ export const decryptMediaFromBuffer = async (
   fileReaderInstance.readAsDataURL(data);
 };
 
-export const mediaCache = new Map<string, string>();
-
 export const useLoadMedia = (
   message: IMessage
 ): [string | null, string | null] => {
   const { wallet } = useWallet();
   const mediaRef = useRef<string | null>(null);
   const typeRef = useRef<string | null>(null);
+  const { cache, getCache } = useCache();
 
   const fn = async () => {
-    const cached = mediaCache.get(message.address.toBase58());
-    if (!!cached) return;
+    const cached = getCache(
+      CachePrefix.DecryptedMedia + message.address.toBase58()
+    );
+    if (!!cached) {
+      mediaRef.current = cached.media;
+      typeRef.current = cached.type;
+      return;
+    }
     await decryptMediaFromBuffer(
       message.message.msg,
       message.address,
       wallet,
       message.message.sender,
       mediaRef,
-      typeRef
+      typeRef,
+      cache
     );
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import {
   encryptMessageToBuffer,
   findType,
@@ -33,6 +33,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Ionicons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import UploadIpfsButton from "../components/UploadIpfsButton";
+import { useCache, CachePrefix } from "../utils/cache";
+import { Buffer } from "buffer";
 
 // TODO
 // Make more components?
@@ -46,13 +48,25 @@ import UploadIpfsButton from "../components/UploadIpfsButton";
 
 export const MessageBoxText = ({ message }: { message: IMessage }) => {
   const { wallet } = useWallet();
+  const { getCache, setCache } = useCache();
+  const [decrypted, setDecrypted] = useState<undefined | string>(undefined);
+  const cacheKey = CachePrefix.DecryptedMessage + message.address.toBase58();
 
-  const decrypted = decrytMessageFromBuffer(
-    message.message.msg,
-    message.address,
-    wallet,
-    message.message.sender
-  );
+  useEffect(() => {
+    const cached = getCache(cacheKey);
+    if (!cached) {
+      const _decrypted = decrytMessageFromBuffer(
+        message.message.msg,
+        message.address,
+        wallet,
+        message.message.sender
+      ) as string;
+      setCache(cacheKey, _decrypted);
+      setDecrypted(_decrypted);
+    } else {
+      setDecrypted(cached);
+    }
+  }, []);
 
   const isUser = wallet?.publicKey.equals(message.message.sender);
 
