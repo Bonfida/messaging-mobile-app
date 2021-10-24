@@ -71,7 +71,6 @@ export const getAccountFromSeed = (seed: string) => {
 
 export const useBalance = (refresh: boolean) => {
   const { wallet } = useWallet();
-  const [balance, setBalance] = useState<null | number>(null);
   const connection = useConnection();
 
   const fn = async () => {

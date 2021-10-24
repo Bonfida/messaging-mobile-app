@@ -1,7 +1,7 @@
 import { useWallet } from "./wallet";
 import { useConnection } from "./connection";
 import { Thread, Message, Profile } from "./web3/jabber";
-import { useEffect, useState, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import {
   retrieveUserThread,
@@ -14,6 +14,7 @@ import axios from "axios";
 import { useAsync, setCache, getCache } from "./utils";
 import { CachePrefix, useCache } from "./cache";
 import { cache } from "./ipfs";
+import { useState } from "react-transition-group/node_modules/@types/react";
 
 export enum MediaType {
   Image,
@@ -72,7 +73,7 @@ export const useUserThread = (refresh: boolean) => {
     }
   };
 
-  return useAsync(fn, refresh);
+  return useAsync(fn, refresh || !!wallet);
 };
 
 export interface IMessage {
