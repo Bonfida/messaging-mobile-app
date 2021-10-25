@@ -69,7 +69,6 @@ export const MessageBoxMedia = ({ message }: { message: IMessage }) => {
   }
 
   if (parsedType === MediaType.Image) {
-    console.log("media", type);
     return (
       <Wrapper>
         <Image

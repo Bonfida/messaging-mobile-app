@@ -54,6 +54,7 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
       // IPFS Client
       // const added = await client.add(encrypted);
       // const hash = added.path;
+
       const hash = "";
 
       const instruction = await sendMessage(
@@ -91,8 +92,6 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
       const base64String = await FileSystem.readAsStringAsync(result.uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
-
-      console.log("PreUpload", base64String);
 
       const fileBuffer = Buffer.from(base64String, "base64");
 
