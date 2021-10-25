@@ -17,6 +17,7 @@ import { useWallet } from "../utils/wallet";
 import { useConnection } from "../utils/connection";
 import { ownerHasDomain } from "../utils/name-service";
 import HelpsUrls from "../utils/HelpUrls";
+import * as SecureStore from "expo-secure-store";
 
 const EnterSeedScreen = () => {
   const connection = useConnection();
@@ -53,7 +54,7 @@ const EnterSeedScreen = () => {
         );
       }
 
-      await AsyncStorage.setItem("mnemonic", normalized);
+      await SecureStore.setItemAsync("mnemonic", normalized);
       refresh();
     } catch (err) {
       console.log(err);

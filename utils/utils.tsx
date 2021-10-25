@@ -119,16 +119,3 @@ export function useAsync<T = any>(
 
   return [value, loading];
 }
-
-export async function setCache<T>(cacheKey: string, object: T): Promise<void> {
-  await AsyncStorage.setItem(cacheKey, JSON.stringify(object));
-}
-
-export async function getCache<T>(cacheKey: string): Promise<T | null> {
-  const cached = await AsyncStorage.getItem(cacheKey);
-  if (!cached) {
-    return null;
-  }
-  const parsed: T = JSON.parse(cached);
-  return parsed;
-}

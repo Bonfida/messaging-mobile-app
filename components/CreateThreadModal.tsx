@@ -101,15 +101,6 @@ const ModalContent = ({
   return (
     <View style={styles.safeArea}>
       <View style={styles.root}>
-        <View style={styles.imgContainer}>
-          <Image
-            style={styles.img}
-            source={require("../assets/search-contact.png")}
-          />
-        </View>
-        <Text style={styles.text}>
-          Enter the domain name of your contact (e.g bonfida.sol)
-        </Text>
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
@@ -118,6 +109,9 @@ const ModalContent = ({
           onChangeText={(text) => setContact(text.toLocaleLowerCase().trim())}
           value={contact || ""}
         />
+        <Text style={styles.text}>
+          Enter the domain name of your contact (e.g bonfida.sol)
+        </Text>
       </View>
 
       <View style={styles.buttonsContainer}>
@@ -148,15 +142,13 @@ export default ModalContent;
 
 const styles = StyleSheet.create({
   input: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderRadius: 20,
-    margin: 20,
+    backgroundColor: "white",
+    padding: 15,
   },
   text: {
-    fontSize: 18,
+    fontSize: 14,
     margin: 20,
-    fontWeight: "bold",
+    opacity: 0.5,
   },
   img: {
     width: 90,
@@ -191,6 +183,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     justifyContent: "space-between",
+    backgroundColor: "rgb(240 ,240, 240)",
   },
   buttonsContainer: {
     display: "flex",

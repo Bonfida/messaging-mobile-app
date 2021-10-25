@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect, Key } from "react";
+import React, { useContext, useState } from "react";
 import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as bip39 from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import { useConnection } from "./connection";
 import { useAsync } from "./utils";
+import * as SecureStore from "expo-secure-store";
 
 interface IContext {
   wallet: Keypair | undefined;
@@ -20,7 +21,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   const load = async () => {
     // Getting stored mnemonic
-    const mnemonic = await AsyncStorage.getItem("mnemonic");
+    const mnemonic = await SecureStore.getItemAsync("mnemonic");
     if (!mnemonic) {
       // No mnemonic stored
       return;

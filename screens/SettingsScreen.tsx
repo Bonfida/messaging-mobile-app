@@ -19,6 +19,7 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDisplayName } from "../utils/name-service";
 import { Circle } from "../components/ContactRow";
+import * as SecureStore from "expo-secure-store";
 
 const Row = ({
   label,
@@ -80,7 +81,7 @@ const SettingsScreen = () => {
   const navigation = useNavigation();
 
   const handleOnPressDelete = async () => {
-    await AsyncStorage.removeItem("mnemonic");
+    await SecureStore.deleteItemAsync("mnemonic");
     refreshWallet();
     alert("Secret key deleted!");
   };
