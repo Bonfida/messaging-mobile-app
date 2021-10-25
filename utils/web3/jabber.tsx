@@ -338,19 +338,10 @@ export class Message {
   }
 }
 
-interface CachedMessage {
-  message: Message;
-  address: PublicKey;
-}
-
-const cache = new Map<string, CachedMessage>();
-
 const deserializeMessage = (data: Buffer, address: PublicKey) => {
-  const cached = cache.get(address.toBase58());
-  if (!!cached) {
-    return cached;
-  }
-  const result = { message: Message.deserialize(data), address: address };
-  cache.set(address.toBase58(), result);
+  const result = {
+    message: Message.deserialize(data),
+    address: address,
+  };
   return result;
 };

@@ -1,7 +1,7 @@
 import { useWallet } from "./wallet";
 import { useConnection } from "./connection";
 import { Thread, Message, Profile } from "./web3/jabber";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import {
   retrieveUserThread,
@@ -11,10 +11,9 @@ import {
 import { generateDiffieHelllman } from "./diffie-hellman";
 import { Buffer } from "buffer";
 import axios from "axios";
-import { useAsync, setCache, getCache } from "./utils";
+import { useAsync } from "./utils";
 import { CachePrefix, useCache } from "./cache";
-import { cache } from "./ipfs";
-import { useState } from "react-transition-group/node_modules/@types/react";
+import base64Url from "base64url";
 
 export enum MediaType {
   Image,
@@ -73,7 +72,7 @@ export const useUserThread = (refresh: boolean) => {
     }
   };
 
-  return useAsync(fn, refresh || !!wallet);
+  return useAsync(fn, refresh != !!wallet);
 };
 
 export interface IMessage {
@@ -87,15 +86,36 @@ export const useMessageData = (
   refresh: boolean
 ) => {
   const connection = useConnection();
+  const msgCountRef = useRef<number | null>(null);
+  const messagesRef = useRef<(IMessage | undefined)[] | null>(null);
 
   const fn = async () => {
     if (!sender || !receiver) return;
+
     try {
-      return await Message.retrieveFromThread(
+      const senderAddress = new PublicKey(sender);
+      const receiverAddress = new PublicKey(receiver);
+
+      const thread = await Thread.retrieve(
         connection,
-        new PublicKey(sender),
-        new PublicKey(receiver)
+        senderAddress,
+        receiverAddress
       );
+
+      if (!!msgCountRef.current && msgCountRef.current === thread.msgCount) {
+        return messagesRef.current;
+      }
+
+      const messages = await Message.retrieveFromThread(
+        connection,
+        senderAddress,
+        receiverAddress
+      );
+
+      msgCountRef.current = thread.msgCount;
+      messagesRef.current = messages;
+
+      return messages;
     } catch (err) {
       console.log("useMessage", err);
     }
@@ -158,9 +178,6 @@ export const encryptMessageToBuffer = (
   return encrypted;
 };
 
-// [media, type]
-export const decryptedCache = new Map<string, [string, string]>();
-
 export const decryptMediaFromBuffer = async (
   msg: Uint8Array,
   msgAddress: PublicKey,
@@ -179,6 +196,8 @@ export const decryptMediaFromBuffer = async (
   const { data }: { data: Blob } = await axios.get(url, {
     responseType: "blob",
   });
+
+  if (!data) return;
 
   let buffer: Buffer;
   const fileReaderInstance = new FileReader();

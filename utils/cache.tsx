@@ -1,10 +1,12 @@
 import React, { useContext, useRef, useState, MutableRefObject } from "react";
 
 export enum CachePrefix {
-  Message = "message",
-  DecryptedMessage = "decrypted_message",
-  Media = "media",
-  DecryptedMedia = "decrypted_media",
+  Message = "message_",
+  DecryptedMessage = "decrypted_message_",
+  Media = "media_",
+  DecryptedMedia = "decrypted_media_",
+  MessageCount = "message_count_",
+  RetrievedThread = "retrieved_thread_",
 }
 
 interface IContext {

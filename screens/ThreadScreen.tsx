@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useUserThread } from "../utils/jabber";
 import { useNavigation } from "@react-navigation/native";
-import MessageRow from "../components/MessageRow";
+import MessageRow from "../components/ContactRow";
 import { useWallet } from "../utils/wallet";
 import CreateThreadModal from "../components/CreateThreadModal";
 
