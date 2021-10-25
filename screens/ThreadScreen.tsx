@@ -58,28 +58,28 @@ export const ThreadScreen = () => {
         }
       >
         <View>{memoizedThread}</View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => setVisibile(true)}
-          >
-            <Text style={styles.buttonText}>New Message</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => navigation.navigate("Settings")}
-          >
-            <Text style={styles.buttonText}>Settings</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => setVisibile(true)}
+        >
+          <Text style={styles.buttonText}>New Message</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => navigation.navigate("Settings")}
+        >
+          <Text style={styles.buttonText}>Settings</Text>
+        </TouchableOpacity>
+      </View>
       <Modal animationType="slide" transparent={false} visible={visible}>
         <CreateThreadModal setVisible={setVisibile} />
       </Modal>

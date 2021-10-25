@@ -27,7 +27,7 @@ export const findDisplayName = async (
     );
     domainsAddresses.sort((a, b) => a.toBase58().localeCompare(b.toBase58()));
     if (domainsAddresses.length === 0) {
-      return abbreviateAddress(receiver);
+      return abbreviateAddress(receiver, 10);
     }
     try {
       const display = await performReverseLookup(
@@ -43,7 +43,7 @@ export const findDisplayName = async (
       );
       return "@" + display;
     } catch (err) {}
-    return abbreviateAddress(receiver);
+    return abbreviateAddress(receiver, 10);
   } catch (err) {
     console.log(err);
     return undefined;

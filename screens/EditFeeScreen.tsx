@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  Image,
   Alert,
   TouchableOpacity,
   View,
@@ -12,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { setUserProfile } from "../utils/web3/jabber";
 import { useConnection } from "../utils/connection";
 import { useWallet } from "../utils/wallet";
@@ -57,22 +55,16 @@ const EditFeeScreen = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.root}>
-          <View style={styles.imgContainer}>
-            <Image
-              style={styles.img}
-              source={require("../assets/transaction.png")}
-            />
-          </View>
-          <Text style={styles.text}>
-            You can be paid to receive message, this means each time someone
-            sends you a message they will pay the amount of SOL you specified
-          </Text>
           <TextInput
             keyboardType="numeric"
             style={styles.input}
             onChangeText={setAmount}
             placeholder="New amount"
           />
+          <Text style={styles.text}>
+            You can be paid to receive message, this means each time someone
+            sends you a message they will pay the amount of SOL you specified
+          </Text>
         </View>
 
         <View>
@@ -105,15 +97,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   text: {
-    fontSize: 18,
+    fontSize: 14,
     margin: 20,
-    fontWeight: "bold",
+    opacity: 0.5,
   },
   input: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderRadius: 20,
-    margin: 20,
+    backgroundColor: "white",
+    padding: 15,
   },
   buttonContainer: {
     margin: 20,

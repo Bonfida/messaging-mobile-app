@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
-  Image,
 } from "react-native";
 import { useBalance, useWallet } from "../utils/wallet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,18 +16,58 @@ import { abbreviateAddress, roundToDecimal } from "../utils/utils";
 import { useProfile } from "../utils/jabber";
 import { useNavigation } from "@react-navigation/core";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useDisplayName } from "../utils/name-service";
+import { Circle } from "../components/ContactRow";
 
 const Row = ({
   label,
   value,
 }: {
-  label: React.ReactNode;
-  value: React.ReactNode;
+  label?: React.ReactNode;
+  value?: React.ReactNode;
 }) => {
   return (
     <View style={styles.row}>
-      <Text>{label}</Text>
-      <Text>{value}</Text>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value}</Text>
+    </View>
+  );
+};
+
+const FeeView = ({ balance }: { balance: number }) => {
+  return (
+    <View style={styles.feeContainer}>
+      <Text style={styles.feeValue}>
+        {roundToDecimal(balance / LAMPORTS_PER_SOL, 3)} SOL
+      </Text>
+      <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
+    </View>
+  );
+};
+
+const ProfileRow = () => {
+  const { wallet } = useWallet();
+  const [displayName] = useDisplayName(wallet!.publicKey.toBase58());
+  const firstLetter =
+    displayName && displayName[0]
+      ? displayName[0][0].toLocaleUpperCase()
+      : wallet!.publicKey.toBase58()[0].toUpperCase();
+
+  if (!displayName) {
+    return (
+      <View style={styles.profileRow}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.profileRow}>
+      <Circle name={firstLetter} />
+      <Text style={styles.accountName}>
+        {firstLetter + displayName?.slice(1)}
+      </Text>
     </View>
   );
 };
@@ -62,15 +101,10 @@ const SettingsScreen = () => {
         contentContainerStyle={styles.scrollView}
       >
         <View style={{ marginTop: "10%" }}>
-          <View style={styles.profileImgContainer}>
-            <Image
-              style={styles.profileImg}
-              source={require("../assets/profile.png")}
-            />
-          </View>
+          <ProfileRow />
           <Row
             label="SOL Address:"
-            value={abbreviateAddress(wallet.publicKey)}
+            value={abbreviateAddress(wallet.publicKey, 10)}
           />
           <Row
             label="Balance:"
@@ -86,29 +120,23 @@ const SettingsScreen = () => {
             {profile && (
               <Row
                 label="SOL per message:"
-                value={`${roundToDecimal(
-                  profile?.lamportsPerMessage.toNumber() / LAMPORTS_PER_SOL,
-                  3
-                )} SOL`}
+                value={
+                  <FeeView balance={profile.lamportsPerMessage.toNumber()} />
+                }
               />
             )}
           </TouchableOpacity>
         </View>
-
-        <View>
-          <TouchableOpacity
-            style={styles.editButtonContainer}
-            onPress={() => navigation.navigate("Edit Fee")}
-          >
-            <Text style={styles.buttonText}>Edit message fee</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.warningButtonContainer}
-            onPress={handleOnPressDelete}
-          >
-            <Text style={styles.buttonText}>Delete private key</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={handleOnPressDelete}
+          style={{ marginTop: "10%" }}
+        >
+          <View style={styles.row}>
+            <View style={styles.warningContainer}>
+              <Text style={styles.redText}>Delete private key</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -118,19 +146,19 @@ export default SettingsScreen;
 
 const styles = StyleSheet.create({
   row: {
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 10,
+    marginTop: 1,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "row",
+    backgroundColor: "white",
+    padding: 15,
   },
   safeAreaView: { height: "100%" },
   scrollView: {
     flex: 1,
     height: "100%",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   editButtonContainer: {
     marginBottom: 5,
@@ -168,5 +196,43 @@ const styles = StyleSheet.create({
   profileImg: {
     width: 90,
     height: 90,
+  },
+  label: {
+    fontWeight: "bold",
+  },
+  value: {
+    opacity: 0.7,
+  },
+  feeContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  feeValue: {
+    marginRight: 5,
+  },
+  accountName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginLeft: 20,
+  },
+  profileRow: {
+    flexDirection: "row",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "10%",
+  },
+  warningContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    flex: 1,
+  },
+  redText: {
+    color: "rgb(243, 7, 9)",
+    fontWeight: "bold",
   },
 });

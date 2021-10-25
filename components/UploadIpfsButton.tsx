@@ -50,12 +50,11 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
       );
 
       // TODO fix issues with ipfs-client
-      // @ts-ignore
-      const hash = "";
 
       // IPFS Client
       // const added = await client.add(encrypted);
       // const hash = added.path;
+      const hash = "";
 
       const instruction = await sendMessage(
         connection,

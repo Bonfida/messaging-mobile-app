@@ -289,5 +289,5 @@ export const useContactFees = (contact: string) => {
     }
     return contactProfile.lamportsPerMessage.toNumber() / LAMPORTS_PER_SOL;
   };
-  return useAsync(fn, false);
+  return useAsync(fn, false, 10 * 60 * 1_000);
 };
