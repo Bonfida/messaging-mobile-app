@@ -13,7 +13,6 @@ import { Buffer } from "buffer";
 import axios from "axios";
 import { useAsync } from "./utils";
 import { CachePrefix, useCache } from "./cache";
-import base64Url from "base64url";
 
 export enum MediaType {
   Image,
@@ -156,12 +155,17 @@ export const decrytMessageFromBuffer = (
 };
 
 export const encryptMessageToBuffer = (
-  message: string,
+  message: string | Buffer,
   wallet: Keypair,
   receiver: PublicKey,
   msgAddress: PublicKey
 ) => {
-  const buffer = new Uint8Array(Buffer.from(message));
+  let buffer: Uint8Array;
+  if (typeof message === "string") {
+    buffer = new Uint8Array(Buffer.from(message));
+  } else {
+    buffer = new Uint8Array(message);
+  }
 
   const dhKeys = generateDiffieHelllman(
     wallet.publicKey.toBuffer(),
@@ -189,46 +193,33 @@ export const decryptMediaFromBuffer = async (
 ) => {
   if (!wallet) return undefined;
 
-  const prefix64 = "data:application/octet-stream;base64,";
   const hash = Buffer.from(msg).toString();
   const url = `https://ipfs.infura.io/ipfs/${hash}`;
 
-  const { data }: { data: Blob } = await axios.get(url, {
-    responseType: "blob",
-  });
+  const { data }: { data: Object } = await axios.get(url);
 
   if (!data) return;
 
-  let buffer: Buffer;
-  const fileReaderInstance = new FileReader();
+  const dataBuffer = Uint8Array.from(Object.values(data));
+  const decrypted = decrytMessageFromBuffer(
+    dataBuffer,
+    msgAddress,
+    wallet,
+    sender,
+    true
+  ) as Buffer;
 
-  fileReaderInstance.onload = () => {
-    let result = fileReaderInstance.result as string;
-    result = result.split(prefix64)[1];
-    buffer = Buffer.from(result, "base64");
-    const decrypted = decrytMessageFromBuffer(
-      new Uint8Array(buffer),
-      msgAddress,
-      wallet,
-      sender,
-      true
-    );
+  const len = decrypted[0];
+  const type = decrypted.slice(1, 1 + len).toString();
+  const file = decodeURI(decrypted.slice(len + 1).toString("base64"));
 
-    if (!decrypted || typeof decrypted === "string") return undefined;
-
-    const len = decrypted[0];
-    const type = decrypted.slice(1, 1 + len).toString();
-    const file = decrypted.slice(len + 1).toString("base64");
-    // @ts-ignore
-    cache.current[CachePrefix.DecryptedMedia + msgAddress.toBase58()] = {
-      media: file,
-      type: type,
-    };
-    mediaRef.current = file;
-    typeRef.current = type;
+  // @ts-ignore
+  cache.current[CachePrefix.DecryptedMedia + msgAddress.toBase58()] = {
+    media: file,
+    type: type,
   };
-
-  fileReaderInstance.readAsDataURL(data);
+  mediaRef.current = file;
+  typeRef.current = type;
 };
 
 export const useLoadMedia = (

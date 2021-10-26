@@ -18,14 +18,15 @@ import { JABBER_ID, MessageType } from "@bonfida/jabber";
 import { encryptMessageToBuffer } from "../utils/jabber";
 import { signAndSendTransactionInstructions } from "../utils/utils";
 import { findProgramAddress } from "../utils/web3/program-address";
-import { client } from "../utils/ipfs";
+import { URL_UPLOAD } from "../utils/ipfs";
+import axios from "axios";
 
 const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
   const [loading, setLoading] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
 
-  const upload = async (message: string, type: string) => {
+  const upload = async (message: Buffer, type: string) => {
     if (!wallet) return;
     try {
       setLoading(true);
@@ -49,13 +50,14 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
         messageAccount
       );
 
-      // TODO fix issues with ipfs-client
+      const formData = new FormData();
 
-      // IPFS Client
-      // const added = await client.add(encrypted);
-      // const hash = added.path;
+      formData.append("file", JSON.stringify(encrypted));
 
-      const hash = "";
+      const { data } = await axios.post(URL_UPLOAD, formData);
+
+      // @ts-ignore
+      const hash = data.Hash;
 
       const instruction = await sendMessage(
         connection,
@@ -95,7 +97,7 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
 
       const fileBuffer = Buffer.from(base64String, "base64");
 
-      const message = Buffer.concat([prefix, fileBuffer]).toString("base64");
+      const message = Buffer.concat([prefix, fileBuffer]);
 
       await upload(message, type);
     }

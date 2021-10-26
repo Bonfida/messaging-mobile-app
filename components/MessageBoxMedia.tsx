@@ -74,7 +74,7 @@ export const MessageBoxMedia = ({ message }: { message: IMessage }) => {
         <Image
           resizeMode="contain"
           style={styles.img}
-          source={{ uri: `data:${type};base64,` + media }}
+          source={{ uri: `data:${type};base64,${media}` }}
         />
       </Wrapper>
     );
