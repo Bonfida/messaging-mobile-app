@@ -316,11 +316,13 @@ export class Message {
   static async retrieveFromThread(
     connection: Connection,
     sender: PublicKey,
-    receiver: PublicKey
+    receiver: PublicKey,
+    limit?: number
   ) {
     const thread = await Thread.retrieve(connection, sender, receiver);
     let messageAccounts: PublicKey[] = [];
-    for (let i = 0; i < thread.msgCount; i++) {
+    const start = limit ? limit : thread.msgCount;
+    for (let i = thread.msgCount - start; i < thread.msgCount; i++) {
       const [acc] = findProgramAddress(
         this.generateSeeds(i, sender, receiver),
         JABBER_ID

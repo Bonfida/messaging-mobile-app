@@ -1,9 +1,10 @@
 import React from "react";
 import { PublicKey } from "@solana/web3.js";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useDisplayName } from "../utils/name-service";
 import { useNavigation } from "@react-navigation/native";
 import { Line } from "./Line";
+import { useProfilePic } from "../utils/jabber";
 
 const COLORS = [
   "#e44f74",
@@ -39,6 +40,7 @@ const MessageRow = ({ contact }: { contact: PublicKey }) => {
   const displayName = useDisplayName(base58);
   const firstLetter = displayName[0] ? displayName[0][0] : base58[0];
   const navigation = useNavigation();
+  const [pic] = useProfilePic(contact);
 
   const handleOnPress = () => {
     navigation.navigate("Message", { contact: base58 });
@@ -47,7 +49,11 @@ const MessageRow = ({ contact }: { contact: PublicKey }) => {
   return (
     <TouchableOpacity onPress={handleOnPress}>
       <View style={styles.row}>
-        <Circle name={firstLetter} />
+        {pic ? (
+          <Image source={{ uri: pic }} style={styles.profilePic} />
+        ) : (
+          <Circle name={firstLetter} />
+        )}
         <Text style={styles.nameText}>{displayName}</Text>
       </View>
       <Line width="100%" />
@@ -70,9 +76,9 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   circle: {
-    width: 60,
-    height: 60,
-    borderRadius: 60 / 2,
+    width: 70,
+    height: 70,
+    borderRadius: 70 / 2,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -84,5 +90,10 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     marginLeft: 10,
+  },
+  profilePic: {
+    width: 70,
+    height: 70,
+    borderRadius: 70 / 2,
   },
 });

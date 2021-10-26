@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
+    marginBottom: 5,
   },
   input: {
     padding: 10,

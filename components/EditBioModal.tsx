@@ -1,37 +1,36 @@
 import React, { useState } from "react";
 import {
-  SafeAreaView,
+  View,
   Text,
   StyleSheet,
-  TextInput,
-  Alert,
   TouchableOpacity,
-  View,
-  Keyboard,
+  TextInput,
   TouchableWithoutFeedback,
+  Keyboard,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import { Profile, setUserProfile } from "../utils/web3/jabber";
 import { useConnection } from "../utils/connection";
 import { useWallet } from "../utils/wallet";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Profile, setUserProfile } from "../utils/web3/jabber";
 import { signAndSendTransactionInstructions } from "../utils/utils";
 
-const EditFeeScreen = () => {
-  const connection = useConnection();
-  const { wallet } = useWallet();
+export const BioModalContent = ({
+  setVisible,
+}: {
+  setVisible: (arg: boolean) => void;
+}) => {
+  const [bio, setBio] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState<string | null>(null);
+  const { wallet } = useWallet();
+  const connection = useConnection();
 
-  const handleOnSubmit = async () => {
+  const handleOnPress = async () => {
     if (!wallet) return;
-    if (!amount) {
-      return alert("Enter an amount");
+    if (!bio) {
+      return alert("Enter a bio");
     }
-    const parsedAmount = parseFloat(amount);
-    if (parsedAmount < 0 || isNaN(parsedAmount) || !isFinite(parsedAmount)) {
-      return alert("Invalid amount");
-    }
+
     try {
       setLoading(true);
       const currentProfile = await Profile.retrieve(
@@ -41,41 +40,49 @@ const EditFeeScreen = () => {
       const instruction = await setUserProfile(
         wallet?.publicKey,
         currentProfile.name,
-        currentProfile.bio,
-        LAMPORTS_PER_SOL * parsedAmount
+        bio,
+        currentProfile.lamportsPerMessage.toNumber()
       );
+
       await signAndSendTransactionInstructions(connection, [], wallet, [
         instruction,
       ]);
-      Alert.alert("Amount updated!");
-    } catch {
-      Alert.alert("Error, try again");
-    } finally {
+      Alert.alert("Bio updated!");
       setLoading(false);
+      setVisible(false);
+    } catch (err) {
+      setLoading(false);
+      Alert.alert("Error, try again");
     }
   };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaView style={styles.safeArea}>
+      <View style={styles.safeArea}>
         <View style={styles.root}>
           <TextInput
-            keyboardType="numeric"
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Bio"
             style={styles.input}
-            onChangeText={setAmount}
-            placeholder="New amount"
+            onChangeText={setBio}
+            value={bio || ""}
           />
-          <Text style={styles.text}>
-            You can be paid to receive message, this means each time someone
-            sends you a message they will pay the amount of SOL you specified
-          </Text>
+          <Text style={styles.text}>Enter your bio</Text>
         </View>
 
-        <View>
+        <View style={styles.buttonsContainer}>
           <TouchableOpacity
-            disabled={!amount || loading}
+            disabled={loading}
             style={styles.buttonContainer}
-            onPress={handleOnSubmit}
+            onPress={() => setVisible(false)}
+          >
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={!bio || loading}
+            style={styles.buttonContainer}
+            onPress={handleOnPress}
           >
             {loading ? (
               <ActivityIndicator />
@@ -84,45 +91,19 @@ const EditFeeScreen = () => {
             )}
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
-
-export default EditFeeScreen;
-
 const styles = StyleSheet.create({
-  root: {
-    marginTop: "10%",
-  },
-  safeArea: {
-    flex: 1,
-    height: "100%",
-    justifyContent: "space-between",
+  input: {
+    backgroundColor: "white",
+    padding: 15,
   },
   text: {
     fontSize: 14,
     margin: 20,
     opacity: 0.5,
-  },
-  input: {
-    backgroundColor: "white",
-    padding: 15,
-  },
-  buttonContainer: {
-    margin: 20,
-    elevation: 8,
-    backgroundColor: "#007bff",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
   },
   img: {
     width: 90,
@@ -133,5 +114,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: "10%",
+  },
+  root: {
+    marginTop: "30%",
+  },
+  buttonContainer: {
+    margin: 20,
+    elevation: 8,
+    backgroundColor: "#007bff",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    width: "40%",
+  },
+  buttonText: {
+    fontSize: 18,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase",
+  },
+  safeArea: {
+    flex: 1,
+    height: "100%",
+    justifyContent: "space-between",
+    backgroundColor: "rgb(240 ,240, 240)",
+  },
+  buttonsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

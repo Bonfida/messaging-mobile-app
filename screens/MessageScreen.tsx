@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from "react";
 import { useMessageData } from "../utils/jabber";
-import { RefreshControl, View, ScrollView } from "react-native";
+import { RefreshControl, View, ScrollView, StyleSheet } from "react-native";
 import { useWallet } from "../utils/wallet";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { RenderMessage } from "../components/RenderMessage";
@@ -44,11 +44,7 @@ const MessageScreen = ({ route }) => {
     <>
       <FeeWarning contact={contact} />
       <KeyboardAwareScrollView
-        contentContainerStyle={{
-          flex: 1,
-          height: "100%",
-          justifyContent: "flex-end",
-        }}
+        contentContainerStyle={styles.contentContainer}
         refreshControl={
           <RefreshControl
             refreshing={!messages}
@@ -57,6 +53,7 @@ const MessageScreen = ({ route }) => {
         }
       >
         <ScrollView
+          contentContainerStyle={styles.contentContainer}
           // @ts-ignore
           ref={scrollViewRef}
           onContentSizeChange={() =>
@@ -73,3 +70,11 @@ const MessageScreen = ({ route }) => {
 };
 
 export default MessageScreen;
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    height: "100%",
+    justifyContent: "flex-end",
+  },
+});

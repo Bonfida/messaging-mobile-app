@@ -5,9 +5,10 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Image,
+  TouchableWithoutFeedback,
   ActivityIndicator,
   Alert,
+  Keyboard,
 } from "react-native";
 import { useConnection } from "../utils/connection";
 import { useNavigation } from "@react-navigation/core";
@@ -99,42 +100,44 @@ const ModalContent = ({
   };
 
   return (
-    <View style={styles.safeArea}>
-      <View style={styles.root}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Domain name"
-          style={styles.input}
-          onChangeText={(text) => setContact(text.toLocaleLowerCase().trim())}
-          value={contact || ""}
-        />
-        <Text style={styles.text}>
-          Enter the domain name of your contact (e.g bonfida.sol)
-        </Text>
-      </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.safeArea}>
+        <View style={styles.root}>
+          <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Domain name"
+            style={styles.input}
+            onChangeText={(text) => setContact(text.toLocaleLowerCase().trim())}
+            value={contact || ""}
+          />
+          <Text style={styles.text}>
+            Enter the domain name of your contact (e.g bonfida.sol)
+          </Text>
+        </View>
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          disabled={loading}
-          style={styles.buttonContainer}
-          onPress={() => setVisible(false)}
-        >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={!contact || loading}
-          style={styles.buttonContainer}
-          onPress={handleOnPress}
-        >
-          {loading ? (
-            <ActivityIndicator />
-          ) : (
-            <Text style={styles.buttonText}>Enter</Text>
-          )}
-        </TouchableOpacity>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            disabled={loading}
+            style={styles.buttonContainer}
+            onPress={() => setVisible(false)}
+          >
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={!contact || loading}
+            style={styles.buttonContainer}
+            onPress={handleOnPress}
+          >
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={styles.buttonText}>Enter</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

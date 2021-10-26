@@ -49,7 +49,6 @@ export const ThreadScreen = () => {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <ScrollView
-        contentContainerStyle={styles.scrollView}
         refreshControl={
           <RefreshControl
             refreshing={threadsLoading}
@@ -59,14 +58,7 @@ export const ThreadScreen = () => {
       >
         <View>{memoizedThread}</View>
       </ScrollView>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <View style={styles.container}>
         <TouchableOpacity
           style={styles.buttonContainer}
           onPress={() => setVisibile(true)}
@@ -88,11 +80,8 @@ export const ThreadScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  safeAreaView: { height: "100%" },
-  scrollView: {
-    flex: 1,
+  safeAreaView: {
     height: "100%",
-    justifyContent: "space-between",
   },
   root: {
     flex: 1,
@@ -113,5 +102,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     textTransform: "uppercase",
+  },
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   Text,
@@ -8,70 +8,37 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  Linking,
+  Modal,
 } from "react-native";
 import { useBalance, useWallet } from "../utils/wallet";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import EnterSeedScreen from "./EnterSeedScreen";
-import { abbreviateAddress, roundToDecimal } from "../utils/utils";
+import {
+  abbreviateAddress,
+  roundToDecimal,
+  signAndSendTransactionInstructions,
+} from "../utils/utils";
 import { useProfile } from "../utils/jabber";
 import { useNavigation } from "@react-navigation/core";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useDisplayName } from "../utils/name-service";
-import { Circle } from "../components/ContactRow";
 import * as SecureStore from "expo-secure-store";
-
-const Row = ({
-  label,
-  value,
-}: {
-  label?: React.ReactNode;
-  value?: React.ReactNode;
-}) => {
-  return (
-    <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
-    </View>
-  );
-};
-
-const FeeView = ({ balance }: { balance: number }) => {
-  return (
-    <View style={styles.feeContainer}>
-      <Text style={styles.feeValue}>
-        {roundToDecimal(balance / LAMPORTS_PER_SOL, 3)} SOL
-      </Text>
-      <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
-    </View>
-  );
-};
-
-const ProfileRow = () => {
-  const { wallet } = useWallet();
-  const [displayName] = useDisplayName(wallet!.publicKey.toBase58());
-  const firstLetter =
-    displayName && displayName[0]
-      ? displayName[0][0].toLocaleUpperCase()
-      : wallet!.publicKey.toBase58()[0].toUpperCase();
-
-  if (!displayName) {
-    return (
-      <View style={styles.profileRow}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.profileRow}>
-      <Circle name={firstLetter} />
-      <Text style={styles.accountName}>
-        {firstLetter + displayName?.slice(1)}
-      </Text>
-    </View>
-  );
-};
+import { makeFtxPayUrl } from "../utils/ftx-pay";
+import { BioModalContent } from "../components/EditBioModal";
+import { Ionicons } from "@expo/vector-icons";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import { Buffer } from "buffer";
+import mime from "mime";
+import axios from "axios";
+import { URL_UPLOAD } from "../utils/ipfs";
+import { Profile } from "../utils/web3/jabber";
+import { useConnection } from "../utils/connection";
+import { setUserProfile } from "@bonfida/jabber";
+import { RenderBio } from "../components/Profile/Bio";
+import { Row } from "../components/Profile/Row";
+import { RenderWithIcon } from "../components/Profile/RenderWithIcon";
+import { ProfileRow } from "../components/Profile/ProfileRow";
 
 const SettingsScreen = () => {
   const { wallet, refresh: refreshWallet } = useWallet();
@@ -79,6 +46,9 @@ const SettingsScreen = () => {
   const [balance, balanceLoading] = useBalance(refresh);
   const [profile, profileLoading] = useProfile(refresh);
   const navigation = useNavigation();
+  const [bioModalVisible, setBioModalVisible] = useState(false);
+  const connection = useConnection();
+  const [loading, setLoading] = useState(false);
 
   const handleOnPressDelete = async () => {
     await SecureStore.deleteItemAsync("mnemonic");
@@ -89,6 +59,65 @@ const SettingsScreen = () => {
   if (!wallet) {
     return <EnterSeedScreen />;
   }
+
+  useEffect(() => {
+    setRefresh((prev) => !prev);
+  }, [bioModalVisible]);
+
+  const handleProfilePicture = async () => {
+    const result = await DocumentPicker.getDocumentAsync({});
+    if (result.type === "success") {
+      const type = mime.getType(result.name);
+      if (!type) {
+        return alert("Unknown tpye");
+      }
+
+      try {
+        setLoading(true);
+        const len = Buffer.alloc(1);
+        len.writeInt8(type.length, 0);
+
+        const prefix = Buffer.concat([len, Buffer.from(type)]);
+
+        const base64String = await FileSystem.readAsStringAsync(result.uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const fileBuffer = Buffer.from(base64String, "base64");
+
+        const message = Buffer.concat([prefix, fileBuffer]);
+        const formData = new FormData();
+
+        formData.append("file", JSON.stringify(Uint8Array.from(message)));
+
+        const { data } = await axios.post(URL_UPLOAD, formData);
+
+        // @ts-ignore
+        const hash = data.Hash;
+
+        const currentProfile = await Profile.retrieve(
+          connection,
+          wallet.publicKey
+        );
+
+        const instruction = await setUserProfile(
+          wallet.publicKey,
+          hash,
+          currentProfile.bio,
+          currentProfile.lamportsPerMessage.toNumber()
+        );
+
+        await signAndSendTransactionInstructions(connection, [], wallet, [
+          instruction,
+        ]);
+        setRefresh((prev) => !prev);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -102,11 +131,14 @@ const SettingsScreen = () => {
         contentContainerStyle={styles.scrollView}
       >
         <View style={{ marginTop: "10%" }}>
+          {/* Profile row: domain name + profile pic */}
           <ProfileRow />
+          {/* SOL address */}
           <Row
             label="SOL Address:"
             value={abbreviateAddress(wallet.publicKey, 10)}
           />
+          {/* Balance */}
           <Row
             label="Balance:"
             value={
@@ -117,17 +149,90 @@ const SettingsScreen = () => {
               )
             }
           />
-          <TouchableOpacity onPress={() => navigation.navigate("Edit Fee")}>
-            {profile && (
+          {/* FTX Pay */}
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(makeFtxPayUrl(wallet.publicKey.toBase58()))
+            }
+          >
+            <Row
+              label="Deposit SOL"
+              value={
+                <RenderWithIcon
+                  text="FTX Pay"
+                  icon={
+                    <MaterialIcons
+                      name="arrow-forward-ios"
+                      size={15}
+                      color="black"
+                    />
+                  }
+                />
+              }
+            />
+          </TouchableOpacity>
+          {/* SOL per message fee */}
+          {profile && (
+            <TouchableOpacity onPress={() => navigation.navigate("Edit Fee")}>
               <Row
                 label="SOL per message:"
                 value={
-                  <FeeView balance={profile.lamportsPerMessage.toNumber()} />
+                  <RenderWithIcon
+                    text={
+                      <>
+                        {roundToDecimal(
+                          profile.lamportsPerMessage.toNumber() /
+                            LAMPORTS_PER_SOL,
+                          3
+                        )}{" "}
+                        SOL
+                      </>
+                    }
+                    icon={
+                      <MaterialIcons
+                        name="arrow-forward-ios"
+                        size={15}
+                        color="black"
+                      />
+                    }
+                  />
                 }
               />
-            )}
+            </TouchableOpacity>
+          )}
+          {/* Bio */}
+          <TouchableOpacity onPress={() => setBioModalVisible(true)}>
+            <Row label="Bio" value={<RenderBio refresh={refresh} />} />
+          </TouchableOpacity>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={bioModalVisible}
+          >
+            <BioModalContent setVisible={setBioModalVisible} />
+          </Modal>
+
+          {/* Profile picture */}
+          <TouchableOpacity onPress={handleProfilePicture}>
+            <Row
+              label="Profile picture"
+              value={
+                loading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Ionicons
+                    name="ios-camera"
+                    size={24}
+                    color="black"
+                    style={styles.opacity}
+                  />
+                )
+              }
+            />
           </TouchableOpacity>
         </View>
+
+        {/* Delete private key */}
         <TouchableOpacity
           onPress={handleOnPressDelete}
           style={{ marginTop: "10%" }}
@@ -146,15 +251,6 @@ const SettingsScreen = () => {
 export default SettingsScreen;
 
 const styles = StyleSheet.create({
-  row: {
-    marginTop: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    backgroundColor: "white",
-    padding: 15,
-  },
   safeAreaView: { height: "100%" },
   scrollView: {
     flex: 1,
@@ -198,33 +294,17 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
   },
-  label: {
-    fontWeight: "bold",
-  },
-  value: {
-    opacity: 0.7,
-  },
+
   feeContainer: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     flexDirection: "row",
   },
   feeValue: {
     marginRight: 5,
   },
-  accountName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginLeft: 20,
-  },
-  profileRow: {
-    flexDirection: "row",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "10%",
-  },
+
   warningContainer: {
     display: "flex",
     alignItems: "center",
@@ -235,5 +315,18 @@ const styles = StyleSheet.create({
   redText: {
     color: "rgb(243, 7, 9)",
     fontWeight: "bold",
+  },
+
+  opacity: {
+    opacity: 0.7,
+  },
+  row: {
+    marginTop: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    backgroundColor: "white",
+    padding: 15,
   },
 });

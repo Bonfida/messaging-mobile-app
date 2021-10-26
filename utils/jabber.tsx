@@ -13,6 +13,7 @@ import { Buffer } from "buffer";
 import axios from "axios";
 import { useAsync } from "./utils";
 import { CachePrefix, useCache } from "./cache";
+import { URL_HASH } from "./ipfs";
 
 export enum MediaType {
   Image,
@@ -108,7 +109,8 @@ export const useMessageData = (
       const messages = await Message.retrieveFromThread(
         connection,
         senderAddress,
-        receiverAddress
+        receiverAddress,
+        10
       );
 
       msgCountRef.current = thread.msgCount;
@@ -194,7 +196,8 @@ export const decryptMediaFromBuffer = async (
   if (!wallet) return undefined;
 
   const hash = Buffer.from(msg).toString();
-  const url = `https://ipfs.infura.io/ipfs/${hash}`;
+
+  const url = URL_HASH + hash;
 
   const { data }: { data: Object } = await axios.get(url);
 
@@ -279,6 +282,29 @@ export const useContactFees = (contact: string) => {
       return 0;
     }
     return contactProfile.lamportsPerMessage.toNumber() / LAMPORTS_PER_SOL;
+  };
+  return useAsync(fn, false, 10 * 60 * 1_000);
+};
+
+export const useProfilePic = (profileOwner: PublicKey) => {
+  const connection = useConnection();
+  const fn = async () => {
+    try {
+      if (!profileOwner) return;
+      const profile = await Profile.retrieve(connection, profileOwner);
+      if (!profile.name) return;
+      const { data }: { data: Object } = await axios.get(
+        URL_HASH + profile.name
+      );
+
+      const dataBuffer = Buffer.from(Object.values(data));
+      const len = dataBuffer[0];
+      const type = dataBuffer.slice(1, 1 + len).toString();
+      const pic = decodeURIComponent(
+        dataBuffer.slice(1 + len).toString("base64")
+      );
+      return `data:${type};base64,${pic}`;
+    } catch {}
   };
   return useAsync(fn, false, 10 * 60 * 1_000);
 };
