@@ -5,6 +5,9 @@ import { useDisplayName } from "../utils/name-service";
 import { useNavigation } from "@react-navigation/native";
 import { Line } from "./Line";
 import { useProfilePic } from "../utils/jabber";
+import { CachePrefix, useCache, useGetAsyncCache } from "../utils/cache";
+import { Thread } from "../utils/web3/jabber";
+import { useWallet } from "../utils/wallet";
 
 const COLORS = [
   "#e44f74",
@@ -35,12 +38,25 @@ export const Circle = ({ name }: { name: string }) => {
   );
 };
 
-const MessageRow = ({ contact }: { contact: PublicKey }) => {
+const MessageRow = ({
+  contact,
+  currentCount,
+}: {
+  contact: PublicKey;
+  currentCount: number;
+}) => {
   const base58 = contact?.toBase58();
   const displayName = useDisplayName(base58);
   const firstLetter = displayName[0] ? displayName[0][0] : base58[0];
   const navigation = useNavigation();
+  const { wallet } = useWallet();
   const [pic] = useProfilePic(contact);
+  const [lastCount] = useGetAsyncCache(
+    CachePrefix.LastMsgCount +
+      Thread.getKeys(contact, wallet!.publicKey).toBase58(),
+    false,
+    1_000
+  );
 
   const handleOnPressDisplayName = () => {
     navigation.navigate("Message", { contact: base58 });
@@ -53,17 +69,28 @@ const MessageRow = ({ contact }: { contact: PublicKey }) => {
   return (
     <>
       <View style={styles.row}>
-        <TouchableOpacity onPress={handleOnPressProfile}>
-          {pic ? (
-            <Image source={{ uri: pic }} style={styles.profilePic} />
-          ) : (
-            <Circle name={firstLetter} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleOnPressDisplayName}>
-          <Text style={styles.nameText}>{displayName}</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            justifyContent: "flex-start",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <TouchableOpacity onPress={handleOnPressProfile}>
+            {pic ? (
+              <Image source={{ uri: pic }} style={styles.profilePic} />
+            ) : (
+              <Circle name={firstLetter} />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleOnPressDisplayName}>
+            <Text style={styles.nameText}>{displayName}</Text>
+          </TouchableOpacity>
+        </View>
+        {lastCount !== currentCount && <View style={styles.unreadCircle} />}
       </View>
+
       <Line width="100%" />
     </>
   );
@@ -76,7 +103,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
     display: "flex",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
   },
@@ -103,5 +130,12 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 70 / 2,
+  },
+  unreadCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 20 / 2,
+    backgroundColor: "#007bff",
+    marginRight: 10,
   },
 });

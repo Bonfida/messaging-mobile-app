@@ -1,4 +1,5 @@
-import React, { useContext, useRef, useState, MutableRefObject } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAsync } from "./utils";
 
 export enum CachePrefix {
   Message = "message_",
@@ -7,50 +8,30 @@ export enum CachePrefix {
   DecryptedMedia = "decrypted_media_",
   MessageCount = "message_count_",
   RetrievedThread = "retrieved_thread_",
+  LastMsgCount = "last_msg_count_",
 }
 
-interface IContext {
-  cache: MutableRefObject<{} | null>;
-  getCache: (key: string) => any;
-  setCache: (key: string, value: any) => void;
-}
-
-const CacheContext: React.Context<null | IContext> =
-  React.createContext<null | IContext>(null);
-
-export const CacheProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cacheData, setCacheData] = useState({});
-  const cache = useRef<null | {}>(null);
-  cache.current = cacheData;
-
-  const getCache = (key: string) => {
-    // @ts-ignore
-    return cacheData[key];
-  };
-
-  const setCache = (key: string, value: any) => {
-    const copy = JSON.parse(JSON.stringify(cacheData));
-    copy[key] = value;
-    setCacheData(copy);
-  };
-
-  return (
-    <CacheContext.Provider
-      value={{
-        cache: cache,
-        setCache,
-        getCache,
-      }}
-    >
-      {children}
-    </CacheContext.Provider>
-  );
-};
-
-export const useCache = () => {
-  const context = useContext(CacheContext);
-  if (!context) {
-    throw new Error("Missing cache context");
+export class asyncCache {
+  static async get(key: string) {
+    const cached = await AsyncStorage.getItem(key);
+    if (!cached) {
+      return null;
+    }
+    return JSON.parse(cached);
   }
-  return context;
+  static async set(key: string, value: any) {
+    const stringified = JSON.stringify(value);
+    await AsyncStorage.setItem(key, stringified);
+  }
+}
+
+export const useGetAsyncCache = (
+  key: string,
+  refresh: boolean,
+  interval: number
+) => {
+  const fn = async () => {
+    return await asyncCache.get(key);
+  };
+  return useAsync(fn, refresh, interval);
 };

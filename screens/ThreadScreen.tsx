@@ -39,6 +39,7 @@ export const ThreadScreen = () => {
                   ? thread?.user2
                   : thread?.user1
               }
+              currentCount={thread.msgCount}
             />
           );
         })}

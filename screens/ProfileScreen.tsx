@@ -68,9 +68,7 @@ const ProfileScreen = ({ route }) => {
   const { contact } = route.params;
   const [refresh, setRefresh] = useState(false);
   const [profile] = useProfile(new PublicKey(contact), refresh);
-  if (!profile) {
-    return null;
-  }
+
   return (
     <SafeAreaView>
       <View style={styles.root}>
@@ -80,16 +78,18 @@ const ProfileScreen = ({ route }) => {
           label="SOL per message:"
           value={
             <>
-              {roundToDecimal(
-                profile.lamportsPerMessage.toNumber() / LAMPORTS_PER_SOL,
-                3
-              )}{" "}
+              {profile
+                ? roundToDecimal(
+                    profile.lamportsPerMessage.toNumber() / LAMPORTS_PER_SOL,
+                    3
+                  )
+                : 0}{" "}
               SOL
             </>
           }
         />
 
-        <Row label="Bio" value={profile.bio} />
+        <Row label="Bio" value={profile?.bio || ""} />
 
         <MessageButton contact={contact} />
         <TipButton contact={contact} />

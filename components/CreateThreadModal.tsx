@@ -68,7 +68,7 @@ const ModalContent = ({
       // Check if thread already exists
       try {
         await Thread.retrieve(connection, wallet.publicKey, receiverAddress);
-        navigation.navigate("Message", {
+        navigation.navigate("Profile", {
           contact: receiverAddress.toBase58(),
         });
         return setVisible(false);
@@ -86,7 +86,7 @@ const ModalContent = ({
         instructions,
       ]);
 
-      navigation.navigate("Message", {
+      navigation.navigate("Profile", {
         contact: receiverAddress.toBase58(),
       });
 

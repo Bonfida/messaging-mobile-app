@@ -44,7 +44,7 @@ const SettingsScreen = () => {
   const { wallet, refresh: refreshWallet } = useWallet();
   const [refresh, setRefresh] = useState(false);
   const [balance, balanceLoading] = useBalance(refresh);
-  const [profile, profileLoading] = useProfile(wallet!.publicKey, refresh);
+  const [profile, profileLoading] = useProfile(wallet?.publicKey, refresh);
   const navigation = useNavigation();
   const [bioModalVisible, setBioModalVisible] = useState(false);
   const connection = useConnection();

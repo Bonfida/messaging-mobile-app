@@ -2,28 +2,30 @@ import React, { useState, useEffect } from "react";
 import { IMessage, decrytMessageFromBuffer } from "../utils/jabber";
 import { Text, View, StyleSheet } from "react-native";
 import { useWallet } from "../utils/wallet";
-import { useCache, CachePrefix } from "../utils/cache";
+import { CachePrefix, asyncCache } from "../utils/cache";
 
 export const MessageBoxText = ({ message }: { message: IMessage }) => {
   const { wallet } = useWallet();
-  const { getCache, setCache } = useCache();
   const [decrypted, setDecrypted] = useState<undefined | string>(undefined);
   const cacheKey = CachePrefix.DecryptedMessage + message.address.toBase58();
 
   useEffect(() => {
-    const cached = getCache(cacheKey);
-    if (!cached) {
-      const _decrypted = decrytMessageFromBuffer(
-        message.message.msg,
-        message.address,
-        wallet,
-        message.message.sender
-      ) as string;
-      setCache(cacheKey, _decrypted);
-      setDecrypted(_decrypted);
-    } else {
-      setDecrypted(cached);
-    }
+    const fn = async () => {
+      const cached = await asyncCache.get(cacheKey);
+      if (!cached) {
+        const _decrypted = decrytMessageFromBuffer(
+          message.message.msg,
+          message.address,
+          wallet,
+          message.message.sender
+        ) as string;
+        await asyncCache.set(cacheKey, _decrypted);
+        setDecrypted(_decrypted);
+      } else {
+        setDecrypted(cached);
+      }
+    };
+    fn();
   }, []);
 
   const isUser = wallet?.publicKey.equals(message.message.sender);

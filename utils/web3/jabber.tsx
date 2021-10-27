@@ -205,7 +205,7 @@ export class Thread {
     return [Buffer.from("thread"), key1.toBuffer(), key2.toBuffer()];
   }
 
-  static async getKeys(sender: PublicKey, receiver: PublicKey) {
+  static getKeys(sender: PublicKey, receiver: PublicKey) {
     const [thread] = findProgramAddress(
       Thread.generateSeeds(sender, receiver),
       JABBER_ID

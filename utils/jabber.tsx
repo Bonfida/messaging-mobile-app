@@ -12,7 +12,7 @@ import { generateDiffieHelllman } from "./diffie-hellman";
 import { Buffer } from "buffer";
 import axios from "axios";
 import { useAsync } from "./utils";
-import { CachePrefix, useCache } from "./cache";
+import { asyncCache, CachePrefix } from "./cache";
 import { URL_HASH } from "./ipfs";
 
 export enum MediaType {
@@ -86,8 +86,6 @@ export const useMessageData = (
   refresh: boolean
 ) => {
   const connection = useConnection();
-  const msgCountRef = useRef<number | null>(null);
-  const messagesRef = useRef<(IMessage | undefined)[] | null>(null);
 
   const fn = async () => {
     if (!sender || !receiver) return;
@@ -102,9 +100,11 @@ export const useMessageData = (
         receiverAddress
       );
 
-      if (!!msgCountRef.current && msgCountRef.current === thread.msgCount) {
-        return messagesRef.current;
-      }
+      await asyncCache.set(
+        CachePrefix.LastMsgCount +
+          Thread.getKeys(senderAddress, receiverAddress).toBase58(),
+        thread.msgCount
+      );
 
       const messages = await Message.retrieveFromThread(
         connection,
@@ -112,9 +112,6 @@ export const useMessageData = (
         receiverAddress,
         10
       );
-
-      msgCountRef.current = thread.msgCount;
-      messagesRef.current = messages;
 
       return messages;
     } catch (err) {
@@ -190,8 +187,7 @@ export const decryptMediaFromBuffer = async (
   wallet: Keypair | undefined,
   sender: PublicKey,
   mediaRef: React.MutableRefObject<string | null>,
-  typeRef: React.MutableRefObject<string | null>,
-  cache: React.MutableRefObject<{} | null>
+  typeRef: React.MutableRefObject<string | null>
 ) => {
   if (!wallet) return undefined;
 
@@ -216,11 +212,10 @@ export const decryptMediaFromBuffer = async (
   const type = decrypted.slice(1, 1 + len).toString();
   const file = decodeURI(decrypted.slice(len + 1).toString("base64"));
 
-  // @ts-ignore
-  cache.current[CachePrefix.DecryptedMedia + msgAddress.toBase58()] = {
+  await asyncCache.set(CachePrefix.DecryptedMedia + msgAddress.toBase58(), {
     media: file,
     type: type,
-  };
+  });
   mediaRef.current = file;
   typeRef.current = type;
 };
@@ -231,10 +226,9 @@ export const useLoadMedia = (
   const { wallet } = useWallet();
   const mediaRef = useRef<string | null>(null);
   const typeRef = useRef<string | null>(null);
-  const { cache, getCache } = useCache();
 
   const fn = async () => {
-    const cached = getCache(
+    const cached = await asyncCache.get(
       CachePrefix.DecryptedMedia + message.address.toBase58()
     );
     if (!!cached) {
@@ -248,8 +242,7 @@ export const useLoadMedia = (
       wallet,
       message.message.sender,
       mediaRef,
-      typeRef,
-      cache
+      typeRef
     );
   };
 
@@ -258,10 +251,14 @@ export const useLoadMedia = (
   return [mediaRef.current, typeRef.current];
 };
 
-export const useProfile = (address: PublicKey, refresh: boolean) => {
+export const useProfile = (
+  address: PublicKey | undefined,
+  refresh: boolean
+) => {
   const connection = useConnection();
 
   const fn = async () => {
+    if (!address) return;
     return await Profile.retrieve(connection, address);
   };
 
