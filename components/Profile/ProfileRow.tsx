@@ -1,16 +1,15 @@
 import React from "react";
-import { useWallet } from "../../utils/wallet";
 import { useDisplayName } from "../../utils/name-service";
 import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
 import { RenderProfilePic } from "./RenderProfilePic";
+import { PublicKey } from "@solana/web3.js";
 
-export const ProfileRow = () => {
-  const { wallet } = useWallet();
-  const [displayName] = useDisplayName(wallet!.publicKey.toBase58());
+export const ProfileRow = ({ address }: { address: PublicKey }) => {
+  const [displayName] = useDisplayName(address.toBase58());
   const firstLetter =
     displayName && displayName[0]
       ? displayName[0][0].toLocaleUpperCase()
-      : wallet!.publicKey.toBase58()[0].toUpperCase();
+      : address.toBase58()[0].toUpperCase();
 
   if (!displayName) {
     return (
@@ -22,7 +21,7 @@ export const ProfileRow = () => {
 
   return (
     <View style={styles.profileRow}>
-      <RenderProfilePic firstLetter={firstLetter} />
+      <RenderProfilePic firstLetter={firstLetter} address={address} />
       <Text style={styles.accountName}>
         {firstLetter + displayName?.slice(1)}
       </Text>

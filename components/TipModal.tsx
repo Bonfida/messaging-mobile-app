@@ -2,57 +2,77 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  StyleSheet,
+  TouchableOpacity,
   ActivityIndicator,
+  Image,
   Alert,
 } from "react-native";
-import { useConnection } from "../utils/connection";
+import {
+  useFidaBalance,
+  FIDA_MULTIPLIER,
+  getAssociatedTokenAccount,
+  FIDA_MINT,
+  createTransferInstruction,
+} from "../utils/tokens";
 import { useWallet } from "../utils/wallet";
-import { Profile, setUserProfile } from "../utils/web3/jabber";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { PublicKey } from "@solana/web3.js";
 import { signAndSendTransactionInstructions } from "../utils/utils";
+import { useConnection } from "../utils/connection";
 
-export const BioModalContent = ({
+export const TipModal = ({
   setVisible,
+  contact,
 }: {
   setVisible: (arg: boolean) => void;
+  contact: string;
 }) => {
-  const [bio, setBio] = useState<string | null>(null);
+  const connection = useConnection();
+  const [tip, setTip] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const { wallet } = useWallet();
-  const connection = useConnection();
+  const [refresh, setRefresh] = useState(false);
+  const [fidaBalance] = useFidaBalance(wallet!.publicKey, refresh);
 
-  const handleOnPress = async () => {
-    if (!wallet) return;
-    if (!bio) {
-      return alert("Enter a bio");
+  const handleOnChangeText = (text: string) => {
+    const parsed = parseFloat(text.trim());
+    if (!parsed || parsed < 0 || isNaN(parsed) || !isFinite(parsed)) {
+      return setTip(null);
     }
+    setTip(parsed);
+  };
 
+  const handelOnPress = async () => {
+    if (!tip || !wallet) return null;
     try {
       setLoading(true);
-      const currentProfile = await Profile.retrieve(
+      const source = getAssociatedTokenAccount(wallet.publicKey, FIDA_MINT)[0];
+      const destination = getAssociatedTokenAccount(
+        new PublicKey(contact),
+        FIDA_MINT
+      )[0];
+      const instr = createTransferInstruction(
+        TOKEN_PROGRAM_ID,
+        source,
+        destination,
+        wallet.publicKey,
+        tip * FIDA_MULTIPLIER
+      );
+      const tx = await signAndSendTransactionInstructions(
         connection,
-        wallet.publicKey
+        [],
+        wallet,
+        [instr]
       );
-      const instruction = await setUserProfile(
-        wallet?.publicKey,
-        currentProfile.name,
-        bio,
-        currentProfile.lamportsPerMessage.toNumber()
-      );
-
-      await signAndSendTransactionInstructions(connection, [], wallet, [
-        instruction,
-      ]);
-      Alert.alert("Bio updated!");
       setLoading(false);
-      setVisible(false);
+      Alert.alert("Success!", `You have successfully sent ${tip} FIDA`);
     } catch (err) {
-      setLoading(false);
-      Alert.alert("Error, try again");
+      console.log(err);
+      Alert.alert("Error", "Please try again");
     }
   };
 
@@ -63,12 +83,17 @@ export const BioModalContent = ({
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
-            placeholder="Bio"
+            placeholder="FIDA Amount "
             style={styles.input}
-            onChangeText={setBio}
-            value={bio || ""}
+            onChangeText={handleOnChangeText}
+            value={tip?.toLocaleString() || ""}
           />
-          <Text style={styles.text}>Enter your bio</Text>
+          <Text style={styles.text}>
+            You can tip your contact with FIDA.{" "}
+            {fidaBalance !== undefined && (
+              <>You currently have {fidaBalance} FIDA in your wallet</>
+            )}
+          </Text>
         </View>
 
         <View style={styles.buttonsContainer}>
@@ -80,9 +105,9 @@ export const BioModalContent = ({
             <Text style={styles.buttonText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={!bio || loading}
+            disabled={!tip || loading}
             style={styles.buttonContainer}
-            onPress={handleOnPress}
+            onPress={handelOnPress}
           >
             {loading ? (
               <ActivityIndicator />

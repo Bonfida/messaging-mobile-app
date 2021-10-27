@@ -44,7 +44,7 @@ const SettingsScreen = () => {
   const { wallet, refresh: refreshWallet } = useWallet();
   const [refresh, setRefresh] = useState(false);
   const [balance, balanceLoading] = useBalance(refresh);
-  const [profile, profileLoading] = useProfile(refresh);
+  const [profile, profileLoading] = useProfile(wallet!.publicKey, refresh);
   const navigation = useNavigation();
   const [bioModalVisible, setBioModalVisible] = useState(false);
   const connection = useConnection();
@@ -132,7 +132,7 @@ const SettingsScreen = () => {
       >
         <View style={{ marginTop: "10%" }}>
           {/* Profile row: domain name + profile pic */}
-          <ProfileRow />
+          <ProfileRow address={wallet.publicKey} />
           {/* SOL address */}
           <Row
             label="SOL Address:"

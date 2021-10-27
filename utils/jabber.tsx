@@ -258,13 +258,11 @@ export const useLoadMedia = (
   return [mediaRef.current, typeRef.current];
 };
 
-export const useProfile = (refresh: boolean) => {
+export const useProfile = (address: PublicKey, refresh: boolean) => {
   const connection = useConnection();
-  const { wallet } = useWallet();
 
   const fn = async () => {
-    if (!wallet?.publicKey) return;
-    return await Profile.retrieve(connection, wallet.publicKey);
+    return await Profile.retrieve(connection, address);
   };
 
   return useAsync(fn, refresh);

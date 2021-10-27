@@ -5,6 +5,7 @@ import EnterSeedScreen from "./screens/EnterSeedScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import MessageScreen from "./screens/MessageScreen";
 import EditFeeScreen from "./screens/EditFeeScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 import { ConnectionProvider } from "./utils/connection";
 import { WalletProvider } from "./utils/wallet";
 import { NavigationContainer } from "@react-navigation/native";
@@ -27,6 +28,7 @@ function App() {
               <Stack.Screen name="Message" component={MessageScreen} />
               <Stack.Screen name="Edit Fee" component={EditFeeScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
               <Stack.Group screenOptions={{ presentation: "modal" }}>
                 <Stack.Screen name="Seed" component={EnterSeedScreen} />
               </Stack.Group>

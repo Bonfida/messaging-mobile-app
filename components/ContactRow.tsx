@@ -42,22 +42,30 @@ const MessageRow = ({ contact }: { contact: PublicKey }) => {
   const navigation = useNavigation();
   const [pic] = useProfilePic(contact);
 
-  const handleOnPress = () => {
+  const handleOnPressDisplayName = () => {
     navigation.navigate("Message", { contact: base58 });
   };
 
+  const handleOnPressProfile = () => {
+    navigation.navigate("Profile", { contact: base58 });
+  };
+
   return (
-    <TouchableOpacity onPress={handleOnPress}>
+    <>
       <View style={styles.row}>
-        {pic ? (
-          <Image source={{ uri: pic }} style={styles.profilePic} />
-        ) : (
-          <Circle name={firstLetter} />
-        )}
-        <Text style={styles.nameText}>{displayName}</Text>
+        <TouchableOpacity onPress={handleOnPressProfile}>
+          {pic ? (
+            <Image source={{ uri: pic }} style={styles.profilePic} />
+          ) : (
+            <Circle name={firstLetter} />
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleOnPressDisplayName}>
+          <Text style={styles.nameText}>{displayName}</Text>
+        </TouchableOpacity>
       </View>
       <Line width="100%" />
-    </TouchableOpacity>
+    </>
   );
 };
 

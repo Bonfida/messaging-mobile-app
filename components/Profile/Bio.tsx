@@ -2,9 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useProfile } from "../../utils/jabber";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useWallet } from "../../utils/wallet";
 
 export const RenderBio = ({ refresh }: { refresh: boolean }) => {
-  const [profile] = useProfile(refresh);
+  const { wallet } = useWallet();
+  const [profile] = useProfile(wallet!.publicKey, refresh);
   return (
     <View style={styles.container}>
       <Text style={styles.value}>
