@@ -9,6 +9,7 @@ export enum CachePrefix {
   MessageCount = "message_count_",
   RetrievedThread = "retrieved_thread_",
   LastMsgCount = "last_msg_count_",
+  ProfilePicture = "profile_pic_",
 }
 
 export class asyncCache {

@@ -5,7 +5,7 @@ import { useDisplayName } from "../utils/name-service";
 import { useNavigation } from "@react-navigation/native";
 import { Line } from "./Line";
 import { useProfilePic } from "../utils/jabber";
-import { CachePrefix, useCache, useGetAsyncCache } from "../utils/cache";
+import { CachePrefix, useGetAsyncCache } from "../utils/cache";
 import { Thread } from "../utils/web3/jabber";
 import { useWallet } from "../utils/wallet";
 

@@ -292,13 +292,21 @@ export const useProfilePic = (profileOwner: PublicKey) => {
         URL_HASH + profile.name
       );
 
+      const cachedKey = CachePrefix.ProfilePicture + profileOwner.toBase58();
+      const cached = await asyncCache.get(cachedKey);
+
+      if (!!cached) {
+        return cached;
+      }
+
       const dataBuffer = Buffer.from(Object.values(data));
       const len = dataBuffer[0];
       const type = dataBuffer.slice(1, 1 + len).toString();
       const pic = decodeURIComponent(
         dataBuffer.slice(1 + len).toString("base64")
       );
-      return `data:${type};base64,${pic}`;
+      const base64Data = `data:${type};base64,${pic}`;
+      await asyncCache.set(cachedKey, base64Data);
     } catch {}
   };
   return useAsync(fn, false, 10 * 60 * 1_000);
