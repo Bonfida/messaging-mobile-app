@@ -10,14 +10,15 @@ import {
   Alert,
   Linking,
 } from "react-native";
-import { normalizeMnemonic, getAccountFromSeed } from "../utils/wallet";
-import * as bip39 from "bip39";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useWallet } from "../utils/wallet";
+import {
+  useWallet,
+  loadKeyPairFromMnemonicOrPrivateKey,
+} from "../utils/wallet";
 import { useConnection } from "../utils/connection";
 import { ownerHasDomain } from "../utils/name-service";
 import HelpsUrls from "../utils/HelpUrls";
 import * as SecureStore from "expo-secure-store";
+import "text-encoding-polyfill";
 
 const EnterSeedScreen = () => {
   const connection = useConnection();
@@ -31,16 +32,18 @@ const EnterSeedScreen = () => {
     }
     try {
       setLoading(true);
-      const normalized = normalizeMnemonic(mnemonic);
-      const seed = await bip39.mnemonicToSeed(normalized);
-      const account = getAccountFromSeed(seed.toString("hex"));
-
+      const [account, normalized] = await loadKeyPairFromMnemonicOrPrivateKey(
+        mnemonic
+      );
+      if (!account || !normalized) {
+        return alert("Invalid input");
+      }
       const hasDomain = await ownerHasDomain(connection, account.publicKey);
 
       if (!hasDomain) {
         return Alert.alert(
           "No domain found",
-          "You don't have a Solana domain",
+          "You don't have a Solana domain or a registered Twitter handle",
           [
             {
               text: "Close",
@@ -68,7 +71,7 @@ const EnterSeedScreen = () => {
     <SafeAreaView style={styles.root}>
       <View>
         <Text style={styles.text}>
-          Restore your wallet using your twenty-four seed words.{" "}
+          Restore your wallet using your twenty-four seed words or private key.{" "}
         </Text>
         <TextInput style={styles.input} onChangeText={setMnemonic} />
         {loading ? (
@@ -93,6 +96,8 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     fontSize: 16,
+    marginLeft: 10,
+    marginRight: 10,
   },
   input: {
     height: 40,

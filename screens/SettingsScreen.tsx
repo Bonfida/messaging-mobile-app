@@ -56,13 +56,14 @@ const SettingsScreen = () => {
     alert("Secret key deleted!");
   };
 
+  useEffect(() => {
+    if (!wallet) return;
+    setRefresh((prev) => !prev);
+  }, [bioModalVisible]);
+
   if (!wallet) {
     return <EnterSeedScreen />;
   }
-
-  useEffect(() => {
-    setRefresh((prev) => !prev);
-  }, [bioModalVisible]);
 
   const handleProfilePicture = async () => {
     const result = await DocumentPicker.getDocumentAsync({});
@@ -132,11 +133,11 @@ const SettingsScreen = () => {
       >
         <View style={{ marginTop: "10%" }}>
           {/* Profile row: domain name + profile pic */}
-          <ProfileRow address={wallet.publicKey} />
+          <ProfileRow address={wallet?.publicKey} />
           {/* SOL address */}
           <Row
             label="SOL Address:"
-            value={abbreviateAddress(wallet.publicKey, 10)}
+            value={abbreviateAddress(wallet?.publicKey, 10)}
           />
           {/* Balance */}
           <Row

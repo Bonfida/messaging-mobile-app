@@ -61,6 +61,7 @@
     "react-native-web": "~0.13.12",
     "react-native-webview": "11.6.2",
     "readable-stream": "^3.6.0",
+    "text-encoding-polyfill": "^0.6.7",
     "tweetnacl": "^1.0.3",
     "vm-browserify": "^1.1.2"
   },

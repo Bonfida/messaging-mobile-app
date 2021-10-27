@@ -1,11 +1,30 @@
 import React, { useContext, useState } from "react";
 import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as bip39 from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import { useConnection } from "./connection";
 import { useAsync } from "./utils";
 import * as SecureStore from "expo-secure-store";
+import "text-encoding-polyfill";
+
+export const loadKeyPairFromMnemonicOrPrivateKey = async (
+  input: string
+): Promise<[Keypair | undefined, string | undefined]> => {
+  let account: Keypair | undefined = undefined;
+  let normalized: string | undefined = undefined;
+  if (input.startsWith("[")) {
+    // Load from private key
+    const privatKey = JSON.parse(input) as number[];
+    account = Keypair.fromSecretKey(new Uint8Array(privatKey));
+    normalized = input;
+  } else {
+    // Load from mnemonic
+    const normalized = normalizeMnemonic(input);
+    const seed = await bip39.mnemonicToSeed(normalized);
+    account = getAccountFromSeed(seed.toString("hex"));
+  }
+  return [account, normalized];
+};
 
 interface IContext {
   wallet: Keypair | undefined;
@@ -27,8 +46,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     const normalized = normalizeMnemonic(mnemonic);
-    const seed = await bip39.mnemonicToSeed(normalized);
-    const account = getAccountFromSeed(seed.toString("hex"));
+    const [account] = await loadKeyPairFromMnemonicOrPrivateKey(normalized);
     return account;
   };
 

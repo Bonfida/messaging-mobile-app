@@ -1,7 +1,13 @@
 import { Buffer } from "buffer";
-import { HASH_PREFIX, NAME_PROGRAM_ID } from "@bonfida/spl-name-service";
+import {
+  HASH_PREFIX,
+  NAME_PROGRAM_ID,
+  TWITTER_ROOT_PARENT_REGISTRY_KEY,
+  TWITTER_VERIFICATION_AUTHORITY,
+  ReverseTwitterRegistryState,
+} from "@bonfida/spl-name-service";
 import { ethers } from "ethers";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Connection } from "@solana/web3.js";
 import { findProgramAddress } from "./program-address";
 
 export function getHashedName(name: string): Buffer {
@@ -28,4 +34,24 @@ export function getNameAccountKey(
   }
   const [nameAccountKey] = findProgramAddress(seeds, NAME_PROGRAM_ID);
   return nameAccountKey;
+}
+export async function getHandleAndRegistryKey(
+  connection: Connection,
+  verifiedPubkey: PublicKey
+): Promise<[string, PublicKey]> {
+  const hashedVerifiedPubkey = getHashedName(verifiedPubkey.toString());
+  const reverseRegistryKey = getNameAccountKey(
+    hashedVerifiedPubkey,
+    TWITTER_VERIFICATION_AUTHORITY,
+    TWITTER_ROOT_PARENT_REGISTRY_KEY
+  );
+
+  let reverseRegistryState = await ReverseTwitterRegistryState.retrieve(
+    connection,
+    reverseRegistryKey
+  );
+  return [
+    reverseRegistryState.twitterHandle,
+    new PublicKey(reverseRegistryState.twitterRegistryKey),
+  ];
 }

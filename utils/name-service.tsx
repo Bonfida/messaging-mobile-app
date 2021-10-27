@@ -1,23 +1,32 @@
-import { getHandleAndRegistryKey } from "@bonfida/spl-name-service";
 import { PublicKey, Connection } from "@solana/web3.js";
 import { abbreviateAddress, useAsync } from "./utils";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { asyncCache } from "./cache";
 import {
   findOwnedNameAccountsForUser,
   performReverseLookup,
 } from "./web3/name-auctionning";
+import { getHandleAndRegistryKey } from "./web3/name-service";
 import { useConnection } from "./connection";
 
 export const SOL_TLD_AUTHORITY = new PublicKey(
   "58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx"
 );
 
+// Some old domains don't have a reverse look up set up
+const findValidAddress = async (connection: Connection, address: PublicKey) => {
+  try {
+    const display = await performReverseLookup(connection, address);
+    return display + ".sol";
+  } catch {}
+  return undefined;
+};
+
 export const findDisplayName = async (
   connection: Connection,
   receiver: string
 ) => {
   try {
-    const knownReceiver = await AsyncStorage.getItem(receiver);
+    const knownReceiver = await asyncCache.get(receiver);
     if (!!knownReceiver) {
       return knownReceiver;
     }
@@ -29,20 +38,23 @@ export const findDisplayName = async (
     if (domainsAddresses.length === 0) {
       return abbreviateAddress(receiver, 10);
     }
-    try {
-      const display = await performReverseLookup(
-        connection,
-        domainsAddresses[0]
-      );
-      return display + ".sol";
-    } catch {}
+
+    for (let address of domainsAddresses) {
+      const name = await findValidAddress(connection, address);
+      if (!!name) {
+        await asyncCache.set(receiver, name);
+        return name;
+      }
+    }
+
     try {
       const [display] = await getHandleAndRegistryKey(
         connection,
-        domainsAddresses[0]
+        new PublicKey(receiver)
       );
       return "@" + display;
     } catch (err) {}
+
     return abbreviateAddress(receiver, 10);
   } catch (err) {
     console.log(err);
@@ -71,5 +83,10 @@ export const ownerHasDomain = async (
     );
     return domainsAddresses.length != 0;
   } catch {}
+  try {
+    await getHandleAndRegistryKey(connection, owner);
+    return true;
+  } catch {}
+
   return false;
 };

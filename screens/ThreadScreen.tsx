@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -25,6 +25,12 @@ export const ThreadScreen = () => {
   const handleOnRefresh = () => {
     setRefresh((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (!wallet) {
+      navigation.navigate("Settings");
+    }
+  });
 
   const memoizedThread = useMemo(() => {
     return (
