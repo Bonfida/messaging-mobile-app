@@ -53,7 +53,6 @@ const MessageScreen = ({ route }) => {
         }
       >
         <ScrollView
-          contentContainerStyle={styles.contentContainer}
           // @ts-ignore
           ref={scrollViewRef}
           onContentSizeChange={() =>
