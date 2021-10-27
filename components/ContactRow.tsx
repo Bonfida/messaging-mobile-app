@@ -38,6 +38,14 @@ export const Circle = ({ name }: { name: string }) => {
   );
 };
 
+const UnReadIcon = ({ unread }: { unread: number }) => {
+  return (
+    <View style={styles.unreadCircle}>
+      <Text style={styles.unreadCount}>{unread}</Text>
+    </View>
+  );
+};
+
 const MessageRow = ({
   contact,
   currentCount,
@@ -57,6 +65,7 @@ const MessageRow = ({
     false,
     1_000
   );
+  const unread = lastCount - currentCount;
 
   const handleOnPressDisplayName = () => {
     navigation.navigate("Message", { contact: base58 });
@@ -88,7 +97,7 @@ const MessageRow = ({
             <Text style={styles.nameText}>{displayName}</Text>
           </TouchableOpacity>
         </View>
-        {lastCount !== currentCount && <View style={styles.unreadCircle} />}
+        {unread !== 0 && <UnReadIcon unread={unread} />}
       </View>
 
       <Line width="100%" />
@@ -132,10 +141,18 @@ const styles = StyleSheet.create({
     borderRadius: 70 / 2,
   },
   unreadCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 20 / 2,
+    width: 25,
+    height: 25,
+    borderRadius: 25 / 2,
     backgroundColor: "#007bff",
     marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  unreadCount: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 15,
   },
 });
