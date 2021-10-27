@@ -18,10 +18,14 @@ import {
   validateInput,
 } from "../utils/utils";
 import { PublicKey } from "@solana/web3.js";
-import { NameRegistryState } from "@bonfida/spl-name-service";
+import {
+  getTwitterRegistry,
+  NameRegistryState,
+} from "@bonfida/spl-name-service";
 import { getHashedName, getNameAccountKey } from "../utils/web3/name-service";
 import { SOL_TLD_AUTHORITY } from "../utils/name-service";
 import { Thread, createThread } from "../utils/web3/jabber";
+import { asyncCache } from "../utils/cache";
 
 const ModalContent = ({
   setVisible,
@@ -38,7 +42,7 @@ const ModalContent = ({
     if (!contact || !wallet) return;
 
     const { valid, input, twitter, domain } = validateInput(contact);
-    if (!valid || !input || twitter) {
+    if (!valid || !input) {
       return Alert.alert("Enter a valid domain name");
     }
 
@@ -59,11 +63,18 @@ const ModalContent = ({
           domainKey
         );
         receiverAddress = nameRegistry.owner;
+      } else if (twitter) {
+        const twitterRegistry = await getTwitterRegistry(connection, input);
+        receiverAddress = twitterRegistry.owner;
       }
 
       if (!receiverAddress) {
         return Alert.alert("Invalid contact");
       }
+
+      const displayName = domain ? input + ".sol" : "@" + input;
+
+      await asyncCache.set(receiverAddress.toBase58(), displayName);
 
       // Check if thread already exists
       try {

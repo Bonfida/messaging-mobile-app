@@ -19,7 +19,7 @@ export const loadKeyPairFromMnemonicOrPrivateKey = async (
     normalized = input;
   } else {
     // Load from mnemonic
-    const normalized = normalizeMnemonic(input);
+    normalized = normalizeMnemonic(input);
     const seed = await bip39.mnemonicToSeed(normalized);
     account = getAccountFromSeed(seed.toString("hex"));
   }

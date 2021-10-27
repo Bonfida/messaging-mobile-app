@@ -48,6 +48,12 @@ export const TipModal = ({
 
   const handelOnPress = async () => {
     if (!tip || !wallet) return null;
+    if (!fidaBalance || fidaBalance < tip) {
+      return Alert.alert(
+        "Insuficient funds",
+        "You do not have enough FIDA in your wallet"
+      );
+    }
     try {
       setLoading(true);
       const source = getAssociatedTokenAccount(wallet.publicKey, FIDA_MINT)[0];
