@@ -7,8 +7,14 @@ import { RenderMessage } from "../components/RenderMessage";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { FeeWarning } from "../components/FeeWarning";
 import { MessageInput } from "../components/MessageInput";
+import { RouteProp } from "@react-navigation/native";
+import { RootStackParamList } from "../App";
 
-const MessageScreen = ({ route }) => {
+const MessageScreen = ({
+  route,
+}: {
+  route: RouteProp<RootStackParamList, "Message">;
+}) => {
   const { contact } = route.params;
   const { wallet } = useWallet();
 

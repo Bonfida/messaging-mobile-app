@@ -16,18 +16,12 @@ import { abbreviateAddress, roundToDecimal } from "../utils/utils";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
-//
-
-// Display basic info:
-// Profile row (domain name + profile pic)
-// SOL address
-// Message fee
-// BIO
-// Tip button
-// Send message button
+import { messageScreenProp } from "../types";
+import { RootStackParamList } from "../App";
+import { RouteProp } from "@react-navigation/native";
 
 const MessageButton = ({ contact }: { contact: string }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<messageScreenProp>();
 
   const handleOnPress = () => {
     navigation.navigate("Message", { contact: contact });
@@ -64,7 +58,11 @@ const TipButton = ({ contact }: { contact: string }) => {
   );
 };
 
-const ProfileScreen = ({ route }) => {
+const ProfileScreen = ({
+  route,
+}: {
+  route: RouteProp<RootStackParamList, "Profile">;
+}) => {
   const { contact } = route.params;
   const profile = useProfileWs(new PublicKey(contact));
 
