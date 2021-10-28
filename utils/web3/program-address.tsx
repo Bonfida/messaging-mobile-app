@@ -32,8 +32,8 @@ export function createProgramAddress(
     programId.toBuffer(),
     Buffer.from("ProgramDerivedAddress"),
   ]);
-  let hash = ethers.utils.sha256(new Uint8Array(buffer)).slice(2);
-  let publicKeyBytes = new BN(hash, 16).toArray(undefined, 32);
+  const hash = ethers.utils.sha256(new Uint8Array(buffer)).slice(2);
+  const publicKeyBytes = new BN(hash, 16).toArray(undefined, 32);
 
   if (is_on_curve(publicKeyBytes)) {
     throw new Error(`Invalid seeds, address must fall off the curve`);
@@ -63,12 +63,9 @@ export function findProgramAddress(
   throw new Error(`Unable to find a viable program address nonce`);
 }
 
-// @ts-ignore (TODO CHECK)
+/* eslint-disable */
+//  @ts-ignore
 let naclLowLevel = nacl.lowlevel;
-
-function isOnCurve(pubkey: Uint8Array): boolean {
-  return is_on_curve(pubkey) == 1;
-}
 
 // Check that a pubkey is on the curve.
 // This function and its dependents were sourced from:
@@ -129,3 +126,5 @@ function neq25519(a: any, b: any) {
   naclLowLevel.pack25519(d, b);
   return naclLowLevel.crypto_verify_32(c, 0, d, 0);
 }
+
+/* eslint-enable */

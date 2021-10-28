@@ -18,7 +18,7 @@ import {
   roundToDecimal,
   signAndSendTransactionInstructions,
 } from "../utils/utils";
-import { useProfile } from "../utils/jabber";
+import { useProfileWs } from "../utils/jabber";
 import { useNavigation } from "@react-navigation/core";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -39,19 +39,22 @@ import { RenderBio } from "../components/Profile/Bio";
 import { Row } from "../components/Profile/Row";
 import { RenderWithIcon } from "../components/Profile/RenderWithIcon";
 import { ProfileRow } from "../components/Profile/ProfileRow";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { editFeeScreenProp, IPost } from "../types";
 
 const SettingsScreen = () => {
   const { wallet, refresh: refreshWallet } = useWallet();
   const [refresh, setRefresh] = useState(false);
   const [balance, balanceLoading] = useBalance(refresh);
-  const [profile, profileLoading] = useProfile(wallet?.publicKey, refresh);
-  const navigation = useNavigation();
+  const profile = useProfileWs(wallet?.publicKey);
+  const navigation = useNavigation<editFeeScreenProp>();
   const [bioModalVisible, setBioModalVisible] = useState(false);
   const connection = useConnection();
   const [loading, setLoading] = useState(false);
 
   const handleOnPressDelete = async () => {
     await SecureStore.deleteItemAsync("mnemonic");
+    await AsyncStorage.clear();
     refreshWallet();
     alert("Secret key deleted!");
   };
@@ -91,9 +94,11 @@ const SettingsScreen = () => {
 
         formData.append("file", JSON.stringify(Uint8Array.from(message)));
 
-        const { data } = await axios.post(URL_UPLOAD, formData);
+        const { data }: { data: IPost } = await axios.post(
+          URL_UPLOAD,
+          formData
+        );
 
-        // @ts-ignore
         const hash = data.Hash;
 
         const currentProfile = await Profile.retrieve(
@@ -125,7 +130,7 @@ const SettingsScreen = () => {
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={balanceLoading || profileLoading}
+            refreshing={balanceLoading}
             onRefresh={() => setRefresh((prev) => !prev)}
           />
         }
@@ -203,7 +208,7 @@ const SettingsScreen = () => {
           )}
           {/* Bio */}
           <TouchableOpacity onPress={() => setBioModalVisible(true)}>
-            <Row label="Bio" value={<RenderBio refresh={refresh} />} />
+            <Row label="Bio" value={<RenderBio profile={profile} />} />
           </TouchableOpacity>
           <Modal
             animationType="slide"
@@ -228,6 +233,20 @@ const SettingsScreen = () => {
                     style={styles.opacity}
                   />
                 )
+              }
+            />
+          </TouchableOpacity>
+
+          {/* Archive */}
+          <TouchableOpacity onPress={() => navigation.navigate("Archived")}>
+            <Row
+              label="Archived"
+              value={
+                <MaterialIcons
+                  name="arrow-forward-ios"
+                  size={15}
+                  color="black"
+                />
               }
             />
           </TouchableOpacity>

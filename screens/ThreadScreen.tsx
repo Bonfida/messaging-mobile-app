@@ -14,13 +14,16 @@ import { useNavigation } from "@react-navigation/native";
 import MessageRow from "../components/ContactRow";
 import { useWallet } from "../utils/wallet";
 import CreateThreadModal from "../components/CreateThreadModal";
+import { CachePrefix, useGetAsyncCache } from "../utils/cache";
+import { settingsScreenProp } from "../types";
 
 export const ThreadScreen = () => {
   const [refresh, setRefresh] = useState(false);
   const [visible, setVisibile] = useState(false);
   const { wallet } = useWallet();
   const [threads, threadsLoading] = useUserThread(refresh);
-  const navigation = useNavigation();
+  const navigation = useNavigation<settingsScreenProp>();
+  const [archived] = useGetAsyncCache(CachePrefix.Archive, false, 1_000);
 
   const handleOnRefresh = () => {
     setRefresh((prev) => !prev);
@@ -46,12 +49,13 @@ export const ThreadScreen = () => {
                   : thread?.user1
               }
               currentCount={thread.msgCount}
+              archived={archived}
             />
           );
         })}
       </>
     );
-  }, [threads?.length]);
+  }, [threads?.length, archived?.length]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -65,6 +69,7 @@ export const ThreadScreen = () => {
       >
         <View>{memoizedThread}</View>
       </ScrollView>
+
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.buttonContainer}

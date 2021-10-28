@@ -20,13 +20,14 @@ import { signAndSendTransactionInstructions } from "../utils/utils";
 import { findProgramAddress } from "../utils/web3/program-address";
 import { URL_UPLOAD } from "../utils/ipfs";
 import axios from "axios";
+import { IPost } from "../types";
 
 const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
   const [loading, setLoading] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
 
-  const upload = async (message: Buffer, type: string) => {
+  const upload = async (message: Buffer) => {
     if (!wallet) return;
     try {
       setLoading(true);
@@ -54,9 +55,8 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
 
       formData.append("file", JSON.stringify(encrypted));
 
-      const { data } = await axios.post(URL_UPLOAD, formData);
+      const { data }: { data: IPost } = await axios.post(URL_UPLOAD, formData);
 
-      // @ts-ignore
       const hash = data.Hash;
 
       const instruction = await sendMessage(
@@ -99,7 +99,7 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
 
       const message = Buffer.concat([prefix, fileBuffer]);
 
-      await upload(message, type);
+      await upload(message);
     }
   };
 

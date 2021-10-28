@@ -140,6 +140,14 @@ export class Profile {
     return deserializeUnchecked(this.schema, Profile, data);
   }
 
+  static getKey(owner: PublicKey) {
+    const [profile] = findProgramAddress(
+      Profile.generateSeeds(owner),
+      JABBER_ID
+    );
+    return profile;
+  }
+
   static async retrieve(connection: Connection, owner: PublicKey) {
     const [profile] = findProgramAddress(
       Profile.generateSeeds(owner),
@@ -205,7 +213,11 @@ export class Thread {
     return [Buffer.from("thread"), key1.toBuffer(), key2.toBuffer()];
   }
 
-  static getKeys(sender: PublicKey, receiver: PublicKey) {
+  static getKeys(
+    sender: PublicKey | undefined,
+    receiver: PublicKey | undefined
+  ) {
+    if (!sender || !receiver) return;
     const [thread] = findProgramAddress(
       Thread.generateSeeds(sender, receiver),
       JABBER_ID
@@ -320,9 +332,33 @@ export class Message {
     limit?: number
   ) {
     const thread = await Thread.retrieve(connection, sender, receiver);
-    let messageAccounts: PublicKey[] = [];
+    const messageAccounts: PublicKey[] = [];
     const start = limit ? limit : thread.msgCount;
     for (let i = thread.msgCount - start; i < thread.msgCount; i++) {
+      const [acc] = findProgramAddress(
+        this.generateSeeds(i, sender, receiver),
+        JABBER_ID
+      );
+      messageAccounts.push(acc);
+    }
+    const accountInfos = await connection.getMultipleAccountsInfo(
+      messageAccounts
+    );
+    return accountInfos.map((info, i) =>
+      info?.data
+        ? deserializeMessage(info?.data, messageAccounts[i])
+        : undefined
+    );
+  }
+
+  static async retrieveFromIndexes(
+    connection: Connection,
+    indexes: number[],
+    receiver: PublicKey,
+    sender: PublicKey
+  ) {
+    const messageAccounts: PublicKey[] = [];
+    for (const i of indexes) {
       const [acc] = findProgramAddress(
         this.generateSeeds(i, sender, receiver),
         JABBER_ID

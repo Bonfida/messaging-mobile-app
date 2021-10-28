@@ -50,7 +50,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     return account;
   };
 
-  const [wallet, walletLoading] = useAsync(load, refresh, 30 * 1_000);
+  const [wallet, walletLoading] = useAsync(load, refresh);
   const loaded = !walletLoading;
   return (
     <WalletContext.Provider
@@ -98,5 +98,5 @@ export const useBalance = (refresh: boolean) => {
     return response / LAMPORTS_PER_SOL;
   };
 
-  return useAsync(fn, refresh);
+  return useAsync(fn, refresh != !!wallet);
 };

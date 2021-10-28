@@ -8,7 +8,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
   Alert,
 } from "react-native";
 import {
@@ -35,8 +34,8 @@ export const TipModal = ({
   const [tip, setTip] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const { wallet } = useWallet();
-  const [refresh, setRefresh] = useState(false);
-  const [fidaBalance] = useFidaBalance(wallet!.publicKey, refresh);
+  const [refresh] = useState(false);
+  const [fidaBalance] = useFidaBalance(wallet?.publicKey, refresh);
 
   const handleOnChangeText = (text: string) => {
     const parsed = parseFloat(text.trim());
@@ -74,6 +73,7 @@ export const TipModal = ({
         wallet,
         [instr]
       );
+      console.log(tx);
       setLoading(false);
       Alert.alert("Success!", `You have successfully sent ${tip} FIDA`);
     } catch (err) {
@@ -93,6 +93,7 @@ export const TipModal = ({
             style={styles.input}
             onChangeText={handleOnChangeText}
             value={tip?.toLocaleString() || ""}
+            keyboardType="numeric"
           />
           <Text style={styles.text}>
             You can tip your contact with FIDA.{" "}

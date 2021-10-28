@@ -6,7 +6,6 @@ import {
   Keypair,
 } from "@solana/web3.js";
 import { useState, useEffect, useRef, useCallback } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const validateInput = (input: string) => {
   if (input.includes(".sol")) {
@@ -69,16 +68,16 @@ export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function useAsync<T = any>(
+export function useAsync<T>(
   asyncFn: () => Promise<T>,
   refresh: boolean,
-  interval = 1_000 * 60
+  interval?: number
 ): [T | undefined, boolean] {
   const [value, setValue] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [counter, setCounter] = useState(false);
   const mountedRef = useRef(true);
-  const refreshRef = useRef(new Boolean(!!refresh));
+  const refreshRef = useRef(new Boolean(refresh));
 
   const execute = useCallback(() => {
     setLoading(true);
@@ -99,6 +98,7 @@ export function useAsync<T = any>(
   }, [asyncFn]);
 
   useEffect(() => {
+    if (!interval) return;
     const timer = setInterval(() => {
       mountedRef.current = true;
       setCounter((prev) => !prev);
@@ -119,3 +119,7 @@ export function useAsync<T = any>(
 
   return [value, loading];
 }
+
+export const range = (start: number, end: number) => {
+  return Array.from(new Array(end - start), (x, i) => start + i);
+};

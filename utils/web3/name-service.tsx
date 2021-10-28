@@ -46,7 +46,7 @@ export async function getHandleAndRegistryKey(
     TWITTER_ROOT_PARENT_REGISTRY_KEY
   );
 
-  let reverseRegistryState = await ReverseTwitterRegistryState.retrieve(
+  const reverseRegistryState = await ReverseTwitterRegistryState.retrieve(
     connection,
     reverseRegistryKey
   );

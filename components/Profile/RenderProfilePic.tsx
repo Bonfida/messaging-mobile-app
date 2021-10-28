@@ -11,8 +11,8 @@ export const RenderProfilePic = ({
   firstLetter: string;
   address: PublicKey;
 }) => {
-  const [pic] = useProfilePic(address);
-  if (!!pic) {
+  const pic = useProfilePic(address);
+  if (pic) {
     return <Image source={{ uri: pic }} style={styles.profilePic} />;
   }
   return <Circle name={firstLetter} />;

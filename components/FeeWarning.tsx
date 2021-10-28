@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useContactFees } from "../utils/jabber";
 
 export const FeeWarning = ({ contact }: { contact: string }) => {
-  const [contactFee] = useContactFees(contact);
+  const contactFee = useContactFees(contact);
 
   if (!contactFee) {
     return null;

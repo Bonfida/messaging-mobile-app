@@ -44,9 +44,13 @@ const EditFeeScreen = () => {
         currentProfile.bio,
         LAMPORTS_PER_SOL * parsedAmount
       );
-      await signAndSendTransactionInstructions(connection, [], wallet, [
-        instruction,
-      ]);
+      const tx = await signAndSendTransactionInstructions(
+        connection,
+        [],
+        wallet,
+        [instruction]
+      );
+      console.log(tx);
       Alert.alert("Amount updated!");
     } catch {
       Alert.alert("Error, try again");

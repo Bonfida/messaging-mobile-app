@@ -10,6 +10,7 @@ export enum CachePrefix {
   RetrievedThread = "retrieved_thread_",
   LastMsgCount = "last_msg_count_",
   ProfilePicture = "profile_pic_",
+  Archive = "archive",
 }
 
 export class asyncCache {
@@ -20,7 +21,7 @@ export class asyncCache {
     }
     return JSON.parse(cached);
   }
-  static async set(key: string, value: any) {
+  static async set<T>(key: string, value: T) {
     const stringified = JSON.stringify(value);
     await AsyncStorage.setItem(key, stringified);
   }
@@ -29,7 +30,7 @@ export class asyncCache {
 export const useGetAsyncCache = (
   key: string,
   refresh: boolean,
-  interval: number
+  interval?: number
 ) => {
   const fn = async () => {
     return await asyncCache.get(key);

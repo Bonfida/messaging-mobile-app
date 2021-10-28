@@ -17,7 +17,9 @@ const findValidAddress = async (connection: Connection, address: PublicKey) => {
   try {
     const display = await performReverseLookup(connection, address);
     return display + ".sol";
-  } catch {}
+  } catch (err) {
+    console.log(err);
+  }
   return undefined;
 };
 
@@ -27,10 +29,10 @@ export const findDisplayName = async (
 ) => {
   try {
     const knownReceiver = await asyncCache.get(receiver);
-    if (!!knownReceiver) {
+    if (knownReceiver) {
       return knownReceiver;
     }
-    let domainsAddresses = await findOwnedNameAccountsForUser(
+    const domainsAddresses = await findOwnedNameAccountsForUser(
       connection,
       new PublicKey(receiver)
     );
@@ -39,9 +41,9 @@ export const findDisplayName = async (
       return abbreviateAddress(receiver, 10);
     }
 
-    for (let address of domainsAddresses) {
+    for (const address of domainsAddresses) {
       const name = await findValidAddress(connection, address);
-      if (!!name) {
+      if (name) {
         await asyncCache.set(receiver, name);
         return name;
       }
@@ -53,7 +55,9 @@ export const findDisplayName = async (
         new PublicKey(receiver)
       );
       return "@" + display;
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
 
     return abbreviateAddress(receiver, 10);
   } catch (err) {
@@ -82,11 +86,15 @@ export const ownerHasDomain = async (
       owner
     );
     return domainsAddresses.length != 0;
-  } catch {}
+  } catch (err) {
+    console.log(err);
+  }
   try {
     await getHandleAndRegistryKey(connection, owner);
     return true;
-  } catch {}
+  } catch (err) {
+    console.log(err);
+  }
 
   return false;
 };

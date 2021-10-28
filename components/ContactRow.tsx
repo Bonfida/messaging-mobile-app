@@ -8,6 +8,8 @@ import { useProfilePic } from "../utils/jabber";
 import { CachePrefix, useGetAsyncCache } from "../utils/cache";
 import { Thread } from "../utils/web3/jabber";
 import { useWallet } from "../utils/wallet";
+import Swipeable from "./Swipeable";
+import { profileScreenProp } from "../types";
 
 const COLORS = [
   "#e44f74",
@@ -41,7 +43,7 @@ export const Circle = ({ name }: { name: string }) => {
 const UnReadIcon = ({ unread }: { unread: number }) => {
   return (
     <View style={styles.unreadCircle}>
-      <Text style={styles.unreadCount}>{unread}</Text>
+      <Text style={styles.unreadCount}>{unread < 100 ? unread : "+99"}</Text>
     </View>
   );
 };
@@ -49,23 +51,28 @@ const UnReadIcon = ({ unread }: { unread: number }) => {
 const MessageRow = ({
   contact,
   currentCount,
+  showArchived,
+  archived,
 }: {
   contact: PublicKey;
   currentCount: number;
+  showArchived?: boolean;
+  archived?: string[];
 }) => {
   const base58 = contact?.toBase58();
   const displayName = useDisplayName(base58);
   const firstLetter = displayName[0] ? displayName[0][0] : base58[0];
-  const navigation = useNavigation();
+  const navigation = useNavigation<profileScreenProp>();
   const { wallet } = useWallet();
-  const [pic] = useProfilePic(contact);
+  const pic = useProfilePic(contact);
   const [lastCount] = useGetAsyncCache(
     CachePrefix.LastMsgCount +
-      Thread.getKeys(contact, wallet!.publicKey).toBase58(),
+      Thread.getKeys(contact, wallet?.publicKey)?.toBase58(),
     false,
     1_000
   );
-  const unread = lastCount - currentCount;
+
+  const unread = showArchived ? 0 : Math.abs(currentCount - lastCount);
 
   const handleOnPressDisplayName = () => {
     navigation.navigate("Message", { contact: base58 });
@@ -75,33 +82,32 @@ const MessageRow = ({
     navigation.navigate("Profile", { contact: base58 });
   };
 
+  if (archived?.includes(contact.toBase58()) && !showArchived) {
+    return null;
+  }
+
   return (
-    <>
+    <Swipeable contact={contact} archived={showArchived}>
       <View style={styles.row}>
-        <View
-          style={{
-            justifyContent: "flex-start",
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity onPress={handleOnPressProfile}>
-            {pic ? (
-              <Image source={{ uri: pic }} style={styles.profilePic} />
-            ) : (
-              <Circle name={firstLetter} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleOnPressDisplayName}>
-            <Text style={styles.nameText}>{displayName}</Text>
-          </TouchableOpacity>
-        </View>
-        {unread !== 0 && <UnReadIcon unread={unread} />}
+        <>
+          <View style={styles.container}>
+            <TouchableOpacity onPress={handleOnPressProfile}>
+              {pic ? (
+                <Image source={{ uri: pic }} style={styles.profilePic} />
+              ) : (
+                <Circle name={firstLetter} />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleOnPressDisplayName}>
+              <Text style={styles.nameText}>{displayName}</Text>
+            </TouchableOpacity>
+          </View>
+          {unread !== 0 && <UnReadIcon unread={unread} />}
+        </>
       </View>
 
       <Line width="100%" />
-    </>
+    </Swipeable>
   );
 };
 
@@ -110,11 +116,12 @@ export default MessageRow;
 const styles = StyleSheet.create({
   row: {
     marginLeft: 10,
-    marginTop: 10,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
+    marginTop: 10,
+    marginBottom: 10,
   },
   item: {
     margin: 10,
@@ -141,9 +148,9 @@ const styles = StyleSheet.create({
     borderRadius: 70 / 2,
   },
   unreadCircle: {
-    width: 25,
-    height: 25,
-    borderRadius: 25 / 2,
+    width: 45,
+    height: 35,
+    borderRadius: 35 / 2,
     backgroundColor: "#007bff",
     marginRight: 10,
     justifyContent: "center",
@@ -153,6 +160,12 @@ const styles = StyleSheet.create({
   unreadCount: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 15,
+    fontSize: 14,
+  },
+  container: {
+    justifyContent: "flex-start",
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
   },
 });

@@ -1,6 +1,6 @@
-import React, { useState, useRef, useMemo } from "react";
-import { useMessageData } from "../utils/jabber";
-import { RefreshControl, View, ScrollView, StyleSheet } from "react-native";
+import React, { useRef, useMemo } from "react";
+import { useMessageDataWs } from "../utils/jabber";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { useWallet } from "../utils/wallet";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { RenderMessage } from "../components/RenderMessage";
@@ -11,15 +11,10 @@ import { MessageInput } from "../components/MessageInput";
 const MessageScreen = ({ route }) => {
   const { contact } = route.params;
   const { wallet } = useWallet();
-  const [refresh, setRefresh] = useState(false);
 
-  const [messages] = useMessageData(
-    contact,
-    wallet?.publicKey.toBase58(),
-    refresh
-  );
+  const messages = useMessageDataWs(contact, wallet?.publicKey.toBase58());
 
-  const scrollViewRef = useRef();
+  const scrollViewRef = useRef() as React.MutableRefObject<ScrollView>;
 
   const memoizedMessages = useMemo(() => {
     return (
@@ -43,20 +38,10 @@ const MessageScreen = ({ route }) => {
   return (
     <>
       <FeeWarning contact={contact} />
-      <KeyboardAwareScrollView
-        contentContainerStyle={styles.contentContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={!messages}
-            onRefresh={() => setRefresh((prev) => !prev)}
-          />
-        }
-      >
+      <KeyboardAwareScrollView contentContainerStyle={styles.contentContainer}>
         <ScrollView
-          // @ts-ignore
           ref={scrollViewRef}
           onContentSizeChange={() =>
-            // @ts-ignore
             scrollViewRef.current.scrollToEnd({ animated: true })
           }
         >

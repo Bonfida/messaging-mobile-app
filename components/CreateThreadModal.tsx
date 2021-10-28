@@ -26,6 +26,7 @@ import { getHashedName, getNameAccountKey } from "../utils/web3/name-service";
 import { SOL_TLD_AUTHORITY } from "../utils/name-service";
 import { Thread, createThread } from "../utils/web3/jabber";
 import { asyncCache } from "../utils/cache";
+import { profileScreenProp } from "../types";
 
 const ModalContent = ({
   setVisible,
@@ -34,7 +35,7 @@ const ModalContent = ({
 }) => {
   const [contact, setContact] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<profileScreenProp>();
   const connection = useConnection();
   const { wallet } = useWallet();
 

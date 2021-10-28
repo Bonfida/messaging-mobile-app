@@ -27,7 +27,7 @@ export const createTransferInstruction = (
   const amountBN = ethers.BigNumber.from(amount).toBigInt();
   data.writeUInt8(3, 0);
   data.writeBigInt64LE(amountBN, 1);
-  let keys = [
+  const keys = [
     { pubkey: source, isSigner: false, isWritable: true },
     { pubkey: destination, isSigner: false, isWritable: true },
   ];
@@ -54,12 +54,16 @@ export const getAssociatedTokenAccount = (
   );
 };
 
-export const useFidaBalance = (owner: PublicKey, refresh: boolean) => {
+export const useFidaBalance = (
+  owner: PublicKey | undefined,
+  refresh: boolean
+) => {
   const connection = useConnection();
   const fn = async () => {
+    if (!owner) return;
     const tokenAccount = getAssociatedTokenAccount(owner, FIDA_MINT)[0];
     const accountInfo = await connection.getTokenAccountBalance(tokenAccount);
     return accountInfo.value.uiAmount;
   };
-  return useAsync(fn, refresh, 10 * 60 * 1_000);
+  return useAsync(fn, refresh);
 };

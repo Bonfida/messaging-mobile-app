@@ -2,7 +2,7 @@ import { Connection } from "@solana/web3.js";
 import React, { useContext } from "react";
 import "react-native-url-polyfill/auto";
 
-const RPC_URL = "https://solana-api.projectserum.com";
+const RPC_URL = "https://bonfida.rpcpool.com/b64b75e641d51f554dee2891c8f0";
 
 interface IContext {
   connection: Connection;

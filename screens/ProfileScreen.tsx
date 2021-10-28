@@ -11,7 +11,7 @@ import {
 import { TipModal } from "../components/TipModal";
 import { ProfileRow } from "../components/Profile/ProfileRow";
 import { Row } from "../components/Profile/Row";
-import { useProfile } from "../utils/jabber";
+import { useProfileWs } from "../utils/jabber";
 import { abbreviateAddress, roundToDecimal } from "../utils/utils";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
@@ -66,8 +66,7 @@ const TipButton = ({ contact }: { contact: string }) => {
 
 const ProfileScreen = ({ route }) => {
   const { contact } = route.params;
-  const [refresh, setRefresh] = useState(false);
-  const [profile] = useProfile(new PublicKey(contact), refresh);
+  const profile = useProfileWs(new PublicKey(contact));
 
   return (
     <SafeAreaView>
