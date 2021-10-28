@@ -2,7 +2,6 @@ import React, { useRef, useMemo } from "react";
 import { useMessageDataWs } from "../utils/jabber";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { useWallet } from "../utils/wallet";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { RenderMessage } from "../components/RenderMessage";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { FeeWarning } from "../components/FeeWarning";
@@ -44,7 +43,7 @@ const MessageScreen = ({
   return (
     <>
       <FeeWarning contact={contact} />
-      <KeyboardAwareScrollView contentContainerStyle={styles.contentContainer}>
+      <View style={styles.contentContainer}>
         <ScrollView
           ref={scrollViewRef}
           onContentSizeChange={() =>
@@ -54,7 +53,7 @@ const MessageScreen = ({
           {memoizedMessages}
         </ScrollView>
         <MessageInput contact={contact} />
-      </KeyboardAwareScrollView>
+      </View>
     </>
   );
 };

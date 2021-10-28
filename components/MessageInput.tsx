@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -6,23 +6,52 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
+  Keyboard,
+  EmitterSubscription,
+  KeyboardEvent,
 } from "react-native";
 import { useWallet } from "../utils/wallet";
 import { PublicKey } from "@solana/web3.js";
 import { useConnection } from "../utils/connection";
 import { Thread, Message, sendMessage } from "../utils/web3/jabber";
 import { findProgramAddress } from "../utils/web3/program-address";
-import { signAndSendTransactionInstructions, sleep } from "../utils/utils";
+import { signAndSendTransactionInstructions } from "../utils/utils";
 import { encryptMessageToBuffer } from "../utils/jabber";
 import { JABBER_ID, MessageType } from "@bonfida/jabber";
 import { Ionicons } from "@expo/vector-icons";
 import UploadIpfsButton from "../components/UploadIpfsButton";
+
+type keyBoardRef = React.MutableRefObject<EmitterSubscription | null>;
 
 export const MessageInput = ({ contact }: { contact: string }) => {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const { wallet } = useWallet();
   const [loading, setLoading] = useState(false);
   const connection = useConnection();
+
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const onKeyboardShow = (event: KeyboardEvent) =>
+    setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardHide = () => setKeyboardOffset(0);
+  const keyboardDidShowListener = useRef(null) as keyBoardRef;
+  const keyboardDidHideListener = useRef(null) as keyBoardRef;
+
+  useEffect(() => {
+    keyboardDidShowListener.current = Keyboard.addListener(
+      "keyboardWillShow",
+      onKeyboardShow
+    );
+
+    keyboardDidHideListener.current = Keyboard.addListener(
+      "keyboardWillHide",
+      onKeyboardHide
+    );
+
+    return () => {
+      keyboardDidShowListener.current?.remove();
+      keyboardDidHideListener.current?.remove();
+    };
+  }, []);
 
   const handeleOnSubmit = async () => {
     if (!message || !wallet) return;
@@ -66,7 +95,6 @@ export const MessageInput = ({ contact }: { contact: string }) => {
       );
       console.log(tx);
       setMessage(undefined);
-      await sleep(800);
     } catch {
       Alert.alert("Error", "Error sending message");
     } finally {
@@ -75,7 +103,12 @@ export const MessageInput = ({ contact }: { contact: string }) => {
   };
 
   return (
-    <View style={styles.textInput}>
+    <View
+      style={{
+        ...styles.textInput,
+        marginBottom: keyboardOffset,
+      }}
+    >
       <TextInput
         value={message}
         style={styles.input}
@@ -101,13 +134,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    marginBottom: 5,
+    marginTop: 10,
   },
   input: {
     padding: 10,
     borderWidth: 0.5,
     borderRadius: 20,
-    margin: 20,
+    margin: 10,
     width: "70%",
   },
   icon: {
