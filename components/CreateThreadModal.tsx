@@ -120,7 +120,7 @@ const ModalContent = ({
             autoCorrect={false}
             placeholder="Domain name"
             style={styles.input}
-            onChangeText={(text) => setContact(text.toLocaleLowerCase().trim())}
+            onChangeText={(text) => setContact(text.trim())}
             value={contact || ""}
           />
           <Text style={styles.text}>

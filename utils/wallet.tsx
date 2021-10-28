@@ -6,6 +6,8 @@ import { useConnection } from "./connection";
 import { useAsync } from "./utils";
 import * as SecureStore from "expo-secure-store";
 import "text-encoding-polyfill";
+import { entropyToMnemonic } from "@ethersproject/hdnode";
+import * as Random from "expo-random";
 
 export const loadKeyPairFromMnemonicOrPrivateKey = async (
   input: string
@@ -99,4 +101,11 @@ export const useBalance = (refresh: boolean) => {
   };
 
   return useAsync(fn, refresh != !!wallet);
+};
+
+export const generateMnemonicAndSeed = async () => {
+  const randomBytes = await Random.getRandomBytesAsync(32);
+  const mnemonic = entropyToMnemonic(randomBytes);
+  const seed = await bip39.mnemonicToSeed(normalizeMnemonic(mnemonic));
+  return { mnemonic, seed: Buffer.from(seed).toString("hex") };
 };

@@ -41,6 +41,8 @@ import { RenderWithIcon } from "../components/Profile/RenderWithIcon";
 import { ProfileRow } from "../components/Profile/ProfileRow";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { editFeeScreenProp, IPost } from "../types";
+import * as Clipboard from "expo-clipboard";
+import { Feather } from "@expo/vector-icons";
 
 const SettingsScreen = () => {
   const { wallet, refresh: refreshWallet } = useWallet();
@@ -51,6 +53,7 @@ const SettingsScreen = () => {
   const [bioModalVisible, setBioModalVisible] = useState(false);
   const connection = useConnection();
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleOnPressDelete = async () => {
     await SecureStore.deleteItemAsync("mnemonic");
@@ -58,6 +61,20 @@ const SettingsScreen = () => {
     refreshWallet();
     alert("Secret key deleted!");
   };
+
+  const copyAddress = () => {
+    if (!wallet) return;
+    Clipboard.setString(wallet?.publicKey?.toBase58());
+    setCopied(true);
+  };
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setInterval(() => {
+      setCopied(false);
+    }, 2_000);
+    return () => clearInterval(timer);
+  }, [copied]);
 
   useEffect(() => {
     if (!wallet) return;
@@ -140,10 +157,17 @@ const SettingsScreen = () => {
           {/* Profile row: domain name + profile pic */}
           <ProfileRow address={wallet?.publicKey} />
           {/* SOL address */}
-          <Row
-            label="SOL Address:"
-            value={abbreviateAddress(wallet?.publicKey, 10)}
-          />
+          <TouchableOpacity onPress={copyAddress}>
+            <Row
+              label="SOL Address:"
+              value={
+                <>
+                  {abbreviateAddress(wallet?.publicKey, 10)}{" "}
+                  {copied && <Feather name="check" size={15} color="green" />}
+                </>
+              }
+            />
+          </TouchableOpacity>
           {/* Balance */}
           <Row
             label="Balance:"
