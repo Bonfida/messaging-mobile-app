@@ -2,9 +2,14 @@ import React from "react";
 import { useWallet } from "../utils/wallet";
 import { useLoadMedia, IMessage, MediaType } from "../utils/jabber";
 import { findType } from "../utils/jabber";
-import { View, Image, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Image,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { WebView } from "react-native-webview";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { mediaScreenProp } from "../types";
 

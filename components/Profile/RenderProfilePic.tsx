@@ -1,8 +1,10 @@
 import React from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Circle } from "../ContactRow";
 import { useProfilePic } from "../../utils/jabber";
 import { PublicKey } from "@solana/web3.js";
+import { useNavigation } from "@react-navigation/native";
+import { mediaScreenProp } from "../../types";
 
 export const RenderProfilePic = ({
   firstLetter,
@@ -12,8 +14,15 @@ export const RenderProfilePic = ({
   address: PublicKey;
 }) => {
   const pic = useProfilePic(address);
+  const navigation = useNavigation<mediaScreenProp>();
   if (pic) {
-    return <Image source={{ uri: pic }} style={styles.profilePic} />;
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Media", { uri: pic })}
+      >
+        <Image source={{ uri: pic }} style={styles.profilePic} />
+      </TouchableOpacity>
+    );
   }
   return <Circle name={firstLetter} />;
 };
