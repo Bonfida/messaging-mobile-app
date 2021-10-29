@@ -4,6 +4,9 @@ import { useLoadMedia, IMessage, MediaType } from "../utils/jabber";
 import { findType } from "../utils/jabber";
 import { View, Image, ActivityIndicator, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
+import { mediaScreenProp } from "../types";
 
 const createHtml = (content: string) => {
   const head = `<style>body{margin:0}</style><meta name="viewport" content="width=device-width, initial-scale=1">`;
@@ -16,6 +19,7 @@ export const MessageBoxMedia = ({ message }: { message: IMessage }) => {
   const [media, type] = useLoadMedia(message);
   const isUser = wallet?.publicKey.equals(message.message.sender);
   const parsedType = findType(type);
+  const navigation = useNavigation<mediaScreenProp>();
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -71,11 +75,19 @@ export const MessageBoxMedia = ({ message }: { message: IMessage }) => {
   if (parsedType === MediaType.Image) {
     return (
       <Wrapper>
-        <Image
-          resizeMode="contain"
-          style={styles.img}
-          source={{ uri: `data:${type};base64,${media}` }}
-        />
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Media", {
+              uri: `data:${type};base64,${media}`,
+            })
+          }
+        >
+          <Image
+            resizeMode="contain"
+            style={styles.img}
+            source={{ uri: `data:${type};base64,${media}` }}
+          />
+        </TouchableOpacity>
       </Wrapper>
     );
   }

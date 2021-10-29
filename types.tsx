@@ -33,6 +33,7 @@ export type archivedScreenProp = StackNavigationProp<
 
 export type seedScreenProp = StackNavigationProp<RootStackParamList, "Seed">;
 
+export type mediaScreenProp = StackNavigationProp<RootStackParamList, "Media">;
 export interface IPost {
   Hash: string;
 }

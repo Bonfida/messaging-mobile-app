@@ -10,6 +10,7 @@ import ArchivedScreen from "./screens/ArchivedScreen";
 import { ConnectionProvider } from "./utils/connection";
 import { WalletProvider } from "./utils/wallet";
 import { NavigationContainer } from "@react-navigation/native";
+import { ImageZoom } from "./components/ImageZoom";
 
 import "./global";
 import "react-native-gesture-handler";
@@ -23,6 +24,7 @@ export type RootStackParamList = {
   Profile: { contact: string };
   Archived: undefined;
   Seed: undefined;
+  Media: { uri: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,6 +41,7 @@ function App() {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Archived" component={ArchivedScreen} />
+            <Stack.Screen name="Media" component={ImageZoom} />
             <Stack.Group screenOptions={{ presentation: "modal" }}>
               <Stack.Screen name="Seed" component={EnterSeedScreen} />
             </Stack.Group>
