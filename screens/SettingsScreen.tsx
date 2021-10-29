@@ -10,6 +10,7 @@ import {
   RefreshControl,
   Linking,
   Modal,
+  Image,
 } from "react-native";
 import { useBalance, useWallet } from "../utils/wallet";
 import EnterSeedScreen from "./EnterSeedScreen";
@@ -43,6 +44,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { editFeeScreenProp, IPost } from "../types";
 import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
+import { useUserHasDomainOrTwitter } from "../utils/name-service";
+import { AntDesign } from "@expo/vector-icons";
 
 const SettingsScreen = () => {
   const { wallet, refresh: refreshWallet } = useWallet();
@@ -54,6 +57,7 @@ const SettingsScreen = () => {
   const connection = useConnection();
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [domainOrTwitter] = useUserHasDomainOrTwitter();
 
   const handleOnPressDelete = async () => {
     await SecureStore.deleteItemAsync("mnemonic");
@@ -156,6 +160,7 @@ const SettingsScreen = () => {
         <View style={{ marginTop: "10%" }}>
           {/* Profile row: domain name + profile pic */}
           <ProfileRow address={wallet?.publicKey} />
+
           {/* SOL address */}
           <TouchableOpacity onPress={copyAddress}>
             <Row
@@ -168,11 +173,12 @@ const SettingsScreen = () => {
               }
             />
           </TouchableOpacity>
+
           {/* Balance */}
           <Row
             label="Balance:"
             value={
-              balance ? (
+              balance !== undefined ? (
                 `${roundToDecimal(balance, 3)} SOL`
               ) : (
                 <ActivityIndicator />
@@ -201,6 +207,7 @@ const SettingsScreen = () => {
               }
             />
           </TouchableOpacity>
+
           {/* SOL per message fee */}
           {profile && (
             <TouchableOpacity onPress={() => navigation.navigate("Edit Fee")}>
@@ -230,6 +237,7 @@ const SettingsScreen = () => {
               />
             </TouchableOpacity>
           )}
+
           {/* Bio */}
           <TouchableOpacity onPress={() => setBioModalVisible(true)}>
             <Row label="Bio" value={<RenderBio profile={profile} />} />
@@ -252,7 +260,7 @@ const SettingsScreen = () => {
                 ) : (
                   <Ionicons
                     name="ios-camera"
-                    size={24}
+                    size={18}
                     color="black"
                     style={styles.opacity}
                   />
@@ -260,6 +268,31 @@ const SettingsScreen = () => {
               }
             />
           </TouchableOpacity>
+
+          {/* Buy domain if does not have one */}
+          {!domainOrTwitter?.hasDomain && (
+            <TouchableOpacity>
+              <Row
+                label="Buy domain"
+                value={
+                  <Image
+                    source={require("../assets/solana-sol-logo.png")}
+                    style={{ width: 18, height: 18 }}
+                  />
+                }
+              />
+            </TouchableOpacity>
+          )}
+
+          {/* Register Twitter handle if does not have one */}
+          {!domainOrTwitter?.hasTwitter && (
+            <TouchableOpacity>
+              <Row
+                label="Register Twitter handle"
+                value={<AntDesign name="twitter" size={18} color="black" />}
+              />
+            </TouchableOpacity>
+          )}
 
           {/* Archive */}
           <TouchableOpacity onPress={() => navigation.navigate("Archived")}>

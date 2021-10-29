@@ -5,18 +5,10 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Button,
+  TouchableOpacity,
   ActivityIndicator,
-  Alert,
-  Linking,
 } from "react-native";
-import {
-  useWallet,
-  loadKeyPairFromMnemonicOrPrivateKey,
-} from "../../utils/wallet";
-import { useConnection } from "../../utils/connection";
-import { ownerHasDomain } from "../../utils/name-service";
-import HelpsUrls from "../../utils/HelpUrls";
+import { loadKeyPairFromMnemonicOrPrivateKey } from "../../utils/wallet";
 import * as SecureStore from "expo-secure-store";
 import "text-encoding-polyfill";
 
@@ -25,10 +17,8 @@ export const RestoreWallet = ({
 }: {
   setStep: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  const connection = useConnection();
   const [mnemonic, setMnemonic] = useState<null | string>(null);
   const [loading, setLoading] = useState(false);
-  const { refresh } = useWallet();
 
   const handleOnPress = async () => {
     if (!mnemonic) {
@@ -42,33 +32,14 @@ export const RestoreWallet = ({
       if (!account || !normalized) {
         return alert("Invalid input");
       }
-      const hasDomain = await ownerHasDomain(connection, account.publicKey);
-
-      if (!hasDomain) {
-        return Alert.alert(
-          "No domain found",
-          "You don't have a Solana domain or a registered Twitter handle",
-          [
-            {
-              text: "Close",
-              style: "cancel",
-            },
-            {
-              text: "Get one",
-              onPress: () => Linking.openURL(HelpsUrls.buyDomain),
-            },
-          ]
-        );
-      }
 
       await SecureStore.setItemAsync("mnemonic", normalized);
-      setStep((prev) => prev + 1);
-      refresh();
+      setLoading(false);
+      setStep(3);
     } catch (err) {
+      setLoading(false);
       console.log(err);
       alert("Invalid seeds");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -82,7 +53,20 @@ export const RestoreWallet = ({
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <Button disabled={!mnemonic} title="Next" onPress={handleOnPress} />
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => setStep(0)}
+            >
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={handleOnPress}
+            >
+              <Text style={styles.buttonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     </SafeAreaView>
@@ -107,5 +91,27 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  buttonContainer: {
+    margin: 20,
+    elevation: 8,
+    backgroundColor: "#007bff",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    width: "40%",
+  },
+  buttonText: {
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase",
+  },
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

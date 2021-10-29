@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
   explanation: {
     fontSize: 14,
     opacity: 0.5,
+    textAlign: "center",
   },
   buttonContainer: {
     margin: 20,

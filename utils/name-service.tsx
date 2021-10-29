@@ -7,6 +7,7 @@ import {
 } from "./web3/name-auctionning";
 import { getHandleAndRegistryKey } from "./web3/name-service";
 import { useConnection } from "./connection";
+import { useWallet } from "./wallet";
 
 export const SOL_TLD_AUTHORITY = new PublicKey(
   "58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx"
@@ -97,4 +98,35 @@ export const ownerHasDomain = async (
   }
 
   return false;
+};
+
+export const useUserHasDomainOrTwitter = () => {
+  const { wallet } = useWallet();
+  const connection = useConnection();
+
+  const fn = async () => {
+    let hasDomain = false;
+    let hasTwitter = false;
+    if (!wallet) return;
+    try {
+      const domainsAddresses = await findOwnedNameAccountsForUser(
+        connection,
+        wallet?.publicKey
+      );
+      hasDomain = domainsAddresses.length !== 0;
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      await getHandleAndRegistryKey(connection, wallet.publicKey);
+      hasTwitter = true;
+    } catch (err) {
+      console.log(err);
+    }
+
+    return { hasTwitter: hasTwitter, hasDomain: hasDomain };
+  };
+
+  return useAsync(fn, false);
 };
