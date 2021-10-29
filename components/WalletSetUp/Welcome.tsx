@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { Step } from "../../types";
 
 export const Welcome = ({
   setStep,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  setStep: React.Dispatch<React.SetStateAction<Step>>;
 }) => {
   return (
     <SafeAreaView style={styles.root}>
@@ -22,13 +23,13 @@ export const Welcome = ({
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => setStep(1)}
+          onPress={() => setStep(Step.Restore)}
         >
           <Text style={styles.buttonText}>Restore</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => setStep(2)}
+          onPress={() => setStep(Step.CreateWallet)}
         >
           <Text style={styles.buttonText}>Create</Text>
         </TouchableOpacity>

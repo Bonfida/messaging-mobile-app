@@ -3,15 +3,20 @@ import { RestoreWallet } from "../components/WalletSetUp/RestoreWallet";
 import { Welcome } from "../components/WalletSetUp/Welcome";
 import { CreateWallet } from "../components/WalletSetUp/CreateWallet";
 import { BuyDomain } from "../components/WalletSetUp/BuyDomain";
+import { ConfirmRestoredWallet } from "../components/WalletSetUp/ConfirmRestoredWallet";
+import { Step } from "../types";
 
 const EnterSeedScreen = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(Step.Welcome);
   return (
     <>
-      {step === 0 && <Welcome setStep={setStep} />}
-      {step === 1 && <RestoreWallet setStep={setStep} />}
-      {step === 2 && <CreateWallet setStep={setStep} />}
-      {step === 3 && <BuyDomain setStep={setStep} />}
+      {step === Step.Welcome && <Welcome setStep={setStep} />}
+      {step === Step.Restore && <RestoreWallet setStep={setStep} />}
+      {step === Step.ConfirmRestore && (
+        <ConfirmRestoredWallet setStep={setStep} />
+      )}
+      {step === Step.CreateWallet && <CreateWallet setStep={setStep} />}
+      {step === Step.BuyDomain && <BuyDomain setStep={setStep} />}
     </>
   );
 };

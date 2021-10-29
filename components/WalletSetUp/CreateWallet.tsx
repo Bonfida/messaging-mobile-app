@@ -14,11 +14,12 @@ import {
 import * as SecureStore from "expo-secure-store";
 import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
+import { Step } from "../../types";
 
 export const CreateWallet = ({
   setStep,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  setStep: React.Dispatch<React.SetStateAction<Step>>;
 }) => {
   const [mnemonic, setMnemonic] = useState<null | string>(null);
   const [copied, setCopied] = useState(false);
@@ -72,14 +73,14 @@ export const CreateWallet = ({
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => setStep(0)}
+          onPress={() => setStep(Step.Welcome)}
         >
           <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
           disabled={!userCopied}
           style={styles.buttonContainer}
-          onPress={() => setStep((prev) => prev + 1)}
+          onPress={() => setStep(Step.BuyDomain)}
         >
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>

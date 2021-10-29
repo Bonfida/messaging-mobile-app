@@ -37,3 +37,11 @@ export type mediaScreenProp = StackNavigationProp<RootStackParamList, "Media">;
 export interface IPost {
   Hash: string;
 }
+
+export enum Step {
+  Welcome,
+  Restore,
+  ConfirmRestore,
+  CreateWallet,
+  BuyDomain,
+}

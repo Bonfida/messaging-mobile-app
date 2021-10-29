@@ -11,11 +11,12 @@ import {
 import { loadKeyPairFromMnemonicOrPrivateKey } from "../../utils/wallet";
 import * as SecureStore from "expo-secure-store";
 import "text-encoding-polyfill";
+import { Step } from "../../types";
 
 export const RestoreWallet = ({
   setStep,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  setStep: React.Dispatch<React.SetStateAction<Step>>;
 }) => {
   const [mnemonic, setMnemonic] = useState<null | string>(null);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export const RestoreWallet = ({
 
       await SecureStore.setItemAsync("mnemonic", normalized);
       setLoading(false);
-      setStep(3);
+      setStep(Step.ConfirmRestore);
     } catch (err) {
       setLoading(false);
       console.log(err);
@@ -56,7 +57,7 @@ export const RestoreWallet = ({
           <View style={styles.container}>
             <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={() => setStep(0)}
+              onPress={() => setStep(Step.Welcome)}
             >
               <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>

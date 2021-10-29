@@ -11,6 +11,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import HelpsUrls from "../../utils/HelpUrls";
 import { useWallet } from "../../utils/wallet";
+import { Step } from "../../types";
 
 const DomainButton = () => {
   const handleOnPress = () => {
@@ -44,7 +45,7 @@ const TwitterButton = () => {
 export const BuyDomain = ({
   setStep,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  setStep: React.Dispatch<React.SetStateAction<Step>>;
 }) => {
   const { refresh } = useWallet();
 
@@ -63,7 +64,7 @@ export const BuyDomain = ({
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => setStep(0)}
+          onPress={() => setStep(Step.Welcome)}
         >
           <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
