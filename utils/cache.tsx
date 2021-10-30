@@ -1,5 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAsync } from "./utils";
+import { ethers } from "ethers";
+import { PublicKey } from "@solana/web3.js";
+import { findProgramAddress } from "./web3/program-address";
 
 export enum CachePrefix {
   Message = "message_",
@@ -10,7 +13,10 @@ export enum CachePrefix {
   RetrievedThread = "retrieved_thread_",
   LastMsgCount = "last_msg_count_",
   ProfilePicture = "profile_pic_",
-  Archive = "archive",
+  Archive = "archive_",
+  CentralState = "central_state_",
+  Sha256 = "sha256_",
+  ProgramAddress = "program_address_",
 }
 
 export class asyncCache {
@@ -25,6 +31,35 @@ export class asyncCache {
     const stringified = JSON.stringify(value);
     await AsyncStorage.setItem(key, stringified);
   }
+
+  static async sha256(data: ethers.utils.BytesLike): Promise<string> {
+    const cached: string = await asyncCache.get(
+      CachePrefix.Sha256 + data.toString()
+    );
+    if (cached) {
+      return cached;
+    }
+    const result: string = await new Promise((resolve) =>
+      resolve(ethers.utils.sha256(data).slice(2))
+    );
+    await asyncCache.set(CachePrefix.Sha256 + data.toString(), result);
+    return result;
+  }
+
+  // static async findProgramAddress(
+  //   seeds: Array<Buffer | Uint8Array>,
+  //   programId: PublicKey
+  // ): Promise<[PublicKey, number]> {
+  //   const cached: [string, number] = await asyncCache.get(
+  //     CachePrefix.Sha256 +
+  //       seeds.map((e) => e.toString()).concat() +
+  //       programId.toBase58()
+  //   );
+  //   if (cached) {
+  //     return [new PublicKey(cached[0]), cached[1]];
+  //   }
+  //   return await findProgramAddress(seeds, programId);
+  // }
 }
 
 export const useGetAsyncCache = (

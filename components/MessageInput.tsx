@@ -70,7 +70,7 @@ export const MessageInput = ({ contact }: { contact: string }) => {
         receiver,
         wallet.publicKey
       );
-      const [messageAccount] = findProgramAddress(seeds, JABBER_ID);
+      const [messageAccount] = await findProgramAddress(seeds, JABBER_ID);
 
       const encrypted = encryptMessageToBuffer(
         message,

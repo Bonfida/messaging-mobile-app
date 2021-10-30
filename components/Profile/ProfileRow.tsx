@@ -5,13 +5,13 @@ import { RenderProfilePic } from "./RenderProfilePic";
 import { PublicKey } from "@solana/web3.js";
 
 export const ProfileRow = ({ address }: { address: PublicKey }) => {
-  const [displayName] = useDisplayName(address.toBase58());
+  const [displayName] = useDisplayName(address?.toBase58());
   const firstLetter =
     displayName && displayName[0]
       ? displayName[0][0].toLocaleUpperCase()
       : address.toBase58()[0].toUpperCase();
 
-  if (!displayName) {
+  if (!displayName || !address) {
     return (
       <View style={styles.profileRow}>
         <ActivityIndicator size="large" />

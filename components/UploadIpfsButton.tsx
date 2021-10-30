@@ -42,7 +42,7 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
         wallet.publicKey,
         new PublicKey(receiver)
       );
-      const [messageAccount] = findProgramAddress(seeds, JABBER_ID);
+      const [messageAccount] = await findProgramAddress(seeds, JABBER_ID);
 
       const encrypted = encryptMessageToBuffer(
         message,

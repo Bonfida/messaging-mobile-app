@@ -61,7 +61,7 @@ export const useFidaBalance = (
   const connection = useConnection();
   const fn = async () => {
     if (!owner) return;
-    const tokenAccount = getAssociatedTokenAccount(owner, FIDA_MINT)[0];
+    const tokenAccount = (await getAssociatedTokenAccount(owner, FIDA_MINT))[0];
     const accountInfo = await connection.getTokenAccountBalance(tokenAccount);
     return accountInfo.value.uiAmount;
   };

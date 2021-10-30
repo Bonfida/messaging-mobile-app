@@ -3,6 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
 import BN from "bn.js";
+import { asyncCache } from "../cache";
 
 export const MAX_SEED_LENGTH = 32;
 
@@ -16,10 +17,10 @@ export const toBuffer = (arr: Buffer | Uint8Array | Array<number>): Buffer => {
   }
 };
 
-export function createProgramAddress(
+export async function createProgramAddress(
   seeds: Array<Buffer | Uint8Array>,
   programId: PublicKey
-): PublicKey {
+): Promise<PublicKey> {
   let buffer = Buffer.alloc(0);
   seeds.forEach(function (seed) {
     if (seed.length > MAX_SEED_LENGTH) {
@@ -32,7 +33,7 @@ export function createProgramAddress(
     programId.toBuffer(),
     Buffer.from("ProgramDerivedAddress"),
   ]);
-  const hash = ethers.utils.sha256(new Uint8Array(buffer)).slice(2);
+  const hash = await asyncCache.sha256(new Uint8Array(buffer));
   const publicKeyBytes = new BN(hash, 16).toArray(undefined, 32);
 
   if (is_on_curve(publicKeyBytes)) {
@@ -41,16 +42,16 @@ export function createProgramAddress(
   return new PublicKey(publicKeyBytes);
 }
 
-export function findProgramAddress(
+export async function findProgramAddress(
   seeds: Array<Buffer | Uint8Array>,
   programId: PublicKey
-): [PublicKey, number] {
+): Promise<[PublicKey, number]> {
   let nonce = 255;
   let address;
   while (nonce != 0) {
     try {
       const seedsWithNonce = seeds.concat(Buffer.from([nonce]));
-      address = createProgramAddress(seedsWithNonce, programId);
+      address = await createProgramAddress(seedsWithNonce, programId);
     } catch (err) {
       if (err instanceof TypeError) {
         throw err;

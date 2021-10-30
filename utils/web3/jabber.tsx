@@ -15,7 +15,7 @@ export const createThread = async (
   receiver: PublicKey,
   feePayer: PublicKey
 ) => {
-  const [thread] = findProgramAddress(
+  const [thread] = await findProgramAddress(
     Thread.generateSeeds(sender, receiver),
     JABBER_ID
   );
@@ -35,18 +35,18 @@ export const sendMessage = async (
   message: Uint8Array,
   kind: MessageType
 ) => {
-  const [receiverProfile] = findProgramAddress(
+  const [receiverProfile] = await findProgramAddress(
     Profile.generateSeeds(receiver),
     JABBER_ID
   );
-  const [threadAccount] = findProgramAddress(
+  const [threadAccount] = await findProgramAddress(
     Thread.generateSeeds(sender, receiver),
     JABBER_ID
   );
 
   const thread = await Thread.retrieve(connection, sender, receiver);
 
-  const [messageAccount] = findProgramAddress(
+  const [messageAccount] = await findProgramAddress(
     Message.generateSeeds(thread.msgCount, sender, receiver),
     JABBER_ID
   );
@@ -71,7 +71,7 @@ export const setUserProfile = async (
   bio: string,
   lamportsPerMessage: number
 ) => {
-  const [profile] = findProgramAddress(
+  const [profile] = await findProgramAddress(
     Profile.generateSeeds(profileOwner),
     JABBER_ID
   );
@@ -140,8 +140,8 @@ export class Profile {
     return deserializeUnchecked(this.schema, Profile, data);
   }
 
-  static getKey(owner: PublicKey) {
-    const [profile] = findProgramAddress(
+  static async getKey(owner: PublicKey) {
+    const [profile] = await findProgramAddress(
       Profile.generateSeeds(owner),
       JABBER_ID
     );
@@ -149,7 +149,7 @@ export class Profile {
   }
 
   static async retrieve(connection: Connection, owner: PublicKey) {
-    const [profile] = findProgramAddress(
+    const [profile] = await findProgramAddress(
       Profile.generateSeeds(owner),
       JABBER_ID
     );
@@ -213,12 +213,12 @@ export class Thread {
     return [Buffer.from("thread"), key1.toBuffer(), key2.toBuffer()];
   }
 
-  static getKeys(
+  static async getKeys(
     sender: PublicKey | undefined,
     receiver: PublicKey | undefined
   ) {
     if (!sender || !receiver) return;
-    const [thread] = findProgramAddress(
+    const [thread] = await findProgramAddress(
       Thread.generateSeeds(sender, receiver),
       JABBER_ID
     );
@@ -230,7 +230,7 @@ export class Thread {
     sender: PublicKey,
     receiver: PublicKey
   ) {
-    const [thread] = findProgramAddress(
+    const [thread] = await findProgramAddress(
       Thread.generateSeeds(sender, receiver),
       JABBER_ID
     );
@@ -314,7 +314,7 @@ export class Message {
     receiver: PublicKey,
     sender: PublicKey
   ) {
-    const [messageAccount] = findProgramAddress(
+    const [messageAccount] = await findProgramAddress(
       this.generateSeeds(index, sender, receiver),
       JABBER_ID
     );
@@ -335,7 +335,7 @@ export class Message {
     const messageAccounts: PublicKey[] = [];
     const start = limit ? limit : thread.msgCount;
     for (let i = thread.msgCount - start; i < thread.msgCount; i++) {
-      const [acc] = findProgramAddress(
+      const [acc] = await findProgramAddress(
         this.generateSeeds(i, sender, receiver),
         JABBER_ID
       );
@@ -359,7 +359,7 @@ export class Message {
   ) {
     const messageAccounts: PublicKey[] = [];
     for (const i of indexes) {
-      const [acc] = findProgramAddress(
+      const [acc] = await findProgramAddress(
         this.generateSeeds(i, sender, receiver),
         JABBER_ID
       );

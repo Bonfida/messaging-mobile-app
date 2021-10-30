@@ -111,11 +111,10 @@ export const useMessageDataWs = (
     );
     setMessages((prev) => [...prev, ..._messages]);
     lastCountRef.current = thread.msgCount;
-    await asyncCache.set(
-      CachePrefix.LastMsgCount +
-        Thread.getKeys(senderAddress, receiverAddress)?.toBase58(),
-      thread.msgCount
-    );
+    const threadKey = (
+      await Thread.getKeys(senderAddress, receiverAddress)
+    )?.toBase58();
+    await asyncCache.set(CachePrefix.LastMsgCount + threadKey, thread.msgCount);
   };
 
   useEffect(() => {
@@ -133,9 +132,11 @@ export const useMessageDataWs = (
       );
       // Update last thread count
       lastCountRef.current = thread.msgCount;
+      const threadKey = (
+        await Thread.getKeys(senderAddress, receiverAddress)
+      )?.toBase58();
       await asyncCache.set(
-        CachePrefix.LastMsgCount +
-          Thread.getKeys(senderAddress, receiverAddress)?.toBase58(),
+        CachePrefix.LastMsgCount + threadKey,
         thread.msgCount
       );
       // Retrieve initial data
@@ -151,10 +152,12 @@ export const useMessageDataWs = (
     load();
 
     // Subscribe to websocket
-    const threadKey = Thread.getKeys(senderAddress, receiverAddress);
-    if (!threadKey) return;
-    const id = connection.onAccountChange(threadKey, callback);
-    idRef.current = id;
+    Thread.getKeys(senderAddress, receiverAddress).then((key) => {
+      if (key) {
+        const id = connection.onAccountChange(key, callback);
+        idRef.current = id;
+      }
+    });
 
     // Unsubscribe and useEffect cleanup
     return () => {
@@ -329,9 +332,11 @@ export const useProfileWs = (address: PublicKey | undefined) => {
     load();
 
     // Subscribe to websocket
-    const profileKey = Profile.getKey(address);
-    const id = connection.onAccountChange(profileKey, callback);
-    idRef.current = id;
+    Profile.getKey(address).then((key) => {
+      const id = connection.onAccountChange(key, callback);
+      idRef.current = id;
+    });
+
     // Unsubscribe and useEffect cleanup
     return () => {
       mountedRef.current = false;
@@ -372,7 +377,7 @@ export const useProfilePic = (profileOwner: PublicKey) => {
   useEffect(() => {
     const fn = async () => {
       if (!profile || !mountedRef) return;
-      const cachedKey = CachePrefix.ProfilePicture + profileOwner.toBase58();
+      const cachedKey = CachePrefix.ProfilePicture + profileOwner?.toBase58();
       const cached = await asyncCache.get(cachedKey);
       if (cached) {
         return setPic(cached);
@@ -390,8 +395,8 @@ export const useProfilePic = (profileOwner: PublicKey) => {
         dataBuffer.slice(1 + len).toString("base64")
       );
       const base64Data = `data:${type};base64,${pic}`;
-      await asyncCache.set(cachedKey, base64Data);
       setPic(base64Data);
+      await asyncCache.set(cachedKey, base64Data);
     };
     fn();
     return () => {

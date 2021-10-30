@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useDisplayName } from "../utils/name-service";
@@ -10,6 +10,7 @@ import { Thread } from "../utils/web3/jabber";
 import { useWallet } from "../utils/wallet";
 import Swipeable from "./Swipeable";
 import { profileScreenProp } from "../types";
+import { findProgramAddress } from "../utils/web3/program-address";
 
 const COLORS = [
   "#e44f74",
@@ -65,12 +66,20 @@ const MessageRow = ({
   const navigation = useNavigation<profileScreenProp>();
   const { wallet } = useWallet();
   const pic = useProfilePic(contact);
+  const [threadKey, setThreadKey] = useState<PublicKey | undefined>(undefined);
   const [lastCount] = useGetAsyncCache(
-    CachePrefix.LastMsgCount +
-      Thread.getKeys(contact, wallet?.publicKey)?.toBase58(),
+    CachePrefix.LastMsgCount + threadKey?.toBase58(),
     false,
     1_000
   );
+
+  useEffect(() => {
+    const fn = async () => {
+      const _threadKey = await Thread.getKeys(contact, wallet?.publicKey);
+      setThreadKey(_threadKey);
+    };
+    fn();
+  }, []);
 
   const unread = showArchived ? 0 : Math.abs(currentCount - lastCount);
 

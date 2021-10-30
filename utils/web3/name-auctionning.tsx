@@ -3,9 +3,14 @@ import { NAME_PROGRAM_ID, NameRegistryState } from "@bonfida/spl-name-service";
 import { getHashedName, getNameAccountKey } from "./name-service";
 import BN from "bn.js";
 import { findProgramAddress } from "./program-address";
+import { asyncCache, CachePrefix } from "../cache";
 
 export const PROGRAM_ID = new PublicKey(
   "jCebN34bUfdeUYJT13J1yG16XWQpt5PDx6Mse9GUqhR"
+);
+
+export const centralState = new PublicKey(
+  "33m47vH6Eav6jr5Ry86XjhRft2jRBLDnDgPSHoquXi2Z"
 );
 
 export async function findOwnedNameAccountsForUser(
@@ -30,12 +35,8 @@ export async function performReverseLookup(
   connection: Connection,
   nameAccount: PublicKey
 ): Promise<string> {
-  const [centralState] = findProgramAddress(
-    [PROGRAM_ID.toBuffer()],
-    PROGRAM_ID
-  );
-  const hashedReverseLookup = getHashedName(nameAccount.toBase58());
-  const reverseLookupAccount = getNameAccountKey(
+  const hashedReverseLookup = await getHashedName(nameAccount.toBase58());
+  const reverseLookupAccount = await getNameAccountKey(
     hashedReverseLookup,
     centralState
   );
