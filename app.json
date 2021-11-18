@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "jabber",
+    "slug": "jabber",
+    "version": "1.0.4",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "usesIcloudStorage": true,
+      "bundleIdentifier": "com.bonfida.jabber"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.bonfida.jabber",
+      "permissions": [],
+      "versionCode": 5
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
