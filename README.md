@@ -27,12 +27,32 @@ yarn && yarn start
 
 ## Smart contract
 
-The smart contract can be found here [Jabber smart contract](https://github.com/Bonfida/jabber)
+The smart contract can be found here: [Jabber smart contract](https://github.com/Bonfida/jabber)
 
-## Secret key
+## Secret key 🚨
 
 The secret key is stored using `expo-secure-store` [https://docs.expo.dev/versions/latest/sdk/securestore/](https://docs.expo.dev/versions/latest/sdk/securestore/)
 
 ## Transactions
 
 On the mobile versions, transactions don't need to be approved, **they are automatically approved**.
+
+## Encryption
+
+- DMs: For DMs (i.e 1 on 1 conversations) all messages are encrypted end to end using [Diffie-Hellman keys](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman). The encryption happens on the mobile before sending the message on-chain. For images, videos and audios, the file is encrypted using Diffie-Hellman, uploaded on IPFS, then the IPFS hash is encrypted and sent on-chain.
+
+- Groups: Groups are **unencrypted** at the moment. This means that the entire group chat history is visible on-chain. If you want to contribute to the repo to add group encryption using [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) please reach out to us, grants are available.
+
+## Cost
+
+Gas cost will depend on the length of your message
+
+| Message length (characters) | Transaction fee (SOL) |
+| --------------------------- | --------------------- |
+| 100                         | ~0.002                |
+| 200                         | ~0.0026               |
+| 500                         | ~0.00469              |
+| 1,000                       | ~0.0082               |
+| 2,000                       | ~0.015                |
+
+For files, the gas cost does not depend on the size of the file because only the IPFS hash is sent on-chain.
