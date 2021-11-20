@@ -667,16 +667,23 @@ export const useGetIpfsData = (hash: string | undefined) => {
   return data;
 };
 
-export const useGroupMembers = (groupKey: string | undefined | null) => {
+export const useGroupMembers = (
+  groupKey: string | undefined | null,
+  groupData: GroupThread | null
+) => {
   const connection = useConnection();
-
   const fn = async () => {
     if (!groupKey) return;
     const result = (
       await retrieveGroupMembers(connection, new PublicKey(groupKey))
-    ).map((e) => new PublicKey(e).toBase58());
+    ).map((e) => {
+      return {
+        address: new PublicKey(e).toBase58(),
+        isAdmin: !!groupData?.admins.find((a) => a.equals(new PublicKey(e))),
+      };
+    });
     return result;
   };
 
-  return useAsync(fn, !groupKey);
+  return useAsync(fn, !groupKey != !groupData);
 };

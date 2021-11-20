@@ -49,7 +49,7 @@ const GroupInfoScreen = ({
   const [copied, setCopied] = useState(false);
   const pic = useGetIpfsData(groupData?.groupPicHash);
   const isAdmin = wallet?.publicKey.toBase58() === groupData?.owner.toBase58();
-  const [groupMembers] = useGroupMembers(group);
+  const [groupMembers] = useGroupMembers(group, groupData);
 
   const handleOnPressEnableMedia = async () => {
     if (!wallet) return;

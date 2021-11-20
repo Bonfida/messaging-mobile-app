@@ -29,6 +29,7 @@ import {
   NameRegistryState,
 } from "@bonfida/spl-name-service";
 import { balanceWarning } from "../components/BalanceWarning";
+import { useNavigation } from "@react-navigation/native";
 
 const AdminRow = ({
   adminAddress,
@@ -65,6 +66,8 @@ const AddRemoveAdminScreen = ({
 
   const connection = useConnection();
   const { wallet, sendTransaction, hasSol } = useWallet();
+
+  const navigation = useNavigation();
 
   const handleOnPress =
     (addAdmin: boolean, adminAddress: string | undefined | null) =>
@@ -142,6 +145,7 @@ const AddRemoveAdminScreen = ({
         });
         console.log(tx);
         setLoading(false);
+        navigation.goBack();
       } catch (err) {
         console.log(err);
         setLoading(false);

@@ -59,7 +59,7 @@ export type RootStackParamList = {
   "Group Info": { group: string };
   "Edit Admins": { group: string };
   "App Information": undefined;
-  "Group Members": { members: string[] };
+  "Group Members": { members: { address: string; isAdmin: boolean }[] };
   "Select Display Domain": { selectedDomain: string | undefined };
 };
 

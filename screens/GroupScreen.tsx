@@ -7,6 +7,8 @@ import { RootStackParamList } from "../App";
 import { MessageInput } from "../components/MessageInput";
 import { FeeWarningGroup } from "../components/FeeWarning";
 import { asyncCache, CachePrefix } from "../utils/cache";
+import { useWallet } from "../utils/wallet.native";
+import { MutedWarning } from "../components/MutedWarning";
 
 const MessageGroupScreen = ({
   route,
@@ -14,7 +16,7 @@ const MessageGroupScreen = ({
   route: RouteProp<RootStackParamList, "Group Messages">;
 }) => {
   const { group } = route.params;
-
+  const { wallet } = useWallet();
   const groupData = useGroupData(group);
   const messages = useGroupMessage(groupData, group);
 
@@ -50,8 +52,12 @@ const MessageGroupScreen = ({
     );
   }, [messages?.length]);
 
+  const isAdmin = groupData?.admins.find((e) => wallet?.publicKey.equals(e));
+  const muted = groupData?.adminOnly && !isAdmin;
+
   return (
     <>
+      {muted && <MutedWarning />}
       <FeeWarningGroup groupData={groupData} />
       <View style={styles.contentContainer}>
         <ScrollView
@@ -66,6 +72,7 @@ const MessageGroupScreen = ({
           contact={group}
           groupData={groupData}
           scrollViewRef={scrollViewRef}
+          muted={muted}
         />
       </View>
     </>

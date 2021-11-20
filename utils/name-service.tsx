@@ -36,15 +36,15 @@ export const findDisplayName = async (
     }
 
     const knownReceiver = await asyncCache.get<string[]>(receiver);
-    if (knownReceiver && knownReceiver.length > 0) {
+    if (knownReceiver && knownReceiver?.length > 0) {
       if (favoriteDisplayName && favoriteDisplayName !== knownReceiver[0]) {
         await asyncCache.set(receiver, [
           favoriteDisplayName,
-          ...knownReceiver.filter((e) => e !== favoriteDisplayName),
+          ...knownReceiver?.filter((e) => e !== favoriteDisplayName),
         ]);
         return [
           favoriteDisplayName,
-          ...knownReceiver.filter((e) => e !== favoriteDisplayName),
+          ...knownReceiver?.filter((e) => e !== favoriteDisplayName),
         ];
       }
       return knownReceiver;

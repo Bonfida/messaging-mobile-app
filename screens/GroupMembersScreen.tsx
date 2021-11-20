@@ -8,7 +8,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { profileScreenProp } from "../types";
 
-const MemberRow = ({ address }: { address: string }) => {
+const MemberRow = ({
+  address,
+  isAdmin,
+}: {
+  address: string;
+  isAdmin: boolean;
+}) => {
   const [displayName] = useDisplayName(address);
   const navigation = useNavigation<profileScreenProp>();
 
@@ -16,12 +22,14 @@ const MemberRow = ({ address }: { address: string }) => {
     return null;
   }
 
+  const adminTag = isAdmin ? " - Admin" : "";
+  console.log(isAdmin);
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Profile", { contact: address })}
     >
       <Row
-        label={displayName[0]}
+        label={displayName[0] + adminTag}
         value={
           <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
         }
@@ -38,8 +46,10 @@ const GroupMembersScreen = ({
   const { members } = route.params;
   return (
     <SafeAreaView>
-      {members.map((m, idx) => {
-        return <MemberRow key={m + idx} address={m} />;
+      {members.map(({ address, isAdmin }, idx) => {
+        return (
+          <MemberRow key={address + idx} address={address} isAdmin={isAdmin} />
+        );
       })}
     </SafeAreaView>
   );

@@ -35,10 +35,12 @@ export const MessageInput = ({
   contact,
   groupData,
   scrollViewRef,
+  muted,
 }: {
   contact: string;
   groupData?: GroupThread | null;
   scrollViewRef: React.MutableRefObject<ScrollView>;
+  muted?: boolean;
 }) => {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const { wallet, sendTransaction, hasSol } = useWallet();
@@ -106,8 +108,17 @@ export const MessageInput = ({
         }
       }
 
+      let adminIndex: undefined | number = undefined;
+      if (groupData && isGroup) {
+        for (let i = 0; i < groupData.admins.length; i++) {
+          if (groupData.admins[i].equals(wallet.publicKey)) {
+            adminIndex = i;
+          }
+        }
+      }
+
       const instruction = await (isGroup
-        ? sendMessageToGroup(connection, contact, message, wallet, undefined)
+        ? sendMessageToGroup(connection, contact, message, wallet, adminIndex)
         : sendMessageToContact(connection, contact, wallet, message));
       const tx = await sendTransaction({
         instruction: [instruction],
@@ -132,6 +143,7 @@ export const MessageInput = ({
   return (
     <View style={[styles.textInput, { marginBottom: keyboardOffset }]}>
       <TextInput
+        editable={!muted}
         value={message}
         style={styles.input}
         onChangeText={setMessage}
