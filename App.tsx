@@ -31,6 +31,7 @@ import "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
 
 import { Entypo, Feather } from "@expo/vector-icons";
+import ChangeRpcScreen from "./screens/ChangeRpcScreen";
 
 const styles = StyleSheet.create({
   header: {
@@ -61,6 +62,7 @@ export type RootStackParamList = {
   "App Information": undefined;
   "Group Members": { members: { address: string; isAdmin: boolean }[] };
   "Select Display Domain": { selectedDomain: string | undefined };
+  "Change RPC endpoint": undefined;
 };
 
 const HeaderLeft = ({ iconSize }: { iconSize: number }) => {
@@ -177,6 +179,10 @@ function App() {
             <Stack.Screen
               name="Select Display Domain"
               component={SelectDisplayDomainNameScreen}
+            />
+            <Stack.Screen
+              name="Change RPC endpoint"
+              component={ChangeRpcScreen}
             />
             <Stack.Group screenOptions={{ presentation: "modal" }}>
               <Stack.Screen name="Seed" component={EnterSeedScreen} />

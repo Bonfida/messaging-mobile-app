@@ -411,6 +411,18 @@ const SettingsScreen = () => {
           />
         </TouchableOpacity>
 
+        {/* Change RPC node */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Change RPC endpoint")}
+        >
+          <Row
+            label="Change RPC endpoint"
+            value={
+              <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
+            }
+          />
+        </TouchableOpacity>
+
         {/* Delete private key */}
         <TouchableOpacity
           onPress={() => setConfirmVisible(true)}

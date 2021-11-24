@@ -70,6 +70,11 @@ export type selectDisplayNameScreenProp = StackNavigationProp<
   "Select Display Domain"
 >;
 
+export type changeRpcEndpointScreenProp = StackNavigationProp<
+  RootStackParamList,
+  "Change RPC endpoint"
+>;
+
 export interface IPost {
   Hash: string;
 }

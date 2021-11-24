@@ -66,6 +66,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-bip39": "^2.3.0",
     "react-native-cache": "^2.0.1",
+    "react-native-dotenv": "^3.3.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-paper": "^4.9.2",
     "react-native-reanimated": "~2.2.0",
