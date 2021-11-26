@@ -123,7 +123,7 @@ const ModalContent = ({
 
       const displayName = domain || pubkey ? input + ".sol" : "@" + input;
 
-      await asyncCache.set(receiverAddress.toBase58(), displayName);
+      await asyncCache.set(receiverAddress.toBase58(), [displayName]);
 
       // Check if thread already exists
       try {
