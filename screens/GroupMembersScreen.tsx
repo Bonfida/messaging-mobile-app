@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, TouchableOpacity } from "react-native";
+import { SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import { RootStackParamList } from "../App";
 import { RouteProp } from "@react-navigation/native";
 import { Row } from "../components/Profile/Row";
@@ -46,11 +46,17 @@ const GroupMembersScreen = ({
   const { members } = route.params;
   return (
     <SafeAreaView>
-      {members.map(({ address, isAdmin }, idx) => {
-        return (
-          <MemberRow key={address + idx} address={address} isAdmin={isAdmin} />
-        );
-      })}
+      <ScrollView>
+        {members.map(({ address, isAdmin }, idx) => {
+          return (
+            <MemberRow
+              key={address + idx}
+              address={address}
+              isAdmin={isAdmin}
+            />
+          );
+        })}
+      </ScrollView>
     </SafeAreaView>
   );
 };
