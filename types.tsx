@@ -79,10 +79,11 @@ export interface IPost {
   Hash: string;
 }
 
-export enum Step {
+export enum IStep {
   Welcome,
   Restore,
   ConfirmRestore,
   CreateWallet,
   BuyDomain,
+  CheckAddress,
 }

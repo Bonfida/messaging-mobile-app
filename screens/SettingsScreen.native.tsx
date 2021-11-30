@@ -50,6 +50,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import { balanceWarning } from "../components/BalanceWarning";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useDisplayName } from "../utils/name-service";
+import globalStyle from "../Style";
 
 const SettingsScreen = () => {
   const {
