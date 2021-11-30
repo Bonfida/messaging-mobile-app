@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { loadKeyPairFromMnemonicOrPrivateKey } from "../../utils/wallet.native";
-import { Step } from "../../types";
+import { IStep } from "../../types";
 
 export const ConfirmRestoredWallet = ({
   setStep,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<Step>>;
+  setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }) => {
   const [address, setAddress] = useState<null | string>(null);
   const mountedRef = useRef(true);
@@ -41,13 +41,13 @@ export const ConfirmRestoredWallet = ({
         <View style={styles.container}>
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => setStep(Step.Restore)}
+            onPress={() => setStep(IStep.Restore)}
           >
             <Text style={styles.buttonText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => setStep(Step.BuyDomain)}
+            onPress={() => setStep(IStep.BuyDomain)}
           >
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>

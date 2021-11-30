@@ -15,12 +15,15 @@ import {
 import * as SecureStore from "expo-secure-store";
 import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
-import { Step } from "../../types";
+import { IStep } from "../../types";
+import GlobalStyle from "../../Style";
+import BlueButton from "../Buttons/BlueGradient";
+import GradientButton from "../Buttons/GradientButton";
 
 export const CreateWallet = ({
   setStep,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<Step>>;
+  setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }) => {
   const [mnemonic, setMnemonic] = useState<null | string>(null);
   const [copied, setCopied] = useState(false);
@@ -61,41 +64,66 @@ export const CreateWallet = ({
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.title}>Seed words</Text>
-      <Text style={styles.explanation}>
-        Please write down the following twenty four words and keep them in a
-        safe place:
-      </Text>
-      <TouchableOpacity onPress={copySeeds}>
-        {mnemonic && <Text style={styles.seedsContainer}>{mnemonic}</Text>}
-        {!mnemonic && (
-          <View style={styles.loading}>
-            <ActivityIndicator />
-          </View>
-        )}
-      </TouchableOpacity>
-      <Text style={styles.explanation}>
-        {copied && (
-          <>
-            Copied <Feather name="check" size={15} color="green" />
-          </>
-        )}
-      </Text>
+      <View>
+        <TouchableOpacity onPress={copySeeds}>
+          {mnemonic && (
+            <Text style={styles.seedsContainer}>
+              {mnemonic.split(" ").map((word, idx) => {
+                return (
+                  <Text
+                    key={idx}
+                    style={[
+                      idx % 2 === 0 ? GlobalStyle.blue : GlobalStyle.grey,
+                      { fontWeight: "bold" },
+                    ]}
+                  >
+                    {word}
+                    {idx < mnemonic.length ? " " : null}
+                  </Text>
+                );
+              })}
+            </Text>
+          )}
+          {!mnemonic && (
+            <View style={styles.loading}>
+              <ActivityIndicator />
+            </View>
+          )}
+        </TouchableOpacity>
+        <Text style={styles.copied}>
+          {copied && (
+            <>
+              Copied <Feather name="check" size={15} color="green" />
+            </>
+          )}
+        </Text>
+
+        <View style={styles.explanationContainer}>
+          <Text style={GlobalStyle.h1}>Seed phrase</Text>
+          <Text style={GlobalStyle.text}>
+            Write down the above 24 words and store them in a safe place. This
+            is used as a unique identifier to reclaim your wallet.
+          </Text>
+        </View>
+      </View>
 
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => setStep(Step.Welcome)}
+        <BlueButton
+          width={103}
+          height={56}
+          borderRadius={28}
+          onPress={() => setStep(IStep.Welcome)}
         >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={!userCopied}
-          style={styles.buttonContainer}
-          onPress={() => setStep(Step.BuyDomain)}
+          <Text style={GlobalStyle.blue}>Back</Text>
+        </BlueButton>
+        <GradientButton
+          width={208}
+          height={56}
+          borderRadius={28}
+          onPress={() => setStep(IStep.CheckAddress)}
         >
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
+          <Text style={GlobalStyle.blue}>Confirmed</Text>
+        </GradientButton>
       </View>
     </SafeAreaView>
   );
@@ -103,10 +131,10 @@ export const CreateWallet = ({
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
+    justifyContent: "space-around",
   },
   loading: {
     margin: 20,
@@ -115,38 +143,28 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginBottom: 10,
   },
-  explanation: {
-    fontSize: 14,
-    opacity: 0.5,
+  copied: {
+    fontSize: 18,
+    color: "white",
     textAlign: "center",
   },
   seedsContainer: {
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: "grey",
     margin: "5%",
     padding: "5%",
     textAlign: "center",
-  },
-  buttonContainer: {
-    margin: 20,
-    elevation: 8,
-    backgroundColor: "#007bff",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    width: "40%",
-  },
-  buttonText: {
-    fontSize: 14,
-    color: "#fff",
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
+    borderRadius: 8,
   },
   container: {
+    width: "90%",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-around",
+  },
+  explanationContainer: {
+    marginLeft: "5%",
+    marginRight: "5%",
   },
 });
