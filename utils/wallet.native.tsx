@@ -16,6 +16,7 @@ import * as Random from "expo-random";
 import { ISendTransaction } from "./send.native";
 import { sendTransaction } from "./send.native";
 import bs58 from "bs58";
+import { IStep } from "../types";
 
 export const loadKeyPairFromMnemonicOrPrivateKey = async (
   input: string
@@ -48,6 +49,10 @@ interface IContext {
   sendTransaction: (params: ISendTransaction) => Promise<string>;
   hasSol: () => Promise<boolean>;
   solBalance: number | null;
+  created: boolean;
+  setCreated: (arg: boolean) => void;
+  step: IStep;
+  setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }
 
 const WalletContext: React.Context<null | IContext> =
@@ -57,6 +62,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const connection = useConnection();
   const [solBalance, setSolBalance] = useState(0);
   const [refresh, setRefresh] = useState(false);
+  const [created, setCreated] = useState(false);
+  const [step, setStep] = useState(IStep.Welcome);
 
   const load = async () => {
     // Getting stored mnemonic
@@ -89,6 +96,10 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         sendTransaction: sendTransaction,
         hasSol,
         solBalance,
+        created,
+        setCreated,
+        step,
+        setStep,
       }}
     >
       {children}
@@ -108,6 +119,10 @@ export function useWallet() {
     sendTransaction: context.sendTransaction,
     hasSol: context.hasSol,
     solBalance: context.solBalance,
+    created: context.created,
+    setCreated: context.setCreated,
+    step: context.step,
+    setStep: context.setStep,
   };
 }
 

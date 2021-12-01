@@ -24,7 +24,7 @@ const BlueTextGradient = ({
   start,
   end,
 }: {
-  text: string;
+  text: string | undefined | null;
   textStyle: StyleProp<TextStyle>;
   maskStyle: StyleProp<any>;
   start?: IStart;
