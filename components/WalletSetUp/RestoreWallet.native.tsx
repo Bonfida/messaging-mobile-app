@@ -5,13 +5,55 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import { loadKeyPairFromMnemonicOrPrivateKey } from "../../utils/wallet.native";
 import * as SecureStore from "expo-secure-store";
 import "text-encoding-polyfill";
 import { IStep } from "../../types";
+import GlobalStyle from "../../Style";
+import GradientButton from "../Buttons/GradientButton";
+import BlueButton from "../Buttons/BlueGradient";
+import { TWFWrapper } from "../../utils/utils.native";
+
+const ButtonSection = ({
+  setStep,
+  onPressConfirm,
+}: {
+  setStep: React.Dispatch<React.SetStateAction<IStep>>;
+  onPressConfirm: () => Promise<void>;
+}) => {
+  const handleOnPressBack = () => {
+    setStep(IStep.Welcome);
+  };
+  const handleOnPressCreate = async () => {
+    await onPressConfirm();
+    setStep(IStep.ConfirmRestore);
+  };
+
+  return (
+    <View style={styles.buttonSection}>
+      <BlueButton
+        style={styles.buttonStyle}
+        onPress={handleOnPressBack}
+        borderRadius={28}
+        width={103}
+        height={56}
+      >
+        <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
+      </BlueButton>
+      <GradientButton
+        style={styles.buttonStyle}
+        onPress={handleOnPressCreate}
+        borderRadius={28}
+        width={208}
+        height={56}
+      >
+        <Text style={[GlobalStyle.blue, styles.buttonText]}>Confirm</Text>
+      </GradientButton>
+    </View>
+  );
+};
 
 export const RestoreWallet = ({
   setStep,
@@ -45,74 +87,69 @@ export const RestoreWallet = ({
   };
 
   return (
-    <SafeAreaView style={styles.root}>
-      <View>
-        <Text style={styles.text}>
-          Restore your wallet using your twenty-four seed words or private key.{" "}
-        </Text>
-        <TextInput style={styles.input} onChangeText={setMnemonic} />
+    <TWFWrapper>
+      <SafeAreaView style={styles.root}>
+        <View style={styles.container}>
+          <TextInput
+            multiline={true}
+            style={styles.input}
+            onChangeText={setMnemonic}
+          />
+          <Text style={styles.h1}>Restore your wallet</Text>
+          <Text style={styles.text}>
+            Restore your wallet with your 24 seed phrases or private key.
+          </Text>
+        </View>
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <View style={styles.container}>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => setStep(IStep.Welcome)}
-            >
-              <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={handleOnPress}
-            >
-              <Text style={styles.buttonText}>Next</Text>
-            </TouchableOpacity>
-          </View>
+          <ButtonSection setStep={setStep} onPressConfirm={handleOnPress} />
         )}
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </TWFWrapper>
   );
 };
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
-  text: {
-    textAlign: "center",
-    fontSize: 16,
-    marginLeft: 10,
-    marginRight: 10,
+    justifyContent: "space-around",
   },
   input: {
-    height: 40,
-    margin: 12,
+    padding: 20,
     borderWidth: 1,
-    padding: 10,
-  },
-  buttonContainer: {
-    margin: 20,
-    elevation: 8,
-    backgroundColor: "#007bff",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    width: "40%",
-  },
-  buttonText: {
-    fontSize: 14,
-    color: "#fff",
+    borderColor: "grey",
+    borderRadius: 8,
+    height: 90,
     fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
+    fontSize: 16,
+    ...GlobalStyle.blue,
   },
   container: {
+    width: "90%",
+  },
+  h1: {
+    marginTop: 20,
+    ...GlobalStyle.h1,
+  },
+  text: {
+    marginTop: 10,
+    ...GlobalStyle.text,
+  },
+  buttonSection: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 20,
+  },
+  buttonStyle: {
+    margin: 10,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

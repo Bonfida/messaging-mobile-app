@@ -25,6 +25,8 @@ import { RouteProp } from "@react-navigation/native";
 import AppInformationScreen from "./screens/AppInformationScreen";
 import GroupMembersScreen from "./screens/GroupMembersScreen";
 import SelectDisplayDomainNameScreen from "./screens/SelectDisplayDomainNameScreen";
+import AppLoading from "expo-app-loading";
+import { useFonts } from "expo-font";
 
 import "./global";
 import "react-native-gesture-handler";
@@ -130,6 +132,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App() {
   const isMobile = Platform.OS !== "web";
+  let [fontsLoaded] = useFonts({
+    "Rota-Regular": require("./assets/Rota-Regular.otf"),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+
   return (
     <ConnectionProvider>
       <WalletProvider>

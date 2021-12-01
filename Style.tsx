@@ -11,15 +11,23 @@ export default StyleSheet.create({
     textShadowColor: "rgba(119, 227, 239, 0.28)",
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
+    fontFamily: "Rota-Regular",
   },
   text: {
     color: "#FFFFFF",
     fontSize: 18,
+    fontFamily: "Rota-Regular",
   },
   blue: {
     color: "#77E3EF",
+    fontFamily: "Rota-Regular",
   },
   grey: {
     color: "#C8CCD6",
+    fontFamily: "Rota-Regular",
+  },
+  pink: {
+    color: "#C0A9C7",
+    fontFamily: "Rota-Regular",
   },
 });

@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     textTransform: "uppercase",
     textAlign: "right",
+    fontFamily: "Rota-Regular",
   },
   maskStyle: {
     height: 30,
@@ -102,5 +103,6 @@ const styles = StyleSheet.create({
   mintText: {
     color: "#9BA3B5",
     fontSize: 12,
+    fontFamily: "Rota-Regular",
   },
 });

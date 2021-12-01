@@ -40,7 +40,7 @@ import { Row } from "../components/Profile/Row";
 import { RenderWithIcon } from "../components/Profile/RenderWithIcon";
 import { ProfileRow } from "../components/Profile/ProfileRow";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { editFeeScreenProp, IPost } from "../types";
+import { editFeeScreenProp, IPost, IStep } from "../types";
 import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
 import { useUserHasDomainOrTwitter } from "../utils/name-service";
@@ -50,7 +50,6 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import { balanceWarning } from "../components/BalanceWarning";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useDisplayName } from "../utils/name-service";
-import globalStyle from "../Style";
 
 const SettingsScreen = () => {
   const {
@@ -59,6 +58,10 @@ const SettingsScreen = () => {
     sendTransaction,
     hasSol,
     walletLoaded,
+    created,
+    setCreated,
+    step,
+    setStep,
   } = useWallet();
   const balance = useBalanceWs(wallet?.publicKey);
   const profile = useProfileWs(wallet?.publicKey);
@@ -74,6 +77,8 @@ const SettingsScreen = () => {
   const handleOnPressDelete = async () => {
     await SecureStore.deleteItemAsync("mnemonic");
     await AsyncStorage.clear();
+    setCreated(false);
+    setStep(IStep.Welcome);
     refreshWallet();
     alert("Secret key deleted!");
   };
@@ -108,8 +113,8 @@ const SettingsScreen = () => {
     return <LoadingScreen />;
   }
 
-  if (!wallet) {
-    return <EnterSeedScreen />;
+  if (!wallet || !created) {
+    return <EnterSeedScreen step={step} setStep={setStep} />;
   }
 
   const handleProfilePicture = async () => {

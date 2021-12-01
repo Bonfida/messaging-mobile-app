@@ -11,6 +11,7 @@ import {
   generateMnemonicAndSeed,
   getAccountFromSeed,
   normalizeMnemonic,
+  useWallet,
 } from "../../utils/wallet.native";
 import * as SecureStore from "expo-secure-store";
 import * as Clipboard from "expo-clipboard";
@@ -74,7 +75,7 @@ export const CreateWallet = ({
                     key={idx}
                     style={[
                       idx % 2 === 0 ? GlobalStyle.blue : GlobalStyle.grey,
-                      { fontWeight: "bold" },
+                      { fontWeight: "bold", fontSize: 16 },
                     ]}
                   >
                     {word}
@@ -114,15 +115,16 @@ export const CreateWallet = ({
           borderRadius={28}
           onPress={() => setStep(IStep.Welcome)}
         >
-          <Text style={GlobalStyle.blue}>Back</Text>
+          <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
         </BlueButton>
         <GradientButton
+          disabled={!userCopied}
           width={208}
           height={56}
           borderRadius={28}
           onPress={() => setStep(IStep.CheckAddress)}
         >
-          <Text style={GlobalStyle.blue}>Confirmed</Text>
+          <Text style={[GlobalStyle.blue, styles.buttonText]}>Confirmed</Text>
         </GradientButton>
       </View>
     </SafeAreaView>
@@ -166,5 +168,9 @@ const styles = StyleSheet.create({
   explanationContainer: {
     marginLeft: "5%",
     marginRight: "5%",
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

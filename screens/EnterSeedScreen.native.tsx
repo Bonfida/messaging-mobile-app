@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
-// import { RestoreWallet } from "../components/WalletSetUp/RestoreWallet.native";
 import { Welcome } from "../components/WalletSetUp/Welcome.native";
 import { CreateWallet } from "../components/WalletSetUp/CreateWallet.native";
-// import { BuyDomain } from "../components/WalletSetUp/BuyDomain.native";
-// import { ConfirmRestoredWallet } from "../components/WalletSetUp/ConfirmRestoredWallet.native";
 import { WalletAddress } from "../components/WalletSetUp/WalletAddress.native";
+import { RestoreWallet } from "../components/WalletSetUp/RestoreWallet.native";
+import { ConfirmRestoredWallet } from "../components/WalletSetUp/ConfirmRestoredWallet.native";
 import { IStep } from "../types";
 import GlobalStyles from "../Style";
 import { Step } from "../components/steps";
+import { BuyDomain } from "../components/WalletSetUp/BuyDomain.native";
 
 const StepContainer = ({ step }: { step: IStep }) => {
   return (
@@ -27,14 +27,24 @@ const StepContainer = ({ step }: { step: IStep }) => {
   );
 };
 
-const EnterSeedScreen = () => {
-  const [step, setStep] = useState(IStep.Welcome);
+const EnterSeedScreen = ({
+  step,
+  setStep,
+}: {
+  step: IStep;
+  setStep: React.Dispatch<React.SetStateAction<IStep>>;
+}) => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StepContainer step={step} />
       {step === IStep.Welcome && <Welcome setStep={setStep} />}
       {step === IStep.CreateWallet && <CreateWallet setStep={setStep} />}
+      {step === IStep.Restore && <RestoreWallet setStep={setStep} />}
       {step === IStep.CheckAddress && <WalletAddress setStep={setStep} />}
+      {step === IStep.ConfirmRestore && (
+        <ConfirmRestoredWallet setStep={setStep} />
+      )}
+      {step === IStep.BuyDomain && <BuyDomain setStep={setStep} />}
     </SafeAreaView>
   );
 };

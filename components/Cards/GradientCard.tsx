@@ -9,8 +9,8 @@ const GradientCard = ({
 }: {
   children: React.ReactNode;
   borderRadius: number;
-  width: number;
-  height: number;
+  width: number | string;
+  height: number | string;
 }) => {
   return (
     <LinearGradient
@@ -32,10 +32,6 @@ const GradientCard = ({
           width: "100%",
           height: "100%",
           borderRadius: borderRadius - 2,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
         {children}

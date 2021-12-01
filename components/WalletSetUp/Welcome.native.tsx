@@ -52,7 +52,7 @@ export const Welcome = ({
       <View>
         <WelcomeCard />
         <View style={styles.textContainer}>
-          <Text style={GlobalStyle.h1}>Wallet setup</Text>
+          <Text style={[GlobalStyle.h1, { marginTop: 20 }]}>Wallet setup</Text>
           <Text style={[GlobalStyle.text, { marginTop: 10 }]}>
             To get started, you can import an existing wallet, or create a new
             one.

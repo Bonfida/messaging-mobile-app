@@ -8,37 +8,49 @@ import {
   Image,
   Linking,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import HelpsUrls from "../../utils/HelpUrls";
 import { useWallet } from "../../utils/wallet.native";
 import { IStep } from "../../types";
+import SolDomainCard from "../Cards/SolDomainCard";
+import TwitterCard from "../Cards/TwitterCard";
+import GlobalStyle from "../../Style";
+import BlueButton from "../Buttons/BlueGradient";
+import GradientButton from "../Buttons/GradientButton";
 
-const DomainButton = () => {
-  const handleOnPress = () => {
-    Linking.openURL(HelpsUrls.buyDomain);
+const ButtonSection = ({
+  setStep,
+}: {
+  setStep: React.Dispatch<React.SetStateAction<IStep>>;
+}) => {
+  const { refresh, setCreated } = useWallet();
+  const onPressBack = () => {
+    setStep(IStep.CheckAddress);
+  };
+  const onPressFinish = () => {
+    setCreated(true);
+    refresh();
   };
 
   return (
-    <TouchableOpacity style={styles.externalButton} onPress={handleOnPress}>
-      <Image
-        source={require("../../assets/solana-sol-logo.png")}
-        style={{ width: 20, height: 20 }}
-      />
-      <Text style={styles.externalButtonText}>Get domain name</Text>
-    </TouchableOpacity>
-  );
-};
-
-const TwitterButton = () => {
-  const handleOnPress = () => {
-    Linking.openURL(HelpsUrls.verifyTwitter);
-  };
-
-  return (
-    <TouchableOpacity style={styles.externalButton} onPress={handleOnPress}>
-      <AntDesign name="twitter" size={24} color="black" />
-      <Text style={styles.externalButtonText}>Verify Twitter handle</Text>
-    </TouchableOpacity>
+    <View style={styles.buttonSection}>
+      <BlueButton
+        style={styles.buttonStyle}
+        onPress={onPressBack}
+        borderRadius={28}
+        width={103}
+        height={56}
+      >
+        <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
+      </BlueButton>
+      <GradientButton
+        style={styles.buttonStyle}
+        onPress={onPressFinish}
+        borderRadius={28}
+        width={208}
+        height={56}
+      >
+        <Text style={[GlobalStyle.blue, styles.buttonText]}>Finish set up</Text>
+      </GradientButton>
+    </View>
   );
 };
 
@@ -51,82 +63,42 @@ export const BuyDomain = ({
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.title}>Help people find you 🧐</Text>
-      <Text style={styles.explanation}>
-        Owning a domain name (e.g bonfida.sol) or Twitter handle (@bonfida) will
-        make it easier for your contact to find you.
-      </Text>
-
-      <DomainButton />
-      <TwitterButton />
-
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => setStep(IStep.Welcome)}
-        >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonContainer} onPress={refresh}>
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
+      <View style={{ width: "95%" }}>
+        <SolDomainCard />
+        <TwitterCard />
+        <Text style={[GlobalStyle.h1, { marginTop: 20, marginBottom: 10 }]}>
+          Get connected
+        </Text>
+        <Text style={GlobalStyle.text}>
+          This is your unique wallet address. Moving forward, this will allow
+          you to interact with the Solana blockchain.
+        </Text>
       </View>
+
+      <ButtonSection setStep={setStep} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 28,
-    marginBottom: 10,
-  },
-  explanation: {
-    fontSize: 14,
-    opacity: 0.5,
-    textAlign: "center",
-  },
   root: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
     flex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
   },
-  buttonContainer: {
-    margin: 20,
-    elevation: 8,
-    backgroundColor: "#007bff",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    width: "40%",
-  },
-  buttonText: {
-    fontSize: 14,
-    color: "#fff",
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
-  },
-  container: {
+  buttonSection: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-  },
-  externalButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 0.5,
-    width: "80%",
-    padding: 15,
     marginTop: 20,
   },
-  externalButtonText: {
-    textTransform: "uppercase",
-    marginLeft: 10,
+  buttonStyle: {
+    margin: 10,
+  },
+  buttonText: {
+    fontSize: 18,
     fontWeight: "bold",
-    opacity: 0.6,
   },
 });
