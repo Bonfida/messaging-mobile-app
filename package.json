@@ -68,6 +68,7 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-bip39": "^2.3.0",
+    "react-native-btr": "^2.1.2",
     "react-native-cache": "^2.0.1",
     "react-native-dotenv": "^3.3.0",
     "react-native-gesture-handler": "^1.10.3",
