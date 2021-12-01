@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  SafeAreaView,
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Linking,
-} from "react-native";
+import { SafeAreaView, Text, View, StyleSheet } from "react-native";
 import { useWallet } from "../../utils/wallet.native";
 import { IStep } from "../../types";
 import SolDomainCard from "../Cards/SolDomainCard";
@@ -59,8 +51,6 @@ export const BuyDomain = ({
 }: {
   setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }) => {
-  const { refresh } = useWallet();
-
   return (
     <SafeAreaView style={styles.root}>
       <View style={{ width: "95%" }}>

@@ -612,7 +612,7 @@ export const useGroupName = (groupKey: string) => {
   return groupData?.groupName;
 };
 
-interface IData {
+export interface IData {
   type: string;
   media: string;
 }

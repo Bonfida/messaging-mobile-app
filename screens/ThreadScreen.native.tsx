@@ -16,6 +16,8 @@ import { PublicKey } from "@solana/web3.js";
 import { useUserGroup } from "../utils/jabber";
 import GroupMessageRow from "../components/GroupRow";
 
+import HomeMenu from "../components/HomeMenu";
+
 export const ThreadScreen = () => {
   const isFocused = useIsFocused();
   const [refresh, setRefresh] = useState(false);
@@ -98,6 +100,7 @@ export const ThreadScreen = () => {
           {memoizedThread}
         </View>
       </ScrollView>
+      <HomeMenu />
     </SafeAreaView>
   );
 };
