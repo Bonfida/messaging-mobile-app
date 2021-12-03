@@ -10,8 +10,12 @@ export const Row = ({
 }) => {
   return (
     <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text numberOfLines={1} ellipsizeMode="tail" style={styles.label}>
+        {label}
+      </Text>
+      <Text numberOfLines={1} ellipsizeMode="tail" style={styles.value}>
+        {value}
+      </Text>
     </View>
   );
 };

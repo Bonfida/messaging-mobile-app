@@ -7,6 +7,7 @@ import { useDisplayName } from "../utils/name-service";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { profileScreenProp } from "../types";
+import { formatDisplayName } from "../utils/utils.native";
 
 const MemberRow = ({
   address,
@@ -29,7 +30,7 @@ const MemberRow = ({
       onPress={() => navigation.navigate("Profile", { contact: address })}
     >
       <Row
-        label={displayName[0] + adminTag}
+        label={formatDisplayName(displayName[0]) + adminTag}
         value={
           <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
         }
