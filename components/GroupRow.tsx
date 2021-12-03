@@ -69,7 +69,7 @@ const GroupMessageRow = ({
   setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
   picHash: string;
 }) => {
-  const firstLetter = groupName[0];
+  const firstLetter = groupName.slice(0, 1);
   const [lastCount, setLastCount] = useState<null | number>(null);
   const isFocused = useIsFocused();
   const navigation = useNavigation<groupInfoScreenProp>();

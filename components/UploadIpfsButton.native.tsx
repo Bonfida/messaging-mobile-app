@@ -4,8 +4,8 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  Image,
 } from "react-native";
-import { Entypo } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Buffer } from "buffer";
@@ -22,6 +22,10 @@ import { URL_UPLOAD } from "../utils/ipfs";
 import axios from "axios";
 import { IPost } from "../types";
 import { balanceWarning } from "./BalanceWarning";
+
+const Clip = () => {
+  return <Image source={require("../assets/clip.png")} />;
+};
 
 const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
   const [loading, setLoading] = useState(false);
@@ -111,13 +115,7 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
 
   return (
     <TouchableOpacity style={styles.root} onPress={handlePickDocument}>
-      <Text>
-        {loading ? (
-          <ActivityIndicator />
-        ) : (
-          <Entypo name="attachment" size={24} color="black" />
-        )}
-      </Text>
+      <Text>{loading ? <ActivityIndicator /> : <Clip />}</Text>
     </TouchableOpacity>
   );
 };
@@ -126,6 +124,9 @@ export default UploadIpfsButton;
 
 const styles = StyleSheet.create({
   root: {
-    marginRight: 20,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 8,
   },
 });

@@ -15,8 +15,7 @@ import {
 import { useWallet } from "../utils/wallet";
 import { CachePrefix, asyncCache } from "../utils/cache";
 import { useDisplayName } from "../utils/name-service";
-import { formatDisplayName, sleep } from "../utils/utils.native";
-import { hashCode } from "../utils/cache";
+import { abbreviateAddress, sleep } from "../utils/utils.native";
 import { useNavigation } from "@react-navigation/native";
 import { profileScreenProp } from "../types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -25,18 +24,45 @@ import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { sendTransaction } from "../utils/send";
 import { useConnection } from "../utils/connection";
 
-const COLORS = [
-  "#FAA357", // orange
-  "#61D2FF", // blue/green
-  "#85DE85", // light green
-  "#ff5694", // pink
-  "#71bafa", // blue
-];
+// TODO delete message feature
 
-const contactColor = (name: string | undefined) => {
-  if (!name) return "white";
-  const hashed = Math.abs(parseFloat(hashCode(name)));
-  return COLORS[hashed % 5];
+const Circle = ({ name }: { name: string }) => {
+  return (
+    <View style={styles.circle}>
+      <Text style={styles.circleText}>{name.toUpperCase()}</Text>
+    </View>
+  );
+};
+
+const Delete = () => {
+  return <MaterialCommunityIcons name="delete" size={24} color="black" />;
+};
+
+const SenderName = ({
+  contact,
+  isUser,
+  displayName,
+  isAdmin,
+}: {
+  contact: string;
+  isUser: boolean;
+  displayName: string;
+  isAdmin: boolean;
+}) => {
+  const navigation = useNavigation<profileScreenProp>();
+  return (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Profile", {
+          contact,
+        })
+      }
+    >
+      <Text style={[styles.senderName, isUser ? styles.blue : styles.pink]}>
+        {displayName} {isAdmin && <Text> - Admin</Text>}
+      </Text>
+    </TouchableOpacity>
+  );
 };
 
 export const MessageBoxText = ({
@@ -159,64 +185,31 @@ export const MessageBoxText = ({
       delayLongPress={1_000}
       onPress={() => setShowDelete(false)}
     >
-      <View style={isUser ? styles.rootUser : styles.rootContact}>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          {showDelete && isUser && (
+      <View style={styles.container}>
+        <Circle
+          name={
+            displayName
+              ? displayName[0].slice(0, 2)
+              : message.message.sender.toBase58().slice(0, 2)
+          }
+        />
+        <View style={styles.innerContainer}>
+          <SenderName
+            displayName={
+              displayName && displayName[0]
+                ? displayName[0]
+                : (abbreviateAddress(message.sender) as string)
+            }
+            isAdmin={isAdmin}
+            isUser={isUser}
+            contact={message.sender.toBase58()}
+          />
+
+          <Text style={styles.messageText}>{decrypted}</Text>
+
+          {showDelete && (
             <TouchableOpacity onPress={handleOnPressDelete}>
-              {loading ? (
-                <ActivityIndicator />
-              ) : (
-                <MaterialCommunityIcons name="delete" size={24} color="red" />
-              )}
-            </TouchableOpacity>
-          )}
-          <View
-            style={isUser ? styles.messageBoxUser : styles.messageBoxContact}
-          >
-            {showSender && !isUser && (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Profile", {
-                    contact: message.message.sender.toBase58(),
-                  })
-                }
-              >
-                <Text
-                  style={[
-                    styles.senderName,
-                    {
-                      color: contactColor(
-                        displayName ? displayName[0] : undefined
-                      ),
-                    },
-                  ]}
-                >
-                  {formatDisplayName(displayName ? displayName[0] : undefined)}{" "}
-                  {isAdmin && <Text> - Admin</Text>}
-                </Text>
-              </TouchableOpacity>
-            )}
-            <Text
-              style={[
-                isUser ? styles.messageTextUser : styles.messageTextContact,
-              ]}
-            >
-              {decrypted}
-            </Text>
-          </View>
-          {showDelete && !isUser && (
-            <TouchableOpacity onPress={handleOnPressDelete}>
-              {loading ? (
-                <ActivityIndicator />
-              ) : (
-                <MaterialCommunityIcons name="delete" size={24} color="black" />
-              )}
+              {loading ? <ActivityIndicator /> : <Delete />}
             </TouchableOpacity>
           )}
         </View>
@@ -226,42 +219,51 @@ export const MessageBoxText = ({
 };
 
 const styles = StyleSheet.create({
-  messageTextUser: {
-    color: "white",
-    textAlign: "right",
-    maxWidth: "100%",
-  },
-  messageTextContact: {
-    color: "white",
-    textAlign: "left",
-    maxWidth: "100%",
-  },
-  messageBoxContact: {
-    backgroundColor: "rgb(52, 52, 52)",
-    borderRadius: 5,
-    marginTop: 5,
-    padding: 10,
-    marginLeft: 5,
-  },
-  messageBoxUser: {
-    backgroundColor: "rgb(27, 86, 235)",
-    borderRadius: 5,
-    marginTop: 5,
-    padding: 10,
-    marginRight: 5,
-  },
-  rootUser: {
-    display: "flex",
-    alignItems: "flex-end",
-  },
-  rootContact: {
+  container: {
     display: "flex",
     alignItems: "flex-start",
+    justifyContent: "flex-start",
+    flexDirection: "row",
+    width: "90%",
+    marginLeft: "5%",
+    marginRight: "5%",
+    marginTop: 20,
+  },
+  innerContainer: {
+    marginLeft: 10,
+    display: "flex",
+    alignItems: "flex-start",
+    width: "100%",
   },
   senderName: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "rgb(250, 163, 87)",
-    marginBottom: 5,
+  },
+  messageContainer: {
+    width: "95%",
+  },
+  blue: {
+    color: "#77E3EF",
+  },
+  pink: {
+    color: "#C0A9C7",
+  },
+  messageText: {
+    fontSize: 18,
+    color: "#FFFFFF",
+    width: "90%",
+  },
+  circle: {
+    height: 24,
+    width: 24,
+    borderRadius: 12,
+    backgroundColor: "#7C7CFF",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  circleText: {
+    fontSize: 10,
   },
 });
