@@ -15,7 +15,7 @@ import { settingsScreenProp } from "../types";
 import { PublicKey } from "@solana/web3.js";
 import { useUserGroup } from "../utils/jabber";
 import GroupMessageRow from "../components/GroupRow";
-
+import GlobalStyle from "../Style";
 import HomeMenu from "../components/HomeMenu";
 
 export const ThreadScreen = () => {
@@ -100,17 +100,25 @@ export const ThreadScreen = () => {
           {memoizedThread}
         </View>
       </ScrollView>
-      <HomeMenu />
+      <View style={styles.menu}>
+        <HomeMenu />
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeAreaView: {
-    height: "100%",
+    position: "relative",
+    ...GlobalStyle.container,
   },
   root: {
     flex: 1,
     flexDirection: "column",
+  },
+  menu: {
+    position: "absolute",
+    alignSelf: "center",
+    bottom: 0,
   },
 });

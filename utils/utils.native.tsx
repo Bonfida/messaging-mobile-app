@@ -7,7 +7,13 @@ import {
   Keypair,
 } from "@solana/web3.js";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Platform, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardEvent,
+} from "react-native";
+import { keyBoardRef } from "../types";
 
 export const TWFWrapper = ({ children }: { children: React.ReactNode }) => {
   if (Platform.OS === "web") {
@@ -153,4 +159,32 @@ export const formatDisplayName = (name: string | undefined) => {
     return abbreviateAddress(name);
   }
   return name;
+};
+
+export const useKeyBoardOffset = () => {
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const onKeyboardShow = (event: KeyboardEvent) =>
+    setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardHide = () => setKeyboardOffset(0);
+  const keyboardDidShowListener = useRef(null) as keyBoardRef;
+  const keyboardDidHideListener = useRef(null) as keyBoardRef;
+
+  useEffect(() => {
+    keyboardDidShowListener.current = Keyboard.addListener(
+      "keyboardWillShow",
+      onKeyboardShow
+    );
+
+    keyboardDidHideListener.current = Keyboard.addListener(
+      "keyboardWillHide",
+      onKeyboardHide
+    );
+
+    return () => {
+      keyboardDidShowListener.current?.remove();
+      keyboardDidHideListener.current?.remove();
+    };
+  }, []);
+
+  return keyboardOffset;
 };

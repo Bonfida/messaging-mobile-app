@@ -50,7 +50,7 @@ interface IContext {
   hasSol: () => Promise<boolean>;
   solBalance: number | null;
   created: boolean;
-  setCreated: (arg: boolean) => void;
+  setCreated: (arg: boolean) => Promise<void>;
   step: IStep;
   setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }
@@ -62,7 +62,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const connection = useConnection();
   const [solBalance, setSolBalance] = useState(0);
   const [refresh, setRefresh] = useState(false);
-  const [created, setCreated] = useState(false);
   const [step, setStep] = useState(IStep.Welcome);
 
   const load = async () => {
@@ -86,6 +85,20 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     return _balance > 0;
   };
 
+  const loadCreated = async () => {
+    const created = await SecureStore.getItemAsync("created");
+    if (!created) {
+      return false;
+    }
+    return JSON.stringify(created);
+  };
+
+  const setCreated = async (arg: boolean) => {
+    await SecureStore.setItemAsync("created", JSON.stringify(true));
+  };
+
+  const [created] = useAsync(loadCreated, refresh);
+
   const loaded = !walletLoading;
   return (
     <WalletContext.Provider
@@ -96,7 +109,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         sendTransaction: sendTransaction,
         hasSol,
         solBalance,
-        created,
+        created: !!created,
         setCreated,
         step,
         setStep,

@@ -33,7 +33,11 @@ const BlueTextGradient = ({
   return (
     <MaskedView
       style={maskStyle}
-      maskElement={<Text style={textStyle}>{text}</Text>}
+      maskElement={
+        <Text numberOfLines={1} ellipsizeMode="tail" style={textStyle}>
+          {text}
+        </Text>
+      }
     >
       <LinearGradient
         colors={["#60C0CB", "#6868FC"]}

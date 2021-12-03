@@ -17,8 +17,8 @@ const ButtonSection = ({
   const onPressBack = () => {
     setStep(IStep.CheckAddress);
   };
-  const onPressFinish = () => {
-    setCreated(true);
+  const onPressFinish = async () => {
+    await setCreated(true);
     refresh();
   };
 

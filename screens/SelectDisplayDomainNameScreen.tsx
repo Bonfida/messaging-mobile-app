@@ -16,6 +16,7 @@ import { sleep } from "../utils/utils.native";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../App";
 import { useNavigation } from "@react-navigation/core";
+import GlobalStyle from "../Style";
 
 const SelectDisplayDomainNameScreen = ({
   route,
@@ -66,7 +67,7 @@ const SelectDisplayDomainNameScreen = ({
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={GlobalStyle.container}>
       <ScrollView>
         {displayNames?.map((name, idx) => {
           return (

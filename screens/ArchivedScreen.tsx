@@ -3,13 +3,14 @@ import { ScrollView, SafeAreaView } from "react-native";
 import { CachePrefix, useGetAsyncCache } from "../utils/cache";
 import MessageRow from "../components/ContactRow";
 import { PublicKey } from "@solana/web3.js";
+import GlobalStyle from "../Style";
 
 const ArchivedScreen = () => {
   const [refresh, setRefresh] = useState(false);
   const archived = useGetAsyncCache<string[]>(CachePrefix.Archive, refresh);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={GlobalStyle.container}>
       <ScrollView>
         {archived?.map((archive, idx) => {
           return (

@@ -34,7 +34,7 @@ export const Circle = ({ name }: { name: string }) => {
   const color = cached ? cached : COLORS[idx];
   if (!cached) cache.set(name, color);
   return (
-    <View style={[styles.circle, { backgroundColor: color }]}>
+    <View style={styles.circle}>
       <FontAwesome name="group" size={28} color="black" />
     </View>
   );
@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#7C7CFF",
   },
   circleText: {
     fontSize: 25,
@@ -191,6 +192,8 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     marginLeft: 10,
+    color: "white",
+    fontWeight: "500",
   },
   unreadContainer: {
     width: "10%",

@@ -11,31 +11,11 @@ import { useWallet } from "../utils/wallet";
 import Swipeable from "./Swipeable";
 import { profileScreenProp } from "../types";
 import { isWeb } from "../utils/utils";
-
-const COLORS = [
-  "#e44f74",
-  "#7839e9",
-  "#7cb9f6",
-  "#78cde6",
-  "#45e9b1",
-  "#0cbe1f",
-  "#31a06b",
-  "#30414c",
-  "#c0c985",
-  "#271132",
-  "#48b6f4",
-  "#e7c447",
-];
-
-const cache = new Map<string, string>();
+import GlobalStyle from "../Style";
 
 export const Circle = ({ name }: { name: string }) => {
-  const idx = Math.floor(Math.random() * COLORS.length);
-  const cached = cache.get(name);
-  const color = cached ? cached : COLORS[idx];
-  if (!cached) cache.set(name, color);
   return (
-    <View style={[styles.circle, { backgroundColor: color }]}>
+    <View style={styles.circle}>
       <Text style={styles.circleText}>{name.toUpperCase()}</Text>
     </View>
   );
@@ -69,7 +49,7 @@ const MessageRow = ({
   const base58 = contact?.toBase58();
   const [displayName] = useDisplayName(base58);
   const firstLetter =
-    displayName && displayName[0] ? displayName[0][0] : base58[0];
+    displayName && displayName[0] ? displayName[0].slice(0, 2) : base58[0];
   const navigation = useNavigation<profileScreenProp>();
   const { wallet } = useWallet();
   const pic = useProfilePic(contact);
@@ -139,7 +119,7 @@ const MessageRow = ({
                 ellipsizeMode="tail"
                 style={styles.nameText}
               >
-                {displayName ? displayName[0] : contact.toBase58().slice(1)}
+                {displayName ? displayName[0] : contact.toBase58().slice(1)}{" "}
               </Text>
             </TouchableOpacity>
           </View>
@@ -184,6 +164,7 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#7C7CFF",
   },
   circleText: {
     fontSize: 25,
@@ -192,6 +173,8 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     marginLeft: 10,
+    color: "white",
+    fontWeight: "500",
   },
   unreadContainer: {
     width: "10%",

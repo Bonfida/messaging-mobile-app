@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import GloablStyle from "../../Style";
 
 export const Row = ({
   label,
@@ -22,10 +23,11 @@ export const Row = ({
 
 const styles = StyleSheet.create({
   label: {
-    fontWeight: "bold",
+    ...GloablStyle.blue,
+    fontSize: 18,
   },
   value: {
-    opacity: 0.7,
+    ...GloablStyle.blue,
   },
   row: {
     marginTop: 1,
@@ -33,7 +35,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "row",
-    backgroundColor: "white",
     padding: 15,
   },
 });
