@@ -67,7 +67,7 @@ export const WalletAddress = ({
             </View>
             <View style={styles.addressContainer}>
               <BlueTextGradient
-                text={abbreviateAddress(wallet?.publicKey, 10)}
+                text={wallet?.publicKey.toBase58()}
                 textStyle={styles.address}
                 maskStyle={styles.mask}
               />

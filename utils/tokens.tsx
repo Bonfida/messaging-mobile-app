@@ -1,9 +1,10 @@
-import { PublicKey, TransactionInstruction } from "@solana/web3.js";
+import { PublicKey, TransactionInstruction, Connection } from "@solana/web3.js";
 import { useConnection } from "./connection";
 import { findProgramAddress } from "./web3/program-address";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
+  Token,
 } from "@solana/spl-token";
 import { useAsync } from "./utils.native";
 import { Buffer } from "buffer";
@@ -66,4 +67,49 @@ export const useFidaBalance = (
     return accountInfo.value.uiAmount;
   };
   return useAsync(fn, refresh);
+};
+
+export const tip = async (
+  connection: Connection,
+  source: PublicKey,
+  destination: PublicKey,
+  amount: number // without decimals
+) => {
+  const instructions: TransactionInstruction[] = [];
+  const destinationAccount = await Token.getAssociatedTokenAddress(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    FIDA_MINT,
+    destination
+  );
+  const sourceAccount = await Token.getAssociatedTokenAddress(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    FIDA_MINT,
+    source
+  );
+
+  const destinationAccountInfo = await connection.getAccountInfo(
+    destinationAccount
+  );
+  if (!destinationAccountInfo?.data || !destinationAccountInfo) {
+    const createIx = Token.createAssociatedTokenAccountInstruction(
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      FIDA_MINT,
+      destinationAccount,
+      destination,
+      source
+    );
+    instructions.push(createIx);
+  }
+  const transferIx = createTransferInstruction(
+    TOKEN_PROGRAM_ID,
+    sourceAccount,
+    destinationAccount,
+    source,
+    amount * Math.pow(10, 6)
+  );
+  instructions.push(transferIx);
+  return instructions;
 };

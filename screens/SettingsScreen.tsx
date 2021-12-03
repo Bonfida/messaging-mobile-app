@@ -70,7 +70,8 @@ const SettingsScreen = () => {
   };
 
   if (!wallet) {
-    return <EnterSeedScreen />;
+    // return <EnterSeedScreen />;
+    return null;
   }
 
   const handleProfilePicture = async () => {

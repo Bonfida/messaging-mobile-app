@@ -1,5 +1,6 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "./App";
+import { EmitterSubscription } from "react-native";
 
 export type messagesScreenProp = StackNavigationProp<
   RootStackParamList,
@@ -87,3 +88,5 @@ export enum IStep {
   BuyDomain,
   CheckAddress,
 }
+
+export type keyBoardRef = React.MutableRefObject<EmitterSubscription | null>;

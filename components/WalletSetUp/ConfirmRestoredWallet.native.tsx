@@ -85,7 +85,7 @@ export const ConfirmRestoredWallet = ({
             </View>
             <View style={styles.addressContainer}>
               <BlueTextGradient
-                text={abbreviateAddress(address, 10)}
+                text={address}
                 textStyle={styles.address}
                 maskStyle={styles.mask}
               />

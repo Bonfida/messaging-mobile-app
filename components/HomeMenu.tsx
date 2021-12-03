@@ -3,12 +3,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import NewChatBottomSheet from "./NewChatBottomSheet";
+import { profileScreenProp } from "../types";
 
 const HomeMenu = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<profileScreenProp>();
   const [visible, setVisible] = useState(false);
   return (
-    <>
+    <View style={{ backgroundColor: "rgba(0,0,0,0)" }}>
       <LinearGradient
         colors={[
           "#0F0F11",
@@ -42,7 +43,7 @@ const HomeMenu = () => {
               source={require("../assets/menu/message.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
             <Image
               style={styles.img}
               source={require("../assets/menu/gear.png")}
@@ -51,7 +52,7 @@ const HomeMenu = () => {
         </View>
       </LinearGradient>
       <NewChatBottomSheet visible={visible} setVisible={setVisible} />
-    </>
+    </View>
   );
 };
 

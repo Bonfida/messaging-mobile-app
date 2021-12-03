@@ -73,7 +73,7 @@ export default class AppleStyleSwipeableRow extends Component<IProps> {
       }}
     >
       {this.renderRightAction(
-        this.props.archived ? "#4cd964" : "#C8C7CD",
+        this.props.archived ? "#4cd964" : "#EB5252",
         80,
         progress,
         this.props.archived ? (
