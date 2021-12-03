@@ -8,6 +8,7 @@ import {
   Alert,
   Keyboard,
   KeyboardEvent,
+  Image,
   ScrollView,
 } from "react-native";
 import { useWallet } from "../utils/wallet";
@@ -29,6 +30,10 @@ import { PublicKey } from "@solana/web3.js";
 import { sleep, useKeyBoardOffset } from "../utils/utils.native";
 import { keyBoardRef } from "../types";
 
+const BlueArrow = () => {
+  return <Ionicons style={styles.icon} name="send" size={24} color="#77E3EF" />;
+};
+
 export const MessageInput = ({
   contact,
   groupData,
@@ -44,7 +49,6 @@ export const MessageInput = ({
   const { wallet, sendTransaction, hasSol } = useWallet();
   const [loading, setLoading] = useState(false);
   const connection = useConnection();
-  const [height, setHeight] = useState(0);
 
   const isGroup = !!groupData;
   const keyboardOffset = useKeyBoardOffset();
@@ -108,7 +112,7 @@ export const MessageInput = ({
       console.log(err);
       isWeb
         ? alert("Error sending message")
-        : Alert.alert("Error", "Error sending message");
+        : Alert.alert("Error", "Error sending message0");
     } finally {
       // sleep for propagation
       await sleep(1_500);
@@ -118,24 +122,23 @@ export const MessageInput = ({
 
   return (
     <View style={[styles.textInput, { marginBottom: keyboardOffset }]}>
+      {!isGroup && <UploadIpfsButton receiver={contact} />}
       <TextInput
         editable={!muted}
         value={message}
-        style={[styles.input, { height: Math.max(35, height) }]}
+        style={styles.input}
         onChangeText={setMessage}
         placeholder="New Message"
         onSubmitEditing={handeleOnSubmit}
-        multiline={true}
-        onContentSizeChange={(e) => setHeight(e.nativeEvent.contentSize.height)}
+        placeholderTextColor="#C8CCD6"
       />
       <TouchableOpacity disabled={!message} onPress={handeleOnSubmit}>
         {loading ? (
           <ActivityIndicator style={styles.icon} size="small" />
         ) : (
-          <Ionicons style={styles.icon} name="send" size={24} color="blue" />
+          <BlueArrow />
         )}
       </TouchableOpacity>
-      {!isGroup && <UploadIpfsButton receiver={contact} />}
     </View>
   );
 };
@@ -154,6 +157,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     margin: 10,
     width: "70%",
+    borderColor: "#9BA3B5",
+    color: "#C8CCD6",
+    backgroundColor: "#181F2B",
   },
   icon: {
     marginRight: 20,

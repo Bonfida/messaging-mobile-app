@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useEffect } from "react";
-import { useMessageDataWs } from "../utils/jabber";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { useMessageDataWs, useProfileWs } from "../utils/jabber";
+import { View, ScrollView, StyleSheet, SafeAreaView, Text } from "react-native";
 import { useWallet } from "../utils/wallet";
 import { RenderMessage } from "../components/RenderMessage";
 import { LoadingScreen } from "../components/LoadingScreen";
@@ -12,6 +12,7 @@ import { asyncCache, CachePrefix } from "../utils/cache";
 import { Thread } from "../utils/web3/jabber";
 import { PublicKey } from "@solana/web3.js";
 import { useConnection } from "../utils/connection";
+import GlobalStyle from "../Style";
 
 const MessageScreen = ({
   route,
@@ -68,7 +69,7 @@ const MessageScreen = ({
   }
 
   return (
-    <>
+    <SafeAreaView style={GlobalStyle.container}>
       <FeeWarning contact={contact} />
       <View style={styles.contentContainer}>
         <ScrollView
@@ -81,7 +82,7 @@ const MessageScreen = ({
         </ScrollView>
         <MessageInput contact={contact} scrollViewRef={scrollViewRef} />
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 
