@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
     textAlign: "right",
+    marginLeft: 10,
   },
   feeAndBalanceContainer: {
     display: "flex",
