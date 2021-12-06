@@ -26,6 +26,7 @@ import { editFeeScreenProp, IStep } from "../types";
 import { useUserHasDomainOrTwitter } from "../utils/name-service";
 import HelpsUrls from "../utils/HelpUrls";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import ConfirmDeleteBottomSheet from "../components/ConfirmDeleteBottomSheet";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useDisplayName } from "../utils/name-service";
 import GlobalStyle from "../Style";
@@ -206,18 +207,11 @@ const SettingsScreen = () => {
           >
             <Text style={styles.redText}>Delete private key</Text>
 
-            {confirmVisible && (
-              <Modal
-                animationType="slide"
-                transparent={false}
-                visible={confirmVisible}
-              >
-                <ConfirmDeleteModal
-                  deleteFn={handleOnPressDelete}
-                  setVisible={setConfirmVisible}
-                />
-              </Modal>
-            )}
+            <ConfirmDeleteBottomSheet
+              visible={confirmVisible}
+              setVisible={setConfirmVisible}
+              deleteFn={handleOnPressDelete}
+            />
           </TouchableOpacity>
 
           {/* Clear cache */}
