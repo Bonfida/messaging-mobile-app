@@ -15,7 +15,11 @@ import {
 import { useWallet } from "../utils/wallet";
 import { CachePrefix, asyncCache } from "../utils/cache";
 import { useDisplayName } from "../utils/name-service";
-import { abbreviateAddress, sleep } from "../utils/utils.native";
+import {
+  abbreviateAddress,
+  formatDisplayName,
+  sleep,
+} from "../utils/utils.native";
 import { useNavigation } from "@react-navigation/native";
 import { profileScreenProp } from "../types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -197,7 +201,7 @@ export const MessageBoxText = ({
           <SenderName
             displayName={
               displayName && displayName[0]
-                ? displayName[0]
+                ? (formatDisplayName(displayName[0]) as string)
                 : (abbreviateAddress(message.sender) as string)
             }
             isAdmin={isAdmin}
@@ -243,14 +247,14 @@ const styles = StyleSheet.create({
     width: "95%",
   },
   blue: {
-    color: "#77E3EF",
+    color: "#60C0CB",
   },
   pink: {
     color: "#C0A9C7",
   },
   messageText: {
     fontSize: 18,
-    color: "#FFFFFF",
+    color: "#2A2346",
     width: "90%",
   },
   circle: {

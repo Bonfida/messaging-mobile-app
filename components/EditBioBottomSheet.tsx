@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { TextInput, StyleSheet, View, Text } from "react-native";
+import {
+  TextInput,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { BottomSheet } from "react-native-btr";
 import GlobalStyle from "../Style";
 import { useKeyBoardOffset } from "../utils/utils.native";
 import BlueButton from "./Buttons/BlueGradient";
+import { Profile, setUserProfile, createProfile } from "../utils/web3/jabber";
+import { useConnection } from "../utils/connection";
+import { useWallet } from "../utils/wallet.native";
+import { balanceWarning } from "../components/BalanceWarning";
 
 const Title = ({ title }: { title: string }) => {
   return (
@@ -13,25 +24,70 @@ const Title = ({ title }: { title: string }) => {
   );
 };
 
-const ConfirmDeleteBottomSheet = ({
+const EditBioBottomSheet = ({
   visible,
   setVisible,
-  deleteFn,
 }: {
-  deleteFn: () => void;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [text, onChangeText] = useState<null | string>(null);
+  const [bio, setBio] = useState<null | string>(null);
   const keyboardOffset = useKeyBoardOffset();
-  const DELETE = "delete";
+  const connection = useConnection();
+  const { wallet, sendTransaction, hasSol } = useWallet();
+  const [loading, setLoading] = useState(false);
 
-  const handleOnPress = () => {
-    if (text != DELETE) {
-      return alert("Invalid input");
+  const handleOnPress = async () => {
+    if (!wallet) return;
+    if (!bio) {
+      return alert("Enter a bio");
     }
-    deleteFn();
-    setVisible(false);
+    if (!(await hasSol())) {
+      return balanceWarning(wallet.publicKey.toBase58());
+    }
+
+    try {
+      setLoading(true);
+      try {
+        const currentProfile = await Profile.retrieve(
+          connection,
+          wallet.publicKey
+        );
+        const instruction = await setUserProfile(
+          wallet?.publicKey,
+          currentProfile.name,
+          bio,
+          currentProfile.lamportsPerMessage.toNumber()
+        );
+
+        await sendTransaction({
+          connection,
+          signers: [],
+          wallet,
+          instruction: [instruction],
+        });
+      } catch {
+        const createInstruction = await createProfile(
+          wallet.publicKey,
+          "",
+          bio,
+          0
+        );
+        await sendTransaction({
+          connection,
+          signers: [],
+          wallet,
+          instruction: [createInstruction],
+        });
+      }
+
+      Alert.alert("Bio updated!");
+      setLoading(false);
+      setVisible(false);
+    } catch (err) {
+      setLoading(false);
+      Alert.alert("Error, try again");
+    }
   };
 
   return (
@@ -44,19 +100,13 @@ const ConfirmDeleteBottomSheet = ({
         style={[styles.bottomNavigationView, { marginBottom: keyboardOffset }]}
       >
         <View style={styles.container}>
-          <Title title="⚠️ This is a destructive action." />
-          <Text style={[GlobalStyle.text, { marginTop: 20 }]}>
-            This will permanently delete your private key from this device
-          </Text>
-          <Text style={[GlobalStyle.text, { marginTop: 20 }]}>
-            Please type <Text style={styles.strong}>delete</Text> to confirm.
-          </Text>
+          <Title title="Change bio" />
           <TextInput
             autoCapitalize="none"
-            placeholder="delete"
+            placeholder="New bio"
             style={styles.textInput}
             placeholderTextColor="#C8CCD6"
-            onChangeText={onChangeText}
+            onChangeText={setBio}
           />
         </View>
         <View style={styles.button}>
@@ -67,7 +117,11 @@ const ConfirmDeleteBottomSheet = ({
             onPress={handleOnPress}
             transparent
           >
-            <Text style={styles.buttonText}>Confirm</Text>
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={styles.buttonText}>Confirm</Text>
+            )}
           </BlueButton>
         </View>
       </View>
@@ -75,12 +129,12 @@ const ConfirmDeleteBottomSheet = ({
   );
 };
 
-export default ConfirmDeleteBottomSheet;
+export default EditBioBottomSheet;
 
 const styles = StyleSheet.create({
   bottomNavigationView: {
     width: "100%",
-    height: 300,
+    height: 200,
     ...GlobalStyle.background,
   },
   title: {

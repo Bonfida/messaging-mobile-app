@@ -2,14 +2,14 @@ import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   background: {
-    backgroundColor: "#121838",
+    backgroundColor: "#FFFFFF",
   },
   container: {
-    backgroundColor: "#121838",
+    backgroundColor: "#FFFFFF",
     height: "100%",
   },
   h1: {
-    color: "#FFFFFF",
+    color: "#2A2346",
     fontSize: 42,
     textShadowColor: "rgba(119, 227, 239, 0.28)",
     textShadowOffset: { width: -1, height: 1 },
@@ -17,7 +17,7 @@ export default StyleSheet.create({
     fontFamily: "Rota-Regular",
   },
   h2: {
-    color: "#FFFFFF",
+    color: "#2A2346",
     fontSize: 26,
     textShadowColor: "rgba(119, 227, 239, 0.28)",
     textShadowOffset: { width: -1, height: 1 },
@@ -25,13 +25,14 @@ export default StyleSheet.create({
     fontFamily: "Rota-Regular",
   },
   text: {
-    color: "#FFFFFF",
+    color: "#12192E",
     fontSize: 18,
     fontFamily: "Rota-Regular",
   },
   blue: {
-    color: "#77E3EF",
+    color: "#2ABDCD",
     fontFamily: "Rota-Regular",
+    fontWeight: "400",
   },
   grey: {
     color: "#C8CCD6",
@@ -40,5 +41,14 @@ export default StyleSheet.create({
   pink: {
     color: "#C0A9C7",
     fontFamily: "Rota-Regular",
+  },
+  white: {
+    color: "#FFFFFF",
+    fontFamily: "Rota-Regular",
+  },
+  darkBlue: {
+    color: "#12192E",
+    fontFamily: "Rota-Regular",
+    fontWeight: "400",
   },
 });

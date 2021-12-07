@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     marginLeft: 10,
-    color: "white",
+    color: "#12192E",
     fontWeight: "500",
   },
   unreadContainer: {

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -22,9 +21,10 @@ import { URL_UPLOAD } from "../utils/ipfs";
 import axios from "axios";
 import { IPost } from "../types";
 import { balanceWarning } from "./BalanceWarning";
+import { Feather } from "@expo/vector-icons";
 
 const Clip = () => {
-  return <Image source={require("../assets/clip.png")} />;
+  return <Feather name="paperclip" size={24} color="#60C0CB" />;
 };
 
 const UploadIpfsButton = ({ receiver }: { receiver: string }) => {

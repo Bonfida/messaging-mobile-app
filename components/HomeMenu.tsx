@@ -1,27 +1,21 @@
 import React, { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import NewChatBottomSheet from "./NewChatBottomSheet";
 import { profileScreenProp } from "../types";
+import { FontAwesome } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 
 const HomeMenu = () => {
   const navigation = useNavigation<profileScreenProp>();
   const [visible, setVisible] = useState(false);
   return (
-    <View style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-      <LinearGradient
-        colors={[
-          "#0F0F11",
-          "rgba(19, 30, 48, 0.75)",
-          "rgba(167, 180, 204, 0.25)",
-          "#0F0F11",
-        ]}
-        end={{ x: 1, y: 1 }}
-        start={{ x: 0, y: 0 }}
+    <View style={styles.container}>
+      <View
         style={{
           width: 224,
-          height: 80,
+          height: 70,
           borderRadius: 40,
           padding: 1,
           display: "flex",
@@ -32,25 +26,20 @@ const HomeMenu = () => {
       >
         <View style={styles.root}>
           <TouchableOpacity onPress={() => console.log("TODO")}>
-            <Image
-              style={styles.img}
-              source={require("../assets/menu/camera.png")}
-            />
+            <Entypo name="camera" size={26} color="#60C0CB" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setVisible(true)}>
-            <Image
-              style={styles.img}
-              source={require("../assets/menu/message.png")}
+            <MaterialCommunityIcons
+              name="message-plus-outline"
+              size={26}
+              color="#60C0CB"
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-            <Image
-              style={styles.img}
-              source={require("../assets/menu/gear.png")}
-            />
+            <FontAwesome name="gear" size={26} color="#60C0CB" />
           </TouchableOpacity>
         </View>
-      </LinearGradient>
+      </View>
       <NewChatBottomSheet visible={visible} setVisible={setVisible} />
     </View>
   );
@@ -58,7 +47,7 @@ const HomeMenu = () => {
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: "#0F0F11",
+    backgroundColor: "#F0F5FF",
     borderRadius: 40,
     width: "100%",
     height: "100%",
@@ -70,6 +59,17 @@ const styles = StyleSheet.create({
   img: {
     width: 28,
     height: 28,
+  },
+  container: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+    elevation: 12,
+    marginBottom: 20,
   },
 });
 

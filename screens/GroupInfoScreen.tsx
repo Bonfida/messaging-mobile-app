@@ -34,6 +34,11 @@ import { encode } from "../utils/utils.native";
 import { URL_UPLOAD } from "../utils/ipfs";
 import { IPost } from "../types";
 import { isWeb } from "../utils/utils";
+import EditFeeBottomSheet from "../components/EditFeeBottomSheet";
+
+const BlueArrow = () => {
+  return <MaterialIcons name="arrow-forward-ios" size={15} color="#12192E" />;
+};
 
 const GroupInfoScreen = ({
   route,
@@ -50,6 +55,7 @@ const GroupInfoScreen = ({
   const pic = useGetIpfsData(groupData?.groupPicHash);
   const isAdmin = wallet?.publicKey.toBase58() === groupData?.owner.toBase58();
   const [groupMembers] = useGroupMembers(group, groupData);
+  const [feeVisible, setFeeVisible] = useState(false);
 
   const handleOnPressEnableMedia = async () => {
     if (!wallet) return;
@@ -239,7 +245,7 @@ const GroupInfoScreen = ({
               />
             </TouchableOpacity>
           ) : (
-            <FontAwesome name="group" size={80} color="black" />
+            <Image source={require("../assets/smb-1.png")} style={styles.pic} />
           )}
         </View>
         {/* Group name */}
@@ -306,18 +312,7 @@ const GroupInfoScreen = ({
             <TouchableOpacity onPress={handleOnPressGroupPicture}>
               <Row
                 label="Group picture"
-                value={
-                  loading ? (
-                    <ActivityIndicator />
-                  ) : (
-                    <Ionicons
-                      name="ios-camera"
-                      size={18}
-                      color="black"
-                      style={styles.opacity}
-                    />
-                  )
-                }
+                value={loading ? <ActivityIndicator /> : <BlueArrow />}
               />
             </TouchableOpacity>
 
@@ -328,31 +323,14 @@ const GroupInfoScreen = ({
                 })
               }
             >
-              <Row
-                label="Manage admins"
-                value={
-                  <MaterialIcons
-                    name="arrow-forward-ios"
-                    size={15}
-                    color="black"
-                  />
-                }
-              />
+              <Row label="Manage admins" value={<BlueArrow />} />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Edit Fee", { groupKey: group })
-              }
-            >
-              <Row
-                label="Edit Fee"
-                value={
-                  <MaterialIcons
-                    name="arrow-forward-ios"
-                    size={15}
-                    color="black"
-                  />
-                }
+            <TouchableOpacity onPress={() => setFeeVisible(true)}>
+              <Row label="Edit Fee" value={<BlueArrow />} />
+              <EditFeeBottomSheet
+                visible={feeVisible}
+                setVisible={setFeeVisible}
+                groupAddress={group}
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleOnPressEnableMedia}>

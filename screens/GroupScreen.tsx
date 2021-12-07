@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useEffect } from "react";
 import { useGroupData, useGroupMessage } from "../utils/jabber";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import { RenderMessage } from "../components/RenderMessage";
 import { RouteProp } from "@react-navigation/core";
 import { RootStackParamList } from "../App";
@@ -9,6 +9,7 @@ import { FeeWarningGroup } from "../components/FeeWarning";
 import { asyncCache, CachePrefix } from "../utils/cache";
 import { useWallet } from "../utils/wallet.native";
 import { MutedWarning } from "../components/MutedWarning";
+import GlobalStyle from "../Style";
 
 const MessageGroupScreen = ({
   route,
@@ -56,7 +57,7 @@ const MessageGroupScreen = ({
   const muted = groupData?.adminOnly && !isAdmin;
 
   return (
-    <>
+    <SafeAreaView style={GlobalStyle.container}>
       {muted && <MutedWarning />}
       <FeeWarningGroup groupData={groupData} />
       <View style={styles.contentContainer}>
@@ -75,7 +76,7 @@ const MessageGroupScreen = ({
           muted={muted}
         />
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 

@@ -74,8 +74,8 @@ export const CreateWallet = ({
                   <Text
                     key={idx}
                     style={[
-                      idx % 2 === 0 ? GlobalStyle.blue : GlobalStyle.grey,
-                      { fontWeight: "bold", fontSize: 16 },
+                      idx % 2 === 0 ? GlobalStyle.darkBlue : GlobalStyle.blue,
+                      { fontWeight: "bold", fontSize: 18 },
                     ]}
                   >
                     {word}
@@ -91,7 +91,7 @@ export const CreateWallet = ({
             </View>
           )}
         </TouchableOpacity>
-        <Text style={styles.copied}>
+        <Text style={[styles.copied, GlobalStyle.darkBlue]}>
           {copied && (
             <>
               Copied <Feather name="check" size={15} color="green" />

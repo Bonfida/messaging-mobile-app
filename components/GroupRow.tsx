@@ -35,7 +35,11 @@ export const Circle = ({ name }: { name: string }) => {
   if (!cached) cache.set(name, color);
   return (
     <View style={styles.circle}>
-      <FontAwesome name="group" size={28} color="black" />
+      {/* <FontAwesome name="group" size={28} color="black" /> */}
+      <Image
+        source={require("../assets/smb-1.png")}
+        style={{ width: 70, height: 70 }}
+      />
     </View>
   );
 };
@@ -192,7 +196,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
     marginLeft: 10,
-    color: "white",
+    color: "#12192E",
     fontWeight: "500",
   },
   unreadContainer: {

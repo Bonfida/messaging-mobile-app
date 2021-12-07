@@ -8,6 +8,8 @@ import {
   ImageProps,
   TextInput,
   Alert,
+  Switch,
+  ActivityIndicator,
 } from "react-native";
 import { BottomSheet } from "react-native-btr";
 import GlobalStyle from "../Style";
@@ -24,6 +26,7 @@ import {
   GroupThread,
   GroupThreadIndex,
   createGroupIndex,
+  createGroupThread,
 } from "../utils/web3/jabber";
 import { useNavigation } from "@react-navigation/core";
 import { profileScreenProp } from "../types";
@@ -34,6 +37,10 @@ import {
   NameRegistryState,
 } from "@bonfida/spl-name-service";
 import { asyncCache } from "../utils/cache";
+import { isWeb } from "../utils/utils";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import BN from "bn.js";
+import { sleep } from "../utils/utils.native";
 
 enum Step {
   DmOrGroup,
@@ -91,8 +98,15 @@ const NewChatBottomSheet = ({
   const [contact, setContact] = useState<string | null>(null);
   const navigation = useNavigation<profileScreenProp>();
 
+  // Create a group
+  const [groupName, setGroupName] = useState<null | string>(null);
+  const [msgFee, setMsgFee] = useState<null | string>(null);
+  const [feeAddress, setFeeAddress] = useState<null | string>(null);
+  const [media, setMedia] = useState(false);
+
   const close = () => {
     setStep(Step.DmOrGroup);
+    setLoading(false);
     setVisible((prev) => !prev);
   };
 
@@ -140,7 +154,7 @@ const NewChatBottomSheet = ({
           }
 
           setLoading(false);
-          setVisible(false);
+          close();
 
           return navigation.navigate("Group Messages", {
             group: input,
@@ -181,10 +195,10 @@ const NewChatBottomSheet = ({
       // Check if thread already exists
       try {
         await Thread.retrieve(connection, wallet.publicKey, receiverAddress);
-        navigation.navigate("Profile", {
+        close();
+        return navigation.navigate("Profile", {
           contact: receiverAddress.toBase58(),
         });
-        return setVisible(false);
       } catch (err) {
         console.log("Thread does not exists");
       }
@@ -202,7 +216,7 @@ const NewChatBottomSheet = ({
       });
 
       setLoading(false);
-      setVisible(false);
+      close();
 
       navigation.navigate("Profile", {
         contact: receiverAddress.toBase58(),
@@ -214,6 +228,95 @@ const NewChatBottomSheet = ({
     }
   };
 
+  const handleOnPressCreateGroup = async () => {
+    if (!wallet) {
+      return;
+    }
+    if (!(await hasSol())) {
+      return balanceWarning(wallet.publicKey.toBase58());
+    }
+
+    const parsedGroupName = groupName?.trim();
+    const parsedDestinationWallet = feeAddress
+      ? new PublicKey(feeAddress)
+      : wallet.publicKey;
+
+    const parsedLamportsPerMessage = msgFee ? parseFloat(msgFee) : 0;
+
+    if (!parsedGroupName) {
+      return isWeb
+        ? alert("Invalid group name")
+        : Alert.alert("Invalid input", "Enter a valid group name");
+    }
+
+    if (
+      isNaN(parsedLamportsPerMessage) ||
+      !isFinite(parsedLamportsPerMessage) ||
+      parsedLamportsPerMessage < 0
+    ) {
+      return isWeb
+        ? alert("Invalid SOL amount")
+        : Alert.alert("Invalid input", "Please enter a valid SOL amount");
+    }
+
+    try {
+      setLoading(true);
+      const createGroupInstruction = await createGroupThread(
+        parsedGroupName,
+        parsedDestinationWallet,
+        new BN(parsedLamportsPerMessage * LAMPORTS_PER_SOL),
+        [] as PublicKey[],
+        wallet.publicKey,
+        media,
+        wallet.publicKey,
+        false
+      );
+
+      const groupKey = await GroupThread.getKey(
+        parsedGroupName,
+        wallet.publicKey
+      );
+      // Check if already exists and redirect if yes
+      const groupInfo = await connection.getAccountInfo(groupKey);
+      if (groupInfo?.data) {
+        setLoading(false);
+        return navigation.navigate("Group Messages", {
+          group: groupKey.toBase58(),
+          name: parsedGroupName,
+        });
+      }
+
+      const indexGroupInstruction = await createGroupIndex(
+        parsedGroupName,
+        wallet.publicKey,
+        groupKey
+      );
+
+      const tx = await sendTransaction({
+        instruction: [createGroupInstruction, indexGroupInstruction],
+        connection,
+        wallet,
+        signers: [],
+      });
+
+      // Wait for propagation
+      await sleep(2_500);
+      console.log(tx);
+      setLoading(false);
+      close();
+      navigation.navigate("Group Messages", {
+        group: groupKey.toBase58(),
+        name: parsedGroupName,
+      });
+    } catch (err) {
+      console.log(err);
+      isWeb
+        ? alert(`Error ${err}`)
+        : Alert.alert("Error creating group", `${err}`);
+      setLoading(false);
+    }
+  };
+
   return (
     <BottomSheet
       visible={visible}
@@ -221,7 +324,13 @@ const NewChatBottomSheet = ({
       onBackdropPress={close}
     >
       <View
-        style={[styles.bottomNavigationView, { marginBottom: keyboardOffset }]}
+        style={[
+          styles.bottomNavigationView,
+          {
+            marginBottom: keyboardOffset,
+            height: step === Step.Group ? 360 : 250,
+          },
+        ]}
       >
         {step === Step.DmOrGroup && (
           <>
@@ -264,8 +373,13 @@ const NewChatBottomSheet = ({
                 width={120}
                 height={56}
                 onPress={handleOnPress}
+                transparent
               >
-                <Text style={styles.buttonText}>Search</Text>
+                {loading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.buttonText}>Search</Text>
+                )}
               </BlueButton>
             </View>
           </View>
@@ -289,8 +403,65 @@ const NewChatBottomSheet = ({
                 width={120}
                 height={56}
                 onPress={handleOnPress}
+                transparent
               >
-                <Text style={styles.buttonText}>Search</Text>
+                {loading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.buttonText}>Search</Text>
+                )}
+              </BlueButton>
+            </View>
+          </View>
+        )}
+        {step === Step.Group && (
+          <View style={styles.container}>
+            <Title title="Create a group" close={close} />
+            <Text style={[GlobalStyle.text, { marginTop: 20 }]}></Text>
+            <TextInput
+              autoCapitalize="none"
+              style={styles.textInput}
+              placeholder="Group name e.g Bonfida wolves"
+              placeholderTextColor="#C8CCD6"
+              onChangeText={setGroupName}
+            />
+            <TextInput
+              autoCapitalize="none"
+              style={styles.textInput}
+              placeholder="SOL per msg e.g 0.1 SOL"
+              placeholderTextColor="#C8CCD6"
+              onChangeText={setMsgFee}
+            />
+            <TextInput
+              autoCapitalize="none"
+              style={styles.textInput}
+              placeholder="Fee address (optional)"
+              placeholderTextColor="#C8CCD6"
+              onChangeText={setFeeAddress}
+            />
+            <View style={styles.switchContainer}>
+              <Text style={styles.switchText}>Allow images and videos</Text>
+              <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={() => setMedia((prev) => !prev)}
+                value={media}
+              />
+            </View>
+
+            <View style={styles.button}>
+              <BlueButton
+                borderRadius={28}
+                width={168}
+                height={56}
+                onPress={handleOnPressCreateGroup}
+                transparent
+              >
+                {loading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.buttonText}>Create group</Text>
+                )}
               </BlueButton>
             </View>
           </View>
@@ -334,7 +505,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   textInput: {
-    backgroundColor: "#181F2B",
+    backgroundColor: "#F0F5FF",
     borderRadius: 2,
     height: 40,
     width: 327,
@@ -342,17 +513,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     marginTop: 10,
-    color: "#C8CCD6",
+    color: "#2A2346",
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: "bold",
-    ...GlobalStyle.blue,
+    ...GlobalStyle.white,
   },
   button: {
     marginTop: 20,
     display: "flex",
     alignItems: "center",
+  },
+  switchContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    marginTop: 10,
+  },
+  switchText: {
+    color: "#2A2346",
+    fontSize: 18,
   },
 });
 

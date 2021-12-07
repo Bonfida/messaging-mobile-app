@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     borderRadius: 8,
     height: 90,
-    fontWeight: "bold",
     fontSize: 16,
     ...GlobalStyle.blue,
   },

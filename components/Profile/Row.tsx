@@ -23,11 +23,11 @@ export const Row = ({
 
 const styles = StyleSheet.create({
   label: {
-    ...GloablStyle.blue,
+    ...GloablStyle.darkBlue,
     fontSize: 18,
   },
   value: {
-    ...GloablStyle.blue,
+    ...GloablStyle.darkBlue,
   },
   row: {
     marginTop: 1,

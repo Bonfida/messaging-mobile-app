@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -6,9 +6,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
-  Keyboard,
-  KeyboardEvent,
-  Image,
   ScrollView,
 } from "react-native";
 import { useWallet } from "../utils/wallet";
@@ -28,10 +25,9 @@ import {
 } from "../utils/web3/jabber";
 import { PublicKey } from "@solana/web3.js";
 import { sleep, useKeyBoardOffset } from "../utils/utils.native";
-import { keyBoardRef } from "../types";
 
 const BlueArrow = () => {
-  return <Ionicons style={styles.icon} name="send" size={24} color="#77E3EF" />;
+  return <Ionicons style={styles.icon} name="send" size={24} color="#60C0CB" />;
 };
 
 export const MessageInput = ({
@@ -152,14 +148,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   input: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderRadius: 20,
     margin: 10,
+    backgroundColor: "#F0F5FF",
+    borderRadius: 20,
+    height: 40,
     width: "70%",
     borderColor: "#9BA3B5",
-    color: "#C8CCD6",
-    backgroundColor: "#181F2B",
+    borderWidth: 1,
+    padding: 10,
+    marginTop: 10,
+    color: "#2A2346",
   },
   icon: {
     marginRight: 20,

@@ -1,9 +1,23 @@
 import React, { useState } from "react";
-import { TextInput, StyleSheet, View, Text } from "react-native";
+import {
+  TextInput,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { BottomSheet } from "react-native-btr";
 import GlobalStyle from "../Style";
 import { useKeyBoardOffset } from "../utils/utils.native";
 import BlueButton from "./Buttons/BlueGradient";
+import { Profile, setUserProfile, createProfile } from "../utils/web3/jabber";
+import { useChangeConnectionUrl, useConnection } from "../utils/connection";
+import { useWallet } from "../utils/wallet.native";
+import { balanceWarning } from "./BalanceWarning";
+// @ts-ignore
+import { RPC_URL } from "@env";
+import { useNavigation } from "@react-navigation/core";
 
 const Title = ({ title }: { title: string }) => {
   return (
@@ -13,25 +27,47 @@ const Title = ({ title }: { title: string }) => {
   );
 };
 
-const ConfirmDeleteBottomSheet = ({
+const ChangeRpcBottomSheet = ({
   visible,
   setVisible,
-  deleteFn,
 }: {
-  deleteFn: () => void;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [text, onChangeText] = useState<null | string>(null);
+  const [newUrl, setNewUrl] = useState<null | string>(null);
   const keyboardOffset = useKeyBoardOffset();
-  const DELETE = "delete";
+  const [loading, setLoading] = useState(false);
+  const changeUrl = useChangeConnectionUrl();
 
-  const handleOnPress = () => {
-    if (text != DELETE) {
-      return alert("Invalid input");
+  const navigation = useNavigation();
+
+  const handleOnPressReset = async () => {
+    try {
+      setLoading(true);
+      await changeUrl(RPC_URL);
+      setVisible(false);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
-    deleteFn();
-    setVisible(false);
+  };
+
+  const handleOnPressChange = async () => {
+    try {
+      if (!newUrl || !newUrl.startsWith("https://")) {
+        return alert("Invalid URL");
+      }
+      setLoading(true);
+      await changeUrl(newUrl);
+      setLoading(false);
+      setVisible(false);
+      navigation.goBack();
+    } catch (err) {
+      alert("Invalid URL - Try again");
+      console.log(err);
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,19 +80,13 @@ const ConfirmDeleteBottomSheet = ({
         style={[styles.bottomNavigationView, { marginBottom: keyboardOffset }]}
       >
         <View style={styles.container}>
-          <Title title="⚠️ This is a destructive action." />
-          <Text style={[GlobalStyle.text, { marginTop: 20 }]}>
-            This will permanently delete your private key from this device
-          </Text>
-          <Text style={[GlobalStyle.text, { marginTop: 20 }]}>
-            Please type <Text style={styles.strong}>delete</Text> to confirm.
-          </Text>
+          <Title title="Change bio" />
           <TextInput
             autoCapitalize="none"
-            placeholder="delete"
+            placeholder="New RPC endpoint e.g https://solana-api.projectserum.com"
             style={styles.textInput}
             placeholderTextColor="#C8CCD6"
-            onChangeText={onChangeText}
+            onChangeText={setNewUrl}
           />
         </View>
         <View style={styles.button}>
@@ -64,10 +94,22 @@ const ConfirmDeleteBottomSheet = ({
             borderRadius={28}
             width={120}
             height={56}
-            onPress={handleOnPress}
+            onPress={handleOnPressReset}
+          >
+            <Text style={styles.buttonText}>Reset</Text>
+          </BlueButton>
+          <BlueButton
+            borderRadius={28}
+            width={120}
+            height={56}
+            onPress={handleOnPressChange}
             transparent
           >
-            <Text style={styles.buttonText}>Confirm</Text>
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={styles.buttonText}>Confirm</Text>
+            )}
           </BlueButton>
         </View>
       </View>
@@ -75,12 +117,12 @@ const ConfirmDeleteBottomSheet = ({
   );
 };
 
-export default ConfirmDeleteBottomSheet;
+export default ChangeRpcBottomSheet;
 
 const styles = StyleSheet.create({
   bottomNavigationView: {
     width: "100%",
-    height: 300,
+    height: 200,
     ...GlobalStyle.background,
   },
   title: {
@@ -121,5 +163,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     display: "flex",
     alignItems: "center",
+    justifyContent: "space-around",
+    width: "80%",
+    marginLeft: "10%",
+    marginRight: "10%",
+    flexDirection: "row",
   },
 });
