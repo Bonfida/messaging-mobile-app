@@ -69,7 +69,7 @@ const SelectDisplayDomainNameScreen = ({
   return (
     <SafeAreaView style={GlobalStyle.container}>
       <ScrollView>
-        {displayNames?.map((name, idx) => {
+        {Array.from(new Set(displayNames))?.map((name, idx) => {
           return (
             <TouchableOpacity key={name + idx} onPress={handleOnPress(name)}>
               <Row

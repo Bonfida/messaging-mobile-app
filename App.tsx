@@ -4,7 +4,6 @@ import { ThreadScreen } from "./screens/ThreadScreen";
 import EnterSeedScreen from "./screens/EnterSeedScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import MessageScreen from "./screens/MessageScreen";
-import EditFeeScreen from "./screens/EditFeeScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import ArchivedScreen from "./screens/ArchivedScreen";
 import CreateGroupScreen from "./screens/CreateGroupScreen";
@@ -19,7 +18,7 @@ import { TouchableOpacity } from "react-native";
 import CreateThreadModal from "./components/CreateThreadModal";
 import { messagesScreenProp, groupMessagesScreenProp } from "./types";
 import ExportSeed from "./screens/ExportSeed";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Modal from "./components/Modal";
 import { RouteProp } from "@react-navigation/native";
 import AppInformationScreen from "./screens/AppInformationScreen";
@@ -32,25 +31,12 @@ import "./global";
 import "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
 
-import { Entypo, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import ChangeRpcScreen from "./screens/ChangeRpcScreen";
-
-const styles = StyleSheet.create({
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  item: {
-    marginRight: 20,
-  },
-});
 
 export type RootStackParamList = {
   Messages: undefined;
   Message: { contact: string };
-  "Edit Fee": { groupKey?: string };
   Settings: undefined;
   Profile: { contact: string };
   Archived: undefined;
@@ -65,49 +51,6 @@ export type RootStackParamList = {
   "Group Members": { members: { address: string; isAdmin: boolean }[] };
   "Select Display Domain": { selectedDomain: string | undefined };
   "Change RPC endpoint": undefined;
-};
-
-const HeaderLeft = ({ iconSize }: { iconSize: number }) => {
-  const [visible, setVisible] = useState(false);
-  return (
-    <TouchableOpacity onPress={() => setVisible(true)}>
-      <Entypo name="new-message" size={iconSize} color="#007bff" />
-      {visible && (
-        <Modal animationType="slide" transparent={false} visible={visible}>
-          <CreateThreadModal setVisible={setVisible} />
-        </Modal>
-      )}
-    </TouchableOpacity>
-  );
-};
-
-const HeaderRight = ({
-  navigation,
-  iconSize,
-}: {
-  navigation: messagesScreenProp;
-  iconSize: number;
-}) => {
-  return (
-    <>
-      <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-        <Feather name="settings" size={iconSize} color="#007bff" />
-      </TouchableOpacity>
-    </>
-  );
-};
-
-const HeaderWeb = ({ navigation }: { navigation: messagesScreenProp }) => {
-  return (
-    <View style={styles.header}>
-      <View style={styles.item}>
-        <HeaderLeft iconSize={30} />
-      </View>
-      <View style={styles.item}>
-        <HeaderRight navigation={navigation} iconSize={30} />
-      </View>
-    </View>
-  );
 };
 
 const HeaderRightGroup = ({
@@ -130,8 +73,9 @@ const HeaderRightGroup = ({
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+const defaultOptions = { headerTransparent: true, headerTitle: "" };
+
 function App() {
-  const isMobile = Platform.OS !== "web";
   let [fontsLoaded] = useFonts({
     "Rota-Regular": require("./assets/Rota-Regular.otf"),
   });
@@ -148,27 +92,34 @@ function App() {
             <Stack.Screen
               name="Messages"
               component={ThreadScreen}
-              options={({ navigation }) => ({
-                headerRight: () =>
-                  isMobile ? (
-                    <HeaderLeft iconSize={20} />
-                  ) : (
-                    <HeaderWeb navigation={navigation} />
-                  ),
-                headerLeft: () =>
-                  isMobile && (
-                    <HeaderRight iconSize={20} navigation={navigation} />
-                  ),
-              })}
+              options={defaultOptions}
             />
             <Stack.Screen name="Message" component={MessageScreen} />
-            <Stack.Screen name="Edit Fee" component={EditFeeScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Archived" component={ArchivedScreen} />
-            <Stack.Screen name="Export Seeds" component={ExportSeed} />
-            <Stack.Screen name="Media" component={ImageZoom} />
-            <Stack.Screen name="Create Group" component={CreateGroupScreen} />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={defaultOptions}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={defaultOptions}
+            />
+            <Stack.Screen
+              name="Archived"
+              component={ArchivedScreen}
+              options={defaultOptions}
+            />
+            <Stack.Screen
+              name="Export Seeds"
+              component={ExportSeed}
+              options={defaultOptions}
+            />
+            <Stack.Screen
+              name="Media"
+              component={ImageZoom}
+              options={defaultOptions}
+            />
             <Stack.Screen
               name="Group Messages"
               component={MessageGroupScreen}
@@ -179,20 +130,30 @@ function App() {
                 ),
               })}
             />
-            <Stack.Screen name="Group Info" component={GroupInfoScreen} />
-            <Stack.Screen name="Edit Admins" component={AddRemoveAdminScreen} />
+            <Stack.Screen
+              name="Group Info"
+              component={GroupInfoScreen}
+              options={defaultOptions}
+            />
+            <Stack.Screen
+              name="Edit Admins"
+              component={AddRemoveAdminScreen}
+              options={defaultOptions}
+            />
             <Stack.Screen
               name="App Information"
               component={AppInformationScreen}
+              options={defaultOptions}
             />
-            <Stack.Screen name="Group Members" component={GroupMembersScreen} />
+            <Stack.Screen
+              name="Group Members"
+              component={GroupMembersScreen}
+              options={defaultOptions}
+            />
             <Stack.Screen
               name="Select Display Domain"
               component={SelectDisplayDomainNameScreen}
-            />
-            <Stack.Screen
-              name="Change RPC endpoint"
-              component={ChangeRpcScreen}
+              options={defaultOptions}
             />
             <Stack.Group screenOptions={{ presentation: "modal" }}>
               <Stack.Screen name="Seed" component={EnterSeedScreen} />

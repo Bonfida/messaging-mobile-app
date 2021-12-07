@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Linking,
-  Modal,
 } from "react-native";
 import { useWallet, useBalanceWs } from "../utils/wallet.native";
 import EnterSeedScreen from "./EnterSeedScreen";
@@ -18,22 +17,23 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { makeFtxPayUrl } from "../utils/ftx-pay";
-import { BioModalContent } from "../components/EditBioModal";
-import { useConnection } from "../utils/connection";
 import { Row } from "../components/Profile/Row";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { editFeeScreenProp, IStep } from "../types";
 import { useUserHasDomainOrTwitter } from "../utils/name-service";
 import HelpsUrls from "../utils/HelpUrls";
-import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import ConfirmDeleteBottomSheet from "../components/ConfirmDeleteBottomSheet";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useDisplayName } from "../utils/name-service";
 import GlobalStyle from "../Style";
 import SettingsCard from "../components/Settings/SettingsCard";
+import BlueButton from "../components/Buttons/BlueGradient";
+import EditFeeBottomSheet from "../components/EditFeeBottomSheet";
+import EditBioBottomSheet from "../components/EditBioBottomSheet";
+import ChangeRpcBottomSheet from "../components/ChangeRpcBottomSheet";
 
 const BlueArrow = () => {
-  return <MaterialIcons name="arrow-forward-ios" size={15} color="#77E3EF" />;
+  return <MaterialIcons name="arrow-forward-ios" size={15} color="#12192E" />;
 };
 
 const SettingsScreen = () => {
@@ -54,6 +54,9 @@ const SettingsScreen = () => {
   const [domainOrTwitter] = useUserHasDomainOrTwitter();
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [displayName] = useDisplayName(wallet?.publicKey?.toBase58());
+  const [feeVisible, setFeeVisible] = useState(false);
+  const [bioVisible, setBioVisible] = useState(false);
+  const [rpcVisible, setRpcVisible] = useState(false);
 
   const handleOnPressDelete = async () => {
     await SecureStore.deleteItemAsync("mnemonic");
@@ -128,27 +131,19 @@ const SettingsScreen = () => {
           </TouchableOpacity>
 
           {/* SOL per message fee */}
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Edit Fee", { groupKey: undefined })
-            }
-          >
+          <TouchableOpacity onPress={() => setFeeVisible(true)}>
             <Row label="Messaging fee" value={<BlueArrow />} />
+            <EditFeeBottomSheet
+              visible={feeVisible}
+              setVisible={setFeeVisible}
+            />
           </TouchableOpacity>
 
           {/* Bio */}
-          <TouchableOpacity onPress={() => setBioModalVisible(true)}>
+          <TouchableOpacity onPress={() => setBioVisible(true)}>
             <Row label="Bio" value={<BlueArrow />} />
           </TouchableOpacity>
-          {bioModalVisible && (
-            <Modal
-              animationType="slide"
-              transparent={false}
-              visible={bioModalVisible}
-            >
-              <BioModalContent setVisible={setBioModalVisible} />
-            </Modal>
-          )}
+          <EditBioBottomSheet visible={bioVisible} setVisible={setBioVisible} />
 
           {/* Register Twitter handle if does not have one */}
           {!domainOrTwitter?.hasTwitter && (
@@ -194,10 +189,12 @@ const SettingsScreen = () => {
         </TouchableOpacity>
 
         {/* Change RPC node */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Change RPC endpoint")}
-        >
+        <TouchableOpacity onPress={() => setRpcVisible(true)}>
           <Row label="Change RPC endpoint" value={<BlueArrow />} />
+          <ChangeRpcBottomSheet
+            visible={rpcVisible}
+            setVisible={setRpcVisible}
+          />
         </TouchableOpacity>
         <View style={styles.buttonContainer}>
           {/* Delete private key */}
@@ -215,12 +212,15 @@ const SettingsScreen = () => {
           </TouchableOpacity>
 
           {/* Clear cache */}
-          <TouchableOpacity
-            style={styles.clearCacheButton}
+          <BlueButton
+            width={205}
+            height={56}
+            borderRadius={28}
             onPress={handleOnPressClearCache}
+            transparent
           >
             <Text style={styles.clearCacheText}>Clear cache</Text>
-          </TouchableOpacity>
+          </BlueButton>
         </View>
       </ScrollView>
     </SafeAreaView>

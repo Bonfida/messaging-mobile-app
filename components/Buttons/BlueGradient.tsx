@@ -3,6 +3,8 @@ import {
   TouchableOpacity,
   GestureResponderEvent,
   StyleProp,
+  View,
+  StyleSheet,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -14,6 +16,7 @@ const BlueButton = ({
   height,
   style,
   disabled,
+  transparent,
 }: {
   onPress: ((event: GestureResponderEvent) => void) | undefined;
   children: React.ReactNode;
@@ -22,7 +25,24 @@ const BlueButton = ({
   height: number;
   style?: StyleProp<any>;
   disabled?: boolean;
+  transparent?: boolean;
 }) => {
+  const _children = transparent ? (
+    <View style={styles.center}>{children}</View>
+  ) : (
+    <LinearGradient
+      colors={["#131E30", "#0F0F11"]}
+      end={{ x: 1, y: 1 }}
+      start={{ x: 0.5, y: 0.5 }}
+      style={{
+        ...styles.center,
+        borderRadius: borderRadius - 2,
+      }}
+    >
+      {children}
+    </LinearGradient>
+  );
+
   return (
     <TouchableOpacity disabled={disabled} onPress={onPress} style={style}>
       <LinearGradient
@@ -36,25 +56,21 @@ const BlueButton = ({
           padding: 2,
         }}
       >
-        <LinearGradient
-          colors={["#131E30", "#0F0F11"]}
-          end={{ x: 1, y: 1 }}
-          start={{ x: 0.5, y: 0.5 }}
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: borderRadius - 2,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {children}
-        </LinearGradient>
+        {_children}
       </LinearGradient>
     </TouchableOpacity>
   );
 };
 
 export default BlueButton;
+
+const styles = StyleSheet.create({
+  center: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

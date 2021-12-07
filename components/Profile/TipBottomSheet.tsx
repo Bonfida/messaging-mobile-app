@@ -31,14 +31,15 @@ const Button = ({
 }) => {
   if (amount === selectedAmount) {
     return (
-      <GradientButton
+      <BlueButton
         height={40}
         width={72.75}
         borderRadius={4}
         onPress={() => setSelectedAmount(amount)}
+        transparent
       >
-        <Text style={styles.buttonText}>{amount}</Text>
-      </GradientButton>
+        <Text style={styles.whiteButtonText}>{amount}</Text>
+      </BlueButton>
     );
   }
   return (
@@ -133,12 +134,13 @@ const TipBottomSheet = ({
         <View style={styles.container}>
           <Text style={GlobalStyle.h2}>Send a tip</Text>
           <Text style={GlobalStyle.text}>
-            Tip your contact with FIDA. Don’t have FIDA? No problem buy some
+            Tip your contact with FIDA. Don’t have FIDA? No problem buy some{" "}
             <Text
               onPress={() => Linking.openURL(HelpsUrls.buyFida)}
-              style={GlobalStyle.blue}
+              style={{
+                textDecorationLine: "underline",
+              }}
             >
-              {" "}
               here.
             </Text>
           </Text>
@@ -182,11 +184,12 @@ const TipBottomSheet = ({
             height={56}
             borderRadius={28}
             onPress={handleSend}
+            transparent
           >
             {loading ? (
               <ActivityIndicator />
             ) : (
-              <Text style={styles.buttonText}>Send the tip</Text>
+              <Text style={styles.whiteButtonText}>Send the tip</Text>
             )}
           </BlueButton>
         </View>
@@ -210,9 +213,16 @@ const styles = StyleSheet.create({
     marginTop: "5%",
   },
   buttonText: {
-    fontWeight: "bold",
     fontSize: 16,
     ...GlobalStyle.blue,
+  },
+  darkblueButtonText: {
+    fontSize: 16,
+    ...GlobalStyle.darkBlue,
+  },
+  whiteButtonText: {
+    fontSize: 16,
+    ...GlobalStyle.white,
   },
   buttonSection: {
     width: "80%",
@@ -224,14 +234,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   textInput: {
-    backgroundColor: "#181F2B",
+    backgroundColor: "#F0F5FF",
     borderRadius: 2,
     height: 40,
     width: 327,
     borderColor: "#9BA3B5",
     borderWidth: 1,
     padding: 10,
-    color: "#C8CCD6",
+    color: "#2A2346",
   },
   inputContainer: {
     display: "flex",
