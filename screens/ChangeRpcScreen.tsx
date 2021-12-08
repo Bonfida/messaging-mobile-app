@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import { useChangeConnectionUrl, useConnection } from "../utils/connection";
+import { useChangeConnectionUrl } from "../utils/connection";
+// @ts-ignore
 import { RPC_URL } from "@env";
 import { TWFWrapper } from "../utils/utils.native";
 import { useNavigation } from "@react-navigation/core";

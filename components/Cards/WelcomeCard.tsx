@@ -2,7 +2,6 @@ import React from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
 import BlueTextGradient from "../TextGradients/BlueTextGradient";
 import { LinearGradient } from "expo-linear-gradient";
-import HelpsUrls from "../../utils/HelpUrls";
 
 const FIDA_MINT = "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp";
 

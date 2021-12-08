@@ -3,7 +3,6 @@ import { SafeAreaView, Text, View, StyleSheet } from "react-native";
 import { IStep } from "../../types";
 import WelcomeCard from "../Cards/WelcomeCard";
 import GlobalStyle from "../../Style";
-import GradientButton from "../Buttons/GradientButton";
 import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 
 const ButtonSection = ({

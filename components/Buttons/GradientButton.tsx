@@ -20,6 +20,7 @@ const GradientButton = ({
   borderRadius: number;
   width: number;
   height: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   style?: StyleProp<any>;
   disabled?: boolean;
 }) => {

@@ -72,12 +72,10 @@ const SenderName = ({
 export const MessageBoxText = ({
   message,
   encrypted = true,
-  showSender,
   groupKey,
 }: {
   message: IMessage;
   encrypted?: boolean;
-  showSender?: boolean;
   groupKey?: string;
 }) => {
   const connection = useConnection();

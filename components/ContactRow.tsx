@@ -11,7 +11,6 @@ import { useWallet } from "../utils/wallet";
 import Swipeable from "./Swipeable";
 import { profileScreenProp } from "../types";
 import { isWeb } from "../utils/utils";
-import GlobalStyle from "../Style";
 
 export const Circle = ({ name }: { name: string }) => {
   return (

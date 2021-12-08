@@ -7,7 +7,6 @@ import { useWallet } from "../../utils/wallet.native";
 import GradientButton from "../Buttons/GradientButton";
 import BlueButton from "../Buttons/BlueGradient";
 import GlobalStyle from "../../Style";
-import { abbreviateAddress } from "../../utils/utils.native";
 
 const ButtonSection = ({
   setStep,
@@ -51,7 +50,6 @@ export const WalletAddress = ({
   setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }) => {
   const { wallet, refresh } = useWallet();
-  const len = wallet?.publicKey.toBase58().length;
 
   useEffect(() => {
     refresh();

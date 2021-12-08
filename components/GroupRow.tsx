@@ -5,7 +5,6 @@ import { Line } from "./Line";
 import { CachePrefix, asyncCache } from "../utils/cache";
 import Swipeable from "./Swipeable";
 import { isWeb } from "../utils/utils";
-import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/core";
 import { useNavigation } from "@react-navigation/native";
 import { groupInfoScreenProp } from "../types";

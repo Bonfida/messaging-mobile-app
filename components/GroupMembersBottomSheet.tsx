@@ -1,10 +1,8 @@
 import React from "react";
 import {
-  TextInput,
   StyleSheet,
   View,
   Text,
-  ActivityIndicator,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
