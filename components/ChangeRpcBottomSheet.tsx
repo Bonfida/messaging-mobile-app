@@ -5,16 +5,12 @@ import {
   View,
   Text,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { BottomSheet } from "react-native-btr";
 import GlobalStyle from "../Style";
 import { useKeyBoardOffset } from "../utils/utils.native";
-import BlueButton from "./Buttons/BlueGradient";
-import { Profile, setUserProfile, createProfile } from "../utils/web3/jabber";
-import { useChangeConnectionUrl, useConnection } from "../utils/connection";
-import { useWallet } from "../utils/wallet.native";
-import { balanceWarning } from "./BalanceWarning";
+import BlueButton, { BlueButtonWhiteBg } from "./Buttons/BlueGradient";
+import { useChangeConnectionUrl } from "../utils/connection";
 // @ts-ignore
 import { RPC_URL } from "@env";
 import { useNavigation } from "@react-navigation/core";
@@ -80,7 +76,7 @@ const ChangeRpcBottomSheet = ({
         style={[styles.bottomNavigationView, { marginBottom: keyboardOffset }]}
       >
         <View style={styles.container}>
-          <Title title="Change bio" />
+          <Title title="Change RPC endpoint" />
           <TextInput
             autoCapitalize="none"
             placeholder="New RPC endpoint e.g https://solana-api.projectserum.com"
@@ -90,14 +86,16 @@ const ChangeRpcBottomSheet = ({
           />
         </View>
         <View style={styles.button}>
-          <BlueButton
+          <BlueButtonWhiteBg
             borderRadius={28}
             width={120}
             height={56}
             onPress={handleOnPressReset}
           >
-            <Text style={styles.buttonText}>Reset</Text>
-          </BlueButton>
+            <Text style={{ ...styles.buttonText, color: "#60C0CB" }}>
+              Reset
+            </Text>
+          </BlueButtonWhiteBg>
           <BlueButton
             borderRadius={28}
             width={120}

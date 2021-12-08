@@ -64,6 +64,51 @@ const BlueButton = ({
 
 export default BlueButton;
 
+export const BlueButtonWhiteBg = ({
+  onPress,
+  children,
+  borderRadius,
+  width,
+  height,
+  style,
+  disabled,
+}: {
+  onPress: ((event: GestureResponderEvent) => void) | undefined;
+  children: React.ReactNode;
+  borderRadius: number;
+  width: number;
+  height: number;
+  style?: StyleProp<any>;
+  disabled?: boolean;
+  transparent?: boolean;
+}) => {
+  return (
+    <TouchableOpacity disabled={disabled} onPress={onPress} style={style}>
+      <LinearGradient
+        colors={["#60C0CB", "#6868FC"]}
+        end={{ x: 1, y: 1 }}
+        start={{ x: 0, y: 0 }}
+        style={{
+          width,
+          height,
+          borderRadius: borderRadius,
+          padding: 2,
+        }}
+      >
+        <View
+          style={{
+            ...styles.center,
+            ...styles.whiteBg,
+            borderRadius: borderRadius - 2,
+          }}
+        >
+          {children}
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
   center: {
     width: "100%",
@@ -72,5 +117,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  whiteBg: {
+    backgroundColor: "#FFFFFF",
   },
 });

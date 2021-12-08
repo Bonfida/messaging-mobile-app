@@ -1,11 +1,10 @@
 import React from "react";
 import GradientCard from "../Cards/GradientCard";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import UploadProfilePic from "./UploadProfilePic";
-import { Profile } from "../../utils/web3/jabber";
 import BlueTextGradient from "../TextGradients/BlueTextGradient";
 import { useGetIpfsData } from "../../utils/jabber";
-import { useWallet } from "../../utils/wallet.native";
+import * as Clipboard from "expo-clipboard";
 
 const FeeAndBalance = ({ fee, balance }: { fee: number; balance: number }) => {
   return (
@@ -47,9 +46,12 @@ const Bottom = ({ name, address }: { name: string; address: string }) => {
           start={{ x: 0.5, y: 0.5 }}
         />
       )}
-      <Text style={styles.greyText} numberOfLines={1} ellipsizeMode="tail">
-        {address}
-      </Text>
+
+      <TouchableOpacity onPress={() => Clipboard.setString(address)}>
+        <Text style={styles.greyText} numberOfLines={1} ellipsizeMode="tail">
+          {address}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -27,7 +27,9 @@ import { LoadingScreen } from "../components/LoadingScreen";
 import { useDisplayName } from "../utils/name-service";
 import GlobalStyle from "../Style";
 import SettingsCard from "../components/Settings/SettingsCard";
-import BlueButton from "../components/Buttons/BlueGradient";
+import BlueButton, {
+  BlueButtonWhiteBg,
+} from "../components/Buttons/BlueGradient";
 import EditFeeBottomSheet from "../components/EditFeeBottomSheet";
 import EditBioBottomSheet from "../components/EditBioBottomSheet";
 import ChangeRpcBottomSheet from "../components/ChangeRpcBottomSheet";
@@ -197,6 +199,16 @@ const SettingsScreen = () => {
           />
         </TouchableOpacity>
         <View style={styles.buttonContainer}>
+          {/* Clear cache */}
+          <BlueButtonWhiteBg
+            width={205}
+            height={56}
+            borderRadius={28}
+            onPress={handleOnPressClearCache}
+          >
+            <Text style={styles.clearCacheText}>Clear cache</Text>
+          </BlueButtonWhiteBg>
+
           {/* Delete private key */}
           <TouchableOpacity
             onPress={() => setConfirmVisible(true)}
@@ -210,17 +222,6 @@ const SettingsScreen = () => {
               deleteFn={handleOnPressDelete}
             />
           </TouchableOpacity>
-
-          {/* Clear cache */}
-          <BlueButton
-            width={205}
-            height={56}
-            borderRadius={28}
-            onPress={handleOnPressClearCache}
-            transparent
-          >
-            <Text style={styles.clearCacheText}>Clear cache</Text>
-          </BlueButton>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -313,7 +314,7 @@ const styles = StyleSheet.create({
   clearCacheText: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#FFFFFF",
+    color: "#60C0CB",
   },
   clearCacheButton: {
     width: 205,

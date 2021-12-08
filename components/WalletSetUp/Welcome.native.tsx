@@ -4,7 +4,7 @@ import { IStep } from "../../types";
 import WelcomeCard from "../Cards/WelcomeCard";
 import GlobalStyle from "../../Style";
 import GradientButton from "../Buttons/GradientButton";
-import BlueButton from "../Buttons/BlueGradient";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 
 const ButtonSection = ({
   setStep,
@@ -20,7 +20,7 @@ const ButtonSection = ({
 
   return (
     <View style={styles.buttonSection}>
-      <BlueButton
+      <BlueButtonWhiteBg
         style={styles.buttonStyle}
         onPress={onPressImport}
         borderRadius={28}
@@ -28,16 +28,17 @@ const ButtonSection = ({
         height={56}
       >
         <Text style={[GlobalStyle.blue, styles.buttonText]}>Import</Text>
-      </BlueButton>
-      <GradientButton
+      </BlueButtonWhiteBg>
+      <BlueButton
         style={styles.buttonStyle}
         onPress={onPressCreate}
         borderRadius={28}
         width={155}
         height={56}
+        transparent
       >
-        <Text style={[GlobalStyle.blue, styles.buttonText]}>Create</Text>
-      </GradientButton>
+        <Text style={[GlobalStyle.white, styles.buttonText]}>Create</Text>
+      </BlueButton>
     </View>
   );
 };

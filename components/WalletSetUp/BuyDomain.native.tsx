@@ -5,8 +5,7 @@ import { IStep } from "../../types";
 import SolDomainCard from "../Cards/SolDomainCard";
 import TwitterCard from "../Cards/TwitterCard";
 import GlobalStyle from "../../Style";
-import BlueButton from "../Buttons/BlueGradient";
-import GradientButton from "../Buttons/GradientButton";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 
 const ButtonSection = ({
   setStep,
@@ -24,7 +23,7 @@ const ButtonSection = ({
 
   return (
     <View style={styles.buttonSection}>
-      <BlueButton
+      <BlueButtonWhiteBg
         style={styles.buttonStyle}
         onPress={onPressBack}
         borderRadius={28}
@@ -32,16 +31,19 @@ const ButtonSection = ({
         height={56}
       >
         <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
-      </BlueButton>
-      <GradientButton
+      </BlueButtonWhiteBg>
+      <BlueButton
         style={styles.buttonStyle}
         onPress={onPressFinish}
         borderRadius={28}
         width={208}
         height={56}
+        transparent
       >
-        <Text style={[GlobalStyle.blue, styles.buttonText]}>Finish set up</Text>
-      </GradientButton>
+        <Text style={[GlobalStyle.white, styles.buttonText]}>
+          Finish set up
+        </Text>
+      </BlueButton>
     </View>
   );
 };
