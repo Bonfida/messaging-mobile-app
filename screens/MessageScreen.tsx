@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useEffect } from "react";
-import { useMessageDataWs, useProfileWs } from "../utils/jabber";
-import { View, ScrollView, StyleSheet, SafeAreaView, Text } from "react-native";
+import { useMessageDataWs } from "../utils/jabber";
+import { View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import { useWallet } from "../utils/wallet";
 import { RenderMessage } from "../components/RenderMessage";
 import { LoadingScreen } from "../components/LoadingScreen";

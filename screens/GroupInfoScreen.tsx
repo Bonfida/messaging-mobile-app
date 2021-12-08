@@ -10,7 +10,6 @@ import {
   ScrollView,
   Text,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { useGetIpfsData, useGroupData, useGroupMembers } from "../utils/jabber";
 import { RouteProp } from "@react-navigation/native";
 import { Row } from "../components/Profile/Row";

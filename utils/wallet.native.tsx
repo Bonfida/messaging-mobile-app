@@ -94,7 +94,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const setCreated = async (arg: boolean) => {
-    await SecureStore.setItemAsync("created", JSON.stringify(true));
+    await SecureStore.setItemAsync("created", JSON.stringify(arg));
   };
 
   const [created] = useAsync(loadCreated, refresh);

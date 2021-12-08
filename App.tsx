@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ThreadScreen } from "./screens/ThreadScreen";
 import EnterSeedScreen from "./screens/EnterSeedScreen";
-import SettingsScreen from "./screens/SettingsScreen";
+import SettingsScreen from "./screens/SettingsScreen.native";
 import MessageScreen from "./screens/MessageScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import ArchivedScreen from "./screens/ArchivedScreen";
-import CreateGroupScreen from "./screens/CreateGroupScreen";
 import MessageGroupScreen from "./screens/GroupScreen";
 import GroupInfoScreen from "./screens/GroupInfoScreen";
 import AddRemoveAdminScreen from "./screens/AddRemoveAdminScreen";
@@ -15,11 +14,8 @@ import { WalletProvider } from "./utils/wallet";
 import { NavigationContainer } from "@react-navigation/native";
 import { ImageZoom } from "./components/ImageZoom";
 import { TouchableOpacity } from "react-native";
-import CreateThreadModal from "./components/CreateThreadModal";
-import { messagesScreenProp, groupMessagesScreenProp } from "./types";
+import { groupMessagesScreenProp } from "./types";
 import ExportSeed from "./screens/ExportSeed";
-import { StyleSheet } from "react-native";
-import Modal from "./components/Modal";
 import { RouteProp } from "@react-navigation/native";
 import AppInformationScreen from "./screens/AppInformationScreen";
 import GroupMembersScreen from "./screens/GroupMembersScreen";
@@ -32,7 +28,6 @@ import "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
 
 import { Feather } from "@expo/vector-icons";
-import ChangeRpcScreen from "./screens/ChangeRpcScreen";
 
 export type RootStackParamList = {
   Messages: undefined;
@@ -76,7 +71,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const defaultOptions = { headerTransparent: true, headerTitle: "" };
 
 function App() {
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     "Rota-Regular": require("./assets/Rota-Regular.otf"),
   });
 

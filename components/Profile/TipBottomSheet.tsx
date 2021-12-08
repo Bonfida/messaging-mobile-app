@@ -14,7 +14,6 @@ import HelpsUrls from "../../utils/HelpUrls";
 import { useFidaBalance } from "../../utils/tokens";
 import { useWallet } from "../../utils/wallet.native";
 import BlueButton from "./../Buttons/BlueGradient";
-import GradientButton from "./../Buttons/GradientButton";
 import { tip } from "../../utils/tokens";
 import { useConnection } from "../../utils/connection";
 import { PublicKey } from "@solana/web3.js";
@@ -85,10 +84,11 @@ const TipBottomSheet = ({
   const handleSend = async () => {
     if (!fidaBalance || !wallet) return;
     if (!custom && selectedAmount === FidaAmount.Custom) return;
+    if (!custom) return;
 
     const parsedAmount =
       selectedAmount === FidaAmount.Custom
-        ? parseFloat(custom!)
+        ? parseFloat(custom)
         : selectedAmount;
 
     if (parsedAmount > fidaBalance) {

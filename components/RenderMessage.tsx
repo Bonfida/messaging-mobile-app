@@ -13,7 +13,7 @@ export const RenderMessage = ({
 }) => {
   switch (message?.message?.kind) {
     case MessageType.Encrypted:
-      return <MessageBoxText message={message} showSender />;
+      return <MessageBoxText message={message} />;
     case MessageType.EncryptedImage:
       return <MessageBoxMedia message={message} />;
     case MessageType.Unencrypted:
@@ -21,7 +21,6 @@ export const RenderMessage = ({
         <MessageBoxText
           message={message}
           encrypted={false}
-          showSender
           groupKey={groupKey}
         />
       );

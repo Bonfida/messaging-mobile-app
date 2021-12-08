@@ -278,7 +278,7 @@ const ManageAdminBottomSheet = ({
                         <AdminRow
                           adminAddress={a.toBase58()}
                           handleOnPress={handleOnPress(false, a.toBase58())}
-                          setVisible={setVisible}
+                          close={close}
                         />
                       </View>
                     );

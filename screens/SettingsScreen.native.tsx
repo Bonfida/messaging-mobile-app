@@ -27,9 +27,7 @@ import { LoadingScreen } from "../components/LoadingScreen";
 import { useDisplayName } from "../utils/name-service";
 import GlobalStyle from "../Style";
 import SettingsCard from "../components/Settings/SettingsCard";
-import BlueButton, {
-  BlueButtonWhiteBg,
-} from "../components/Buttons/BlueGradient";
+import { BlueButtonWhiteBg } from "../components/Buttons/BlueGradient";
 import EditFeeBottomSheet from "../components/EditFeeBottomSheet";
 import EditBioBottomSheet from "../components/EditBioBottomSheet";
 import ChangeRpcBottomSheet from "../components/ChangeRpcBottomSheet";
@@ -51,7 +49,6 @@ const SettingsScreen = () => {
   const balance = useBalanceWs(wallet?.publicKey);
   const profile = useProfileWs(wallet?.publicKey);
   const navigation = useNavigation<editFeeScreenProp>();
-  const [bioModalVisible, setBioModalVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const [domainOrTwitter] = useUserHasDomainOrTwitter();
   const [confirmVisible, setConfirmVisible] = useState(false);

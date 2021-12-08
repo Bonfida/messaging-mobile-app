@@ -26,6 +26,7 @@ const BlueTextGradient = ({
 }: {
   text: string | undefined | null;
   textStyle: StyleProp<TextStyle>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   maskStyle: StyleProp<any>;
   start?: IStart;
   end?: IEnd;
