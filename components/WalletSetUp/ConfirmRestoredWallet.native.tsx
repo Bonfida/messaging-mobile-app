@@ -1,20 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { loadKeyPairFromMnemonicOrPrivateKey } from "../../utils/wallet.native";
 import { IStep } from "../../types";
 import GradientCard from "../Cards/GradientCard";
-import GradientButton from "../Buttons/GradientButton";
-import BlueButton from "../Buttons/BlueGradient";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import GlobalStyle from "../../Style";
 import BlueTextGradient from "../TextGradients/BlueTextGradient";
-import { abbreviateAddress } from "../../utils/utils.native";
 
 const ButtonSection = ({
   setStep,
@@ -30,7 +22,7 @@ const ButtonSection = ({
 
   return (
     <View style={styles.buttonSection}>
-      <BlueButton
+      <BlueButtonWhiteBg
         style={styles.buttonStyle}
         onPress={onPressImport}
         borderRadius={28}
@@ -38,16 +30,19 @@ const ButtonSection = ({
         height={56}
       >
         <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
-      </BlueButton>
-      <GradientButton
+      </BlueButtonWhiteBg>
+      <BlueButton
         style={styles.buttonStyle}
         onPress={onPressCreate}
         borderRadius={28}
         width={208}
         height={56}
+        transparent
       >
-        <Text style={[GlobalStyle.blue, styles.buttonText]}>Get connected</Text>
-      </GradientButton>
+        <Text style={[GlobalStyle.white, styles.buttonText]}>
+          Get connected
+        </Text>
+      </BlueButton>
     </View>
   );
 };

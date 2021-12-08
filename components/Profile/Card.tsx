@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import GradientCard from "../Cards/GradientCard";
 import BlueTextGradient from "../TextGradients/BlueTextGradient";
 import { IData } from "../../utils/jabber";
+import * as Clipboard from "expo-clipboard";
 
 export const Circle = ({ name }: { name: string }) => {
   return (
@@ -39,7 +40,9 @@ const BottomCard = ({
         />
       </View>
       <View>
-        <Text style={styles.addressText}>{address}</Text>
+        <TouchableOpacity onPress={() => Clipboard.setString(address)}>
+          <Text style={styles.addressText}>{address}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

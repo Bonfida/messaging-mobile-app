@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { StyleSheet, View, Text, SafeAreaView } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { useProfileWs } from "../../utils/jabber";
 import { useDisplayName } from "../../utils/name-service";
 import ProfileCard from "./Card";
 import { useGetIpfsData } from "../../utils/jabber";
 import GlobalStyle from "../../Style";
-import BlueButton from "../Buttons/BlueGradient";
-import GradientButton from "../Buttons/GradientButton";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import TipBottomSheet from "./TipBottomSheet";
 import { useNavigation } from "@react-navigation/core";
 import { messageScreenProp } from "../../types";
@@ -19,15 +18,16 @@ const MessageButton = ({ contact }: { contact: string }) => {
     navigation.navigate("Message", { contact: contact });
   };
   return (
-    <GradientButton
+    <BlueButton
       style={styles.buttonStyle}
       onPress={handleOnPress}
       width={155.5}
       height={56}
       borderRadius={28}
+      transparent
     >
-      <Text style={[GlobalStyle.blue, styles.buttonText]}>Message</Text>
-    </GradientButton>
+      <Text style={[GlobalStyle.white, styles.buttonText]}>Message</Text>
+    </BlueButton>
   );
 };
 
@@ -35,7 +35,7 @@ const TipButton = ({ contact }: { contact: string }) => {
   const [visible, setVisible] = useState(false);
   return (
     <>
-      <BlueButton
+      <BlueButtonWhiteBg
         style={styles.buttonStyle}
         onPress={() => setVisible(true)}
         width={155.5}
@@ -43,7 +43,7 @@ const TipButton = ({ contact }: { contact: string }) => {
         borderRadius={28}
       >
         <Text style={[GlobalStyle.blue, styles.buttonText]}>Send a tip</Text>
-      </BlueButton>
+      </BlueButtonWhiteBg>
       <TipBottomSheet
         contact={contact}
         visible={visible}

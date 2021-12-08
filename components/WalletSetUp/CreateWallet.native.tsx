@@ -11,15 +11,13 @@ import {
   generateMnemonicAndSeed,
   getAccountFromSeed,
   normalizeMnemonic,
-  useWallet,
 } from "../../utils/wallet.native";
 import * as SecureStore from "expo-secure-store";
 import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
 import { IStep } from "../../types";
 import GlobalStyle from "../../Style";
-import BlueButton from "../Buttons/BlueGradient";
-import GradientButton from "../Buttons/GradientButton";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 
 export const CreateWallet = ({
   setStep,
@@ -109,23 +107,24 @@ export const CreateWallet = ({
       </View>
 
       <View style={styles.container}>
-        <BlueButton
+        <BlueButtonWhiteBg
           width={103}
           height={56}
           borderRadius={28}
           onPress={() => setStep(IStep.Welcome)}
         >
           <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
-        </BlueButton>
-        <GradientButton
+        </BlueButtonWhiteBg>
+        <BlueButton
           disabled={!userCopied}
           width={208}
           height={56}
           borderRadius={28}
           onPress={() => setStep(IStep.CheckAddress)}
+          transparent
         >
-          <Text style={[GlobalStyle.blue, styles.buttonText]}>Confirmed</Text>
-        </GradientButton>
+          <Text style={[GlobalStyle.white, styles.buttonText]}>Confirmed</Text>
+        </BlueButton>
       </View>
     </SafeAreaView>
   );

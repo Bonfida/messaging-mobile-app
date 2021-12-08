@@ -12,8 +12,7 @@ import * as SecureStore from "expo-secure-store";
 import "text-encoding-polyfill";
 import { IStep } from "../../types";
 import GlobalStyle from "../../Style";
-import GradientButton from "../Buttons/GradientButton";
-import BlueButton from "../Buttons/BlueGradient";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import { TWFWrapper } from "../../utils/utils.native";
 
 const ButtonSection = ({
@@ -33,7 +32,7 @@ const ButtonSection = ({
 
   return (
     <View style={styles.buttonSection}>
-      <BlueButton
+      <BlueButtonWhiteBg
         style={styles.buttonStyle}
         onPress={handleOnPressBack}
         borderRadius={28}
@@ -41,16 +40,17 @@ const ButtonSection = ({
         height={56}
       >
         <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
-      </BlueButton>
-      <GradientButton
+      </BlueButtonWhiteBg>
+      <BlueButton
         style={styles.buttonStyle}
         onPress={handleOnPressCreate}
         borderRadius={28}
         width={208}
         height={56}
+        transparent
       >
-        <Text style={[GlobalStyle.blue, styles.buttonText]}>Confirm</Text>
-      </GradientButton>
+        <Text style={[GlobalStyle.white, styles.buttonText]}>Confirm</Text>
+      </BlueButton>
     </View>
   );
 };

@@ -21,7 +21,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWallet } from "../utils/wallet.native";
 import { useConnection } from "../utils/connection";
 import { editGroupThread, GroupThread } from "../utils/web3/jabber";
-import { Feather, Entypo, Ionicons } from "@expo/vector-icons";
+import { Feather, Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { editAdminScreenProp, messageScreenProp } from "../types";
 import { balanceWarning } from "../components/BalanceWarning";
@@ -35,6 +35,8 @@ import { URL_UPLOAD } from "../utils/ipfs";
 import { IPost } from "../types";
 import { isWeb } from "../utils/utils";
 import EditFeeBottomSheet from "../components/EditFeeBottomSheet";
+import GroupMembersBottomSheet from "../components/GroupMembersBottomSheet";
+import ManageAdminBottomSheet from "../components/ManageAdminsBottomSheet";
 
 const BlueArrow = () => {
   return <MaterialIcons name="arrow-forward-ios" size={15} color="#12192E" />;
@@ -56,6 +58,8 @@ const GroupInfoScreen = ({
   const isAdmin = wallet?.publicKey.toBase58() === groupData?.owner.toBase58();
   const [groupMembers] = useGroupMembers(group, groupData);
   const [feeVisible, setFeeVisible] = useState(false);
+  const [membersVisible, setMembersVisible] = useState(false);
+  const [manageAdminVisible, setManageAdminVisible] = useState(false);
 
   const handleOnPressEnableMedia = async () => {
     if (!wallet) return;
@@ -264,17 +268,17 @@ const GroupInfoScreen = ({
         </TouchableOpacity>
 
         {/* Group members */}
-        <TouchableOpacity
-          onPress={() =>
-            groupMembers &&
-            navigation.navigate("Group Members", { members: groupMembers })
-          }
-        >
+        <TouchableOpacity onPress={() => setMembersVisible(true)}>
           <Row
             label="Group members"
             value={
               <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
             }
+          />
+          <GroupMembersBottomSheet
+            visible={membersVisible}
+            setVisible={setMembersVisible}
+            members={groupMembers}
           />
         </TouchableOpacity>
 
@@ -317,13 +321,19 @@ const GroupInfoScreen = ({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Edit Admins", {
-                  group: group,
-                })
-              }
+              // onPress={() =>
+              //   navigation.navigate("Edit Admins", {
+              //     group: group,
+              //   })
+              // }
+              onPress={() => setManageAdminVisible(true)}
             >
               <Row label="Manage admins" value={<BlueArrow />} />
+              <ManageAdminBottomSheet
+                visible={manageAdminVisible}
+                setVisible={setManageAdminVisible}
+                group={group}
+              />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setFeeVisible(true)}>
               <Row label="Edit Fee" value={<BlueArrow />} />
