@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
 import { StyleSheet, SafeAreaView, Text, View } from "react-native";
-import GradientCard from "../Cards/GradientCard";
 import { IStep } from "../../types";
-import BlueTextGradient from "../TextGradients/BlueTextGradient";
 import { useWallet } from "../../utils/wallet.native";
-import GradientButton from "../Buttons/GradientButton";
-import BlueButton from "../Buttons/BlueGradient";
+import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import GlobalStyle from "../../Style";
+import LightGradientCard from "../Cards/LightGradientCard";
 
 const ButtonSection = ({
   setStep,
@@ -22,7 +20,7 @@ const ButtonSection = ({
 
   return (
     <View style={styles.buttonSection}>
-      <BlueButton
+      <BlueButtonWhiteBg
         style={styles.buttonStyle}
         onPress={onPressImport}
         borderRadius={28}
@@ -30,16 +28,19 @@ const ButtonSection = ({
         height={56}
       >
         <Text style={[GlobalStyle.blue, styles.buttonText]}>Back</Text>
-      </BlueButton>
-      <GradientButton
+      </BlueButtonWhiteBg>
+      <BlueButton
         style={styles.buttonStyle}
         onPress={onPressCreate}
         borderRadius={28}
         width={208}
         height={56}
+        transparent
       >
-        <Text style={[GlobalStyle.blue, styles.buttonText]}>Get connected</Text>
-      </GradientButton>
+        <Text style={[GlobalStyle.white, styles.buttonText]}>
+          Get connected
+        </Text>
+      </BlueButton>
     </View>
   );
 };
@@ -58,20 +59,16 @@ export const WalletAddress = ({
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.explanationContainer}>
-        <GradientCard borderRadius={20} height={200} width={"100%"}>
+        <LightGradientCard borderRadius={20} height={200} width={"100%"}>
           <View style={styles.innerCard}>
             <View style={styles.emojiContainer}>
               <Text style={styles.emoji}>👇</Text>
             </View>
             <View style={styles.addressContainer}>
-              <BlueTextGradient
-                text={wallet?.publicKey.toBase58()}
-                textStyle={styles.address}
-                maskStyle={styles.mask}
-              />
+              <Text style={styles.address}>{wallet?.publicKey.toBase58()}</Text>
             </View>
           </View>
-        </GradientCard>
+        </LightGradientCard>
         <Text style={[GlobalStyle.h1, { marginTop: 10 }]}>Wallet address</Text>
         <Text style={[GlobalStyle.text, { marginTop: 10 }]}>
           This is your unique wallet address. Moving forward, this will allow
@@ -91,6 +88,8 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 24,
     flexShrink: 1,
+    color: "#77E3EF",
+    width: "95%",
   },
   addressContainer: {
     bottom: 10,

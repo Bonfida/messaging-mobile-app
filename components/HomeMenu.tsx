@@ -14,7 +14,7 @@ const HomeMenu = () => {
     <View style={styles.container}>
       <View
         style={{
-          width: 224,
+          width: 170,
           height: 70,
           borderRadius: 40,
           padding: 1,
@@ -25,9 +25,6 @@ const HomeMenu = () => {
         }}
       >
         <View style={styles.root}>
-          <TouchableOpacity onPress={() => console.log("TODO")}>
-            <Entypo name="camera" size={26} color="#60C0CB" />
-          </TouchableOpacity>
           <TouchableOpacity onPress={() => setVisible(true)}>
             <MaterialCommunityIcons
               name="message-plus-outline"

@@ -36,7 +36,7 @@ export const Circle = ({ name }: { name: string }) => {
     <View style={styles.circle}>
       {/* <FontAwesome name="group" size={28} color="black" /> */}
       <Image
-        source={require("../assets/smb-1.png")}
+        source={require("../assets/group-fida.png")}
         style={{ width: 70, height: 70 }}
       />
     </View>

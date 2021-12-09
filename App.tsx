@@ -8,7 +8,6 @@ import ProfileScreen from "./screens/ProfileScreen";
 import ArchivedScreen from "./screens/ArchivedScreen";
 import MessageGroupScreen from "./screens/GroupScreen";
 import GroupInfoScreen from "./screens/GroupInfoScreen";
-import AddRemoveAdminScreen from "./screens/AddRemoveAdminScreen";
 import { ConnectionProvider } from "./utils/connection";
 import { WalletProvider } from "./utils/wallet";
 import { NavigationContainer } from "@react-navigation/native";
@@ -18,7 +17,6 @@ import { groupMessagesScreenProp } from "./types";
 import ExportSeed from "./screens/ExportSeed";
 import { RouteProp } from "@react-navigation/native";
 import AppInformationScreen from "./screens/AppInformationScreen";
-import GroupMembersScreen from "./screens/GroupMembersScreen";
 import SelectDisplayDomainNameScreen from "./screens/SelectDisplayDomainNameScreen";
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
@@ -131,18 +129,8 @@ function App() {
               options={defaultOptions}
             />
             <Stack.Screen
-              name="Edit Admins"
-              component={AddRemoveAdminScreen}
-              options={defaultOptions}
-            />
-            <Stack.Screen
               name="App Information"
               component={AppInformationScreen}
-              options={defaultOptions}
-            />
-            <Stack.Screen
-              name="Group Members"
-              component={GroupMembersScreen}
               options={defaultOptions}
             />
             <Stack.Screen

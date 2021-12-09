@@ -35,7 +35,7 @@ const BlueTextGradient = ({
     <MaskedView
       style={maskStyle}
       maskElement={
-        <Text numberOfLines={1} ellipsizeMode="tail" style={textStyle}>
+        <Text numberOfLines={2} ellipsizeMode="tail" style={textStyle}>
           {text}
         </Text>
       }
