@@ -29,6 +29,11 @@ export default StyleSheet.create({
     fontSize: 18,
     fontFamily: "Rota-Regular",
   },
+  whiteText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontFamily: "Rota-Regular",
+  },
   blue: {
     color: "#2ABDCD",
     fontFamily: "Rota-Regular",

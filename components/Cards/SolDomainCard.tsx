@@ -1,5 +1,5 @@
 import React from "react";
-import GradientCard from "./GradientCard";
+import LightGradientCard from "./LightGradientCard";
 import {
   View,
   Linking,
@@ -17,18 +17,18 @@ const SolDomainCard = () => {
       style={styles.container}
       onPress={() => Linking.openURL(HelpsUrls.buyDomain)}
     >
-      <GradientCard borderRadius={4} width={"100%"} height={180}>
+      <LightGradientCard borderRadius={8} width={"100%"} height={180}>
         <View style={styles.innerContainer}>
           <Image source={require("../../assets/SOL.png")} style={styles.sol} />
 
-          <Text style={[GlobalStyle.pink, styles.domain]}>yourname.sol</Text>
+          <Text style={styles.domain}>yourname.sol</Text>
 
-          <Text style={GlobalStyle.text}>
+          <Text style={GlobalStyle.whiteText}>
             Get a domain name on the Solana chain and bind it to your wallet
             address
           </Text>
         </View>
-      </GradientCard>
+      </LightGradientCard>
     </TouchableOpacity>
   );
 };
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "bold",
     fontFamily: "Rota-Regular",
+    color: "#77E3EF",
   },
   sol: {
     width: 48,
