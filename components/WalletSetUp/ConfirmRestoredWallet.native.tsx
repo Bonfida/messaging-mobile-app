@@ -3,18 +3,17 @@ import { SafeAreaView, View, Text, StyleSheet } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { loadKeyPairFromMnemonicOrPrivateKey } from "../../utils/wallet.native";
 import { IStep } from "../../types";
-import GradientCard from "../Cards/GradientCard";
 import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import GlobalStyle from "../../Style";
-import BlueTextGradient from "../TextGradients/BlueTextGradient";
+import LightGradientCard from "../Cards/LightGradientCard";
 
 const ButtonSection = ({
   setStep,
 }: {
   setStep: React.Dispatch<React.SetStateAction<IStep>>;
 }) => {
-  const onPressImport = () => {
-    setStep(IStep.CreateWallet);
+  const onPressBack = () => {
+    setStep(IStep.Restore);
   };
   const onPressCreate = () => {
     setStep(IStep.BuyDomain);
@@ -24,7 +23,7 @@ const ButtonSection = ({
     <View style={styles.buttonSection}>
       <BlueButtonWhiteBg
         style={styles.buttonStyle}
-        onPress={onPressImport}
+        onPress={onPressBack}
         borderRadius={28}
         width={103}
         height={56}
@@ -73,20 +72,16 @@ export const ConfirmRestoredWallet = ({
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.explanationContainer}>
-        <GradientCard borderRadius={20} height={200} width={"100%"}>
+        <LightGradientCard borderRadius={20} height={200} width={"100%"}>
           <View style={styles.innerCard}>
             <View style={styles.emojiContainer}>
               <Text style={styles.emoji}>👇</Text>
             </View>
             <View style={styles.addressContainer}>
-              <BlueTextGradient
-                text={address}
-                textStyle={styles.address}
-                maskStyle={styles.mask}
-              />
+              <Text style={styles.address}>{address}</Text>
             </View>
           </View>
-        </GradientCard>
+        </LightGradientCard>
         <Text style={[GlobalStyle.h1, { marginTop: 30 }]}>Confirm address</Text>
         <Text style={[GlobalStyle.text, { marginTop: 10 }]}>
           Check to ensure this is your wallet address
@@ -105,6 +100,8 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 24,
     flexShrink: 1,
+    color: "#77E3EF",
+    width: "95%",
   },
   addressContainer: {
     bottom: 10,

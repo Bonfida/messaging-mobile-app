@@ -248,7 +248,10 @@ const GroupInfoScreen = ({
               />
             </TouchableOpacity>
           ) : (
-            <Image source={require("../assets/smb-1.png")} style={styles.pic} />
+            <Image
+              source={require("../assets/group-fida.png")}
+              style={styles.pic}
+            />
           )}
         </View>
         {/* Group name */}

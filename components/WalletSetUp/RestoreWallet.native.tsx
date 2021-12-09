@@ -18,9 +18,11 @@ import { TWFWrapper } from "../../utils/utils.native";
 const ButtonSection = ({
   setStep,
   onPressConfirm,
+  disabled,
 }: {
   setStep: React.Dispatch<React.SetStateAction<IStep>>;
   onPressConfirm: () => Promise<void>;
+  disabled: boolean;
 }) => {
   const handleOnPressBack = () => {
     setStep(IStep.Welcome);
@@ -48,6 +50,7 @@ const ButtonSection = ({
         width={208}
         height={56}
         transparent
+        disabled={disabled}
       >
         <Text style={[GlobalStyle.white, styles.buttonText]}>Confirm</Text>
       </BlueButton>
@@ -103,7 +106,11 @@ export const RestoreWallet = ({
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <ButtonSection setStep={setStep} onPressConfirm={handleOnPress} />
+          <ButtonSection
+            setStep={setStep}
+            onPressConfirm={handleOnPress}
+            disabled={!mnemonic}
+          />
         )}
       </SafeAreaView>
     </TWFWrapper>
