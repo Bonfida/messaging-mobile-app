@@ -54,7 +54,10 @@ const MessageGroupScreen = ({
   }, [messages?.length]);
 
   const isAdmin = groupData?.admins.find((e) => wallet?.publicKey.equals(e));
-  const muted = groupData?.adminOnly && !isAdmin;
+  const muted =
+    groupData?.adminOnly &&
+    !isAdmin &&
+    !wallet?.publicKey.equals(groupData.owner);
 
   return (
     <SafeAreaView style={GlobalStyle.container}>

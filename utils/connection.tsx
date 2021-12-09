@@ -27,7 +27,7 @@ export const ConnectionProvider = ({
   const connection = useMemo(
     () =>
       new Connection(url, {
-        commitment: "confirmed",
+        commitment: "processed",
       }),
     [url]
   );
