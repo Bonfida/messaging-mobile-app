@@ -66,8 +66,6 @@ const HeaderRightGroup = ({
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const defaultOptions = { headerTransparent: true, headerTitle: "" };
-
 function App() {
   const [fontsLoaded] = useFonts({
     "Rota-Regular": require("./assets/Rota-Regular.otf"),
@@ -82,37 +80,13 @@ function App() {
       <WalletProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen
-              name="Messages"
-              component={ThreadScreen}
-              options={defaultOptions}
-            />
+            <Stack.Screen name="Messages" component={ThreadScreen} />
             <Stack.Screen name="Message" component={MessageScreen} />
-            <Stack.Screen
-              name="Settings"
-              component={SettingsScreen}
-              options={defaultOptions}
-            />
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={defaultOptions}
-            />
-            <Stack.Screen
-              name="Archived"
-              component={ArchivedScreen}
-              options={defaultOptions}
-            />
-            <Stack.Screen
-              name="Export Seeds"
-              component={ExportSeed}
-              options={defaultOptions}
-            />
-            <Stack.Screen
-              name="Media"
-              component={ImageZoom}
-              options={defaultOptions}
-            />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Archived" component={ArchivedScreen} />
+            <Stack.Screen name="Export Seeds" component={ExportSeed} />
+            <Stack.Screen name="Media" component={ImageZoom} />
             <Stack.Screen
               name="Group Messages"
               component={MessageGroupScreen}
@@ -123,20 +97,14 @@ function App() {
                 ),
               })}
             />
-            <Stack.Screen
-              name="Group Info"
-              component={GroupInfoScreen}
-              options={defaultOptions}
-            />
+            <Stack.Screen name="Group Info" component={GroupInfoScreen} />
             <Stack.Screen
               name="App Information"
               component={AppInformationScreen}
-              options={defaultOptions}
             />
             <Stack.Screen
               name="Select Display Domain"
               component={SelectDisplayDomainNameScreen}
-              options={defaultOptions}
             />
             <Stack.Group screenOptions={{ presentation: "modal" }}>
               <Stack.Screen name="Seed" component={EnterSeedScreen} />
