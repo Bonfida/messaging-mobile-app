@@ -38,7 +38,7 @@ const GradientCard = ({
         }}
       >
         <LinearGradient
-          colors={["#131E30", "#0F0F11"]}
+          colors={["#8585FD", "#7049AE"]}
           end={{ x: 1, y: 1 }}
           start={{ x: 0.5, y: 0.5 }}
           style={{

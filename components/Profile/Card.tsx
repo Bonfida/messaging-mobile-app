@@ -17,7 +17,7 @@ const Fee = ({ fee }: { fee: number | null }) => {
   return (
     <View style={styles.feeContainer}>
       <Text style={styles.fee}>Fee/msg</Text>
-      <Text style={styles.pinkText}>{fee || 0} SOL</Text>
+      <Text style={styles.whiteBoldText}>{fee || 0} SOL</Text>
     </View>
   );
 };
@@ -32,12 +32,7 @@ const BottomCard = ({
   return (
     <View style={styles.bottomCard}>
       <View>
-        <BlueTextGradient
-          textStyle={styles.gradientStyle}
-          maskStyle={styles.maskStyle}
-          text={domain}
-          start={{ x: 0.5, y: 0.5 }}
-        />
+        <Text style={styles.blueText}>{domain}</Text>
       </View>
       <View>
         <TouchableOpacity onPress={() => Clipboard.setString(address)}>
@@ -82,11 +77,10 @@ const ProfileCard = ({
 export default ProfileCard;
 
 const styles = StyleSheet.create({
-  pinkText: {
-    fontSize: 16,
-    color: "#B846B2",
-    fontWeight: "bold",
-    textAlign: "right",
+  whiteBoldText: {
+    color: "#F0F5FF",
+    fontSize: 18,
+    fontWeight: "700",
   },
   circle: {
     width: 70,
@@ -103,7 +97,7 @@ const styles = StyleSheet.create({
   },
   fee: {
     fontSize: 14,
-    color: "#C8CCD6",
+    color: "#F0F5FF",
   },
   feeContainer: {
     width: 100,
@@ -127,7 +121,7 @@ const styles = StyleSheet.create({
     right: 10,
   },
   addressText: {
-    color: "#9BA3B5",
+    color: "#F0F5FF",
     fontSize: 12,
     fontFamily: "Rota-Regular",
   },
@@ -148,5 +142,11 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 70 / 2,
+  },
+  blueText: {
+    color: "#77E3EF",
+    fontSize: 26,
+    textAlign: "right",
+    textTransform: "uppercase",
   },
 });

@@ -10,9 +10,9 @@ const FeeAndBalance = ({ fee, balance }: { fee: number; balance: number }) => {
   return (
     <View style={styles.feeAndBalanceContainer}>
       <Text style={styles.greyText}>Balance</Text>
-      <Text style={styles.pinkText}>{balance}</Text>
+      <Text style={styles.whiteBoldText}>{balance}</Text>
       <Text style={styles.greyText}>Messaging fee</Text>
-      <Text style={styles.pinkText}>{fee}</Text>
+      <Text style={styles.whiteBoldText}>{fee}</Text>
     </View>
   );
 };
@@ -38,14 +38,7 @@ const Top = ({
 const Bottom = ({ name, address }: { name: string; address: string }) => {
   return (
     <View style={styles.bottomContainer}>
-      {name !== address && (
-        <BlueTextGradient
-          maskStyle={styles.maskStyle}
-          textStyle={styles.gradientStyle}
-          text={name}
-          start={{ x: 0.5, y: 0.5 }}
-        />
-      )}
+      {name !== address && <Text style={styles.blueText}>{name}</Text>}
 
       <TouchableOpacity onPress={() => Clipboard.setString(address)}>
         <Text style={styles.greyText} numberOfLines={1} ellipsizeMode="tail">
@@ -80,13 +73,13 @@ const SettingsCard = ({
 };
 
 const styles = StyleSheet.create({
-  pinkText: {
-    color: "#B846B2",
+  whiteBoldText: {
+    color: "#F0F5FF",
     fontSize: 18,
     fontWeight: "700",
   },
   greyText: {
-    color: "#C8CCD6",
+    color: "#F0F5FF",
     fontSize: 14,
     fontWeight: "400",
     textAlign: "right",
@@ -127,6 +120,12 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     marginRight: "5%",
+  },
+  blueText: {
+    color: "#77E3EF",
+    fontSize: 26,
+    textAlign: "right",
+    textTransform: "uppercase",
   },
 });
 
