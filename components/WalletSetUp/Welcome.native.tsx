@@ -58,8 +58,8 @@ export const Welcome = ({
             one.
           </Text>
           <Text style={[GlobalStyle.text, { marginTop: 10 }]}>
-            Setting up your wallet is similar to a creating an account so you
-            can start sending and receiving messages.
+            Setting up your wallet is similar to creating an account so you can
+            start sending and receiving messages.
           </Text>
         </View>
       </View>
