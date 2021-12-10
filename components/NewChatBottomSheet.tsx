@@ -343,7 +343,7 @@ const NewChatBottomSheet = ({
               />
               <Row
                 icon={require("../assets/new-group.png")}
-                label="New Group message"
+                label="New group message"
                 handleOnPress={() => setStep(Step.Group)}
               />
               <Row
