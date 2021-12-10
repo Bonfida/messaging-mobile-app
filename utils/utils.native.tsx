@@ -188,3 +188,12 @@ export const useKeyBoardOffset = () => {
 
   return keyboardOffset;
 };
+
+export const abbreviateBio = (bio: string | undefined | null) => {
+  if (!bio) return null;
+  const max = 45;
+  if (bio.length > max) {
+    return bio.slice(0, max) + "...";
+  }
+  return bio;
+};
