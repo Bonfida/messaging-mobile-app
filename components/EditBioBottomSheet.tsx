@@ -25,9 +25,11 @@ const Title = ({ title }: { title: string }) => {
 };
 
 const EditBioBottomSheet = ({
+  currentBio,
   visible,
   setVisible,
 }: {
+  currentBio: string | undefined | null;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -101,6 +103,11 @@ const EditBioBottomSheet = ({
       >
         <View style={styles.container}>
           <Title title="Change bio" />
+          {currentBio && (
+            <Text style={{ ...GlobalStyle.darkBlue, margin: 10 }}>
+              {currentBio}
+            </Text>
+          )}
           <TextInput
             autoCapitalize="none"
             placeholder="New bio"
@@ -134,7 +141,7 @@ export default EditBioBottomSheet;
 const styles = StyleSheet.create({
   bottomNavigationView: {
     width: "100%",
-    height: 200,
+    height: 230,
     ...GlobalStyle.background,
   },
   title: {

@@ -142,7 +142,11 @@ const SettingsScreen = () => {
           <TouchableOpacity onPress={() => setBioVisible(true)}>
             <Row label="Bio" value={<BlueArrow />} />
           </TouchableOpacity>
-          <EditBioBottomSheet visible={bioVisible} setVisible={setBioVisible} />
+          <EditBioBottomSheet
+            currentBio={profile?.bio}
+            visible={bioVisible}
+            setVisible={setBioVisible}
+          />
 
           {/* Register Twitter handle if does not have one */}
           {!domainOrTwitter?.hasTwitter && (
@@ -274,7 +278,6 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
   },
-
   feeContainer: {
     display: "flex",
     alignItems: "center",
