@@ -5,7 +5,6 @@ import NewChatBottomSheet from "./NewChatBottomSheet";
 import { profileScreenProp } from "../types";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
 
 const HomeMenu = () => {
   const navigation = useNavigation<profileScreenProp>();

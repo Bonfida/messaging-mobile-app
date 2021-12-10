@@ -30,7 +30,7 @@ import { useConnection } from "../utils/connection";
 
 // TODO delete message feature
 
-const Circle = ({ name }: { name: string }) => {
+export const Circle = ({ name }: { name: string }) => {
   return (
     <View style={styles.circle}>
       <Text style={styles.circleText}>{name.toUpperCase()}</Text>
@@ -42,7 +42,7 @@ const Delete = () => {
   return <MaterialCommunityIcons name="delete" size={24} color="black" />;
 };
 
-const SenderName = ({
+export const SenderName = ({
   contact,
   isUser,
   displayName,
