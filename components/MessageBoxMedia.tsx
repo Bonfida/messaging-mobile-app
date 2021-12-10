@@ -12,6 +12,9 @@ import {
 import { WebView } from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
 import { mediaScreenProp } from "../types";
+import { SenderName, Circle } from "./MessageBoxText";
+import { useDisplayName } from "../utils/name-service";
+import { abbreviateAddress, formatDisplayName } from "../utils/utils.native";
 
 const createHtml = (content: string) => {
   const head = `<style>body{margin:0}</style><meta name="viewport" content="width=device-width, initial-scale=1">`;
@@ -31,11 +34,29 @@ export const MessageBoxMedia = ({
   const isUser = wallet?.publicKey.equals(message.message.sender);
   const parsedType = findType(type);
   const navigation = useNavigation<mediaScreenProp>();
+  const [displayName] = useDisplayName(message.message.sender.toBase58());
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
     return (
-      <View style={isUser ? styles.rootUser : styles.rootContact}>
-        <View style={isUser ? styles.messageBoxUser : styles.messageBoxContact}>
+      <View style={styles.container}>
+        <Circle
+          name={
+            displayName
+              ? displayName[0].slice(0, 2)
+              : message.message.sender.toBase58().slice(0, 2)
+          }
+        />
+        <View style={styles.innerContainer}>
+          <SenderName
+            displayName={
+              displayName && displayName[0]
+                ? (formatDisplayName(displayName[0]) as string)
+                : (abbreviateAddress(message.sender) as string)
+            }
+            isAdmin={false}
+            isUser={isUser}
+            contact={message.sender.toBase58()}
+          />
           {children}
         </View>
       </View>
@@ -107,28 +128,6 @@ export const MessageBoxMedia = ({
 };
 
 const styles = StyleSheet.create({
-  messageBoxContact: {
-    backgroundColor: "rgb(52, 52, 52)",
-    borderRadius: 5,
-    marginTop: 5,
-    padding: 10,
-    marginLeft: 5,
-  },
-  messageBoxUser: {
-    backgroundColor: "rgb(27, 86, 235)",
-    borderRadius: 5,
-    marginTop: 5,
-    padding: 10,
-    marginRight: 5,
-  },
-  rootUser: {
-    display: "flex",
-    alignItems: "flex-end",
-  },
-  rootContact: {
-    display: "flex",
-    alignItems: "flex-start",
-  },
   img: {
     height: 200,
     width: 200,
@@ -138,5 +137,21 @@ const styles = StyleSheet.create({
     marginTop: 5,
     height: 40,
     width: 300,
+  },
+  container: {
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    flexDirection: "row",
+    width: "90%",
+    marginLeft: "5%",
+    marginRight: "5%",
+    marginTop: 20,
+  },
+  innerContainer: {
+    marginLeft: 10,
+    display: "flex",
+    alignItems: "flex-start",
+    width: "100%",
   },
 });
