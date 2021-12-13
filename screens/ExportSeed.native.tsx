@@ -12,9 +12,13 @@ import * as SecureStore from "expo-secure-store";
 import * as Clipboard from "expo-clipboard";
 import * as bip39 from "bip39";
 import { Feather } from "@expo/vector-icons";
+import bs58 from "bs58";
+import GlobalStyle from "../Style";
 
 const ExportSeed = () => {
   const [mnemonic, setMnemonic] = useState<null | string>(null);
+  const [privateKey, setPrivateKey] = useState<null | string>(null);
+  const [privateKeyBs58, setPrivateKeyBs58] = useState<null | string>(null);
   const [copied, setCopied] = useState(false);
   const [, setUserCopied] = useState(false);
   const mountedRef = useRef(true);
@@ -28,9 +32,12 @@ const ExportSeed = () => {
       const normalized = normalizeMnemonic(_mnemonic);
       const seed = await bip39.mnemonicToSeed(normalized);
 
-      getAccountFromSeed(seed.toString("hex"));
+      const keypair = getAccountFromSeed(seed.toString("hex"));
+
       if (!mountedRef.current) return null;
+      setPrivateKey(JSON.stringify(Array.from(Buffer.from(keypair.secretKey))));
       setMnemonic(normalized);
+      setPrivateKeyBs58(bs58.encode(keypair.secretKey));
       return () => {
         mountedRef.current = false;
       };
@@ -38,9 +45,9 @@ const ExportSeed = () => {
     fn();
   }, []);
 
-  const copySeeds = () => {
-    if (!mnemonic) return;
-    Clipboard.setString(mnemonic);
+  const copySeeds = (arg: string | null) => () => {
+    if (!arg) return;
+    Clipboard.setString(arg);
     setCopied(true);
     setUserCopied(true);
   };
@@ -55,13 +62,22 @@ const ExportSeed = () => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <TouchableOpacity onPress={copySeeds}>
+      <Text style={GlobalStyle.h2}>Mnemonic</Text>
+      <TouchableOpacity onPress={copySeeds(mnemonic)}>
         {mnemonic && <Text style={styles.seedsContainer}>{mnemonic}</Text>}
         {!mnemonic && (
           <View style={styles.loading}>
             <ActivityIndicator />
           </View>
         )}
+      </TouchableOpacity>
+      <Text style={GlobalStyle.h2}>Private key</Text>
+      <TouchableOpacity onPress={copySeeds(privateKey)}>
+        <Text style={styles.seedsContainer}>{privateKey}</Text>
+      </TouchableOpacity>
+      <Text style={GlobalStyle.h2}>Private key (base 58)</Text>
+      <TouchableOpacity onPress={copySeeds(privateKeyBs58)}>
+        <Text style={styles.seedsContainer}>{privateKeyBs58}</Text>
       </TouchableOpacity>
       <Text style={styles.explanation}>
         {copied && (
@@ -77,7 +93,12 @@ const ExportSeed = () => {
 export default ExportSeed;
 
 const styles = StyleSheet.create({
-  safeAreaView: { height: "100%" },
+  safeAreaView: {
+    height: "100%",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   seedsContainer: {
     borderWidth: 0.5,
     borderColor: "grey",
