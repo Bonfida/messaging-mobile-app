@@ -265,7 +265,7 @@ const NewChatBottomSheet = ({
         parsedGroupName,
         parsedDestinationWallet,
         new BN(parsedLamportsPerMessage * LAMPORTS_PER_SOL),
-        [] as PublicKey[],
+        [wallet.publicKey],
         wallet.publicKey,
         media,
         wallet.publicKey,
