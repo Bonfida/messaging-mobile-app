@@ -46,6 +46,7 @@ export const MessageInput = ({
   const { wallet, sendTransaction, hasSol } = useWallet();
   const [loading, setLoading] = useState(false);
   const connection = useConnection();
+  const [height, setHeight] = useState(0);
 
   const isGroup = !!groupData;
 
@@ -145,10 +146,12 @@ export const MessageInput = ({
       <TextInput
         editable={!muted}
         value={message}
-        style={styles.input}
+        style={[styles.input, { height: Math.max(35, height) }]}
         onChangeText={setMessage}
         placeholder="New Message"
         onSubmitEditing={handeleOnSubmit}
+        multiline={true}
+        onContentSizeChange={(e) => setHeight(e.nativeEvent.contentSize.height)}
       />
       <TouchableOpacity disabled={!message} onPress={handeleOnSubmit}>
         {loading ? (
