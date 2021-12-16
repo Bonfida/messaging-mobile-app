@@ -307,7 +307,7 @@ export class Message {
   }
 
   static deserialize(data: Buffer) {
-    return deserializeUnchecked(this.schema, Message, data);
+    return deserializeUnchecked(this.schema, Message, data) as Message;
   }
 
   static generateSeeds(
@@ -344,6 +344,7 @@ export class Message {
     );
     const accountInfo = await connection.getAccountInfo(messageAccount);
     if (!accountInfo?.data) {
+      console.log("messageAccount", messageAccount.toBase58());
       throw new Error("Invalid message info");
     }
     return this.deserialize(accountInfo.data);
@@ -412,13 +413,21 @@ export class Message {
   }
 }
 
+interface IDeserialize {
+  message: Message;
+  address: PublicKey;
+  index: number;
+  receiver: PublicKey;
+  sender: PublicKey;
+}
+
 const deserializeMessage = (
   data: Buffer,
   address: PublicKey,
   index: number,
   receiver: PublicKey,
   sender: PublicKey
-) => {
+): IDeserialize => {
   const result = {
     message: Message.deserialize(data),
     address: address,

@@ -2,7 +2,6 @@ import React from "react";
 import GradientCard from "../Cards/GradientCard";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import UploadProfilePic from "./UploadProfilePic";
-import BlueTextGradient from "../TextGradients/BlueTextGradient";
 import { useGetIpfsData } from "../../utils/jabber";
 import * as Clipboard from "expo-clipboard";
 

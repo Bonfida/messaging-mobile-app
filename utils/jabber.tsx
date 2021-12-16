@@ -22,6 +22,7 @@ import { useAsync, range } from "./utils.native";
 import { asyncCache, CachePrefix } from "./cache";
 import { URL_HASH } from "./ipfs";
 import lz from "lz-string";
+import { GenericThread } from "../types";
 
 export enum MediaType {
   Image,
@@ -59,7 +60,7 @@ export const useUserThread = (refresh: boolean) => {
         ({ pubkey }, index) => !ids.includes(pubkey?.toBase58(), index + 1)
       );
 
-      const result = filtered
+      const result: Thread[] = filtered
         .map((t) => {
           try {
             return Thread.deserialize(t.account.data);
@@ -68,12 +69,26 @@ export const useUserThread = (refresh: boolean) => {
           }
         })
         .filter((e) => !!e && e.msgCount > 0);
-      return result.sort((a, b) => {
-        if (!!a && !!b) {
-          return b?.msgCount - a?.msgCount;
+
+      const fn = async (thread: Thread) => {
+        try {
+          const lastMessage = await Message.retrieveFromIndex(
+            connection,
+            thread.msgCount - 1,
+            thread.user1,
+            thread.user2
+          );
+          return { thread, time: lastMessage.timestamp.toNumber() };
+        } catch (err) {
+          console.log(`err ${err}`);
+          return { thread, time: -1 };
         }
-        return 1;
-      });
+      };
+
+      const threadsWithTime: { thread: Thread; time: number }[] =
+        await Promise.all(result.map((r) => fn(r)));
+
+      return threadsWithTime as GenericThread[];
     } catch (err) {
       console.log(err);
       return undefined;
@@ -512,7 +527,37 @@ export const useUserGroup = (
           : undefined;
       })
       .filter((e) => !!e) as { groupData: GroupThread; address: PublicKey }[];
-    return groups;
+
+    const fn = async (arg: { groupData: GroupThread; address: PublicKey }) => {
+      try {
+        const lastMessage = await Message.retrieveFromIndex(
+          connection,
+          arg.groupData.msgCount - 1,
+          arg.address,
+          arg.address
+        );
+        return {
+          groupData: arg.groupData,
+          address: arg.address,
+          time: lastMessage.timestamp.toNumber(),
+        };
+      } catch (err) {
+        console.log(err);
+        return {
+          groupData: arg.groupData,
+          address: arg.address,
+          time: -1,
+        };
+      }
+    };
+
+    const groupsWithTime: {
+      groupData: GroupThread;
+      address: PublicKey;
+      time: number;
+    }[] = await Promise.all(groups.map((group) => fn(group)));
+
+    return groupsWithTime as GenericThread[];
   };
   return useAsync(fn, !!user != refresh);
 };

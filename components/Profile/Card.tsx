@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import GradientCard from "../Cards/GradientCard";
-import BlueTextGradient from "../TextGradients/BlueTextGradient";
 import { IData } from "../../utils/jabber";
 import * as Clipboard from "expo-clipboard";
 

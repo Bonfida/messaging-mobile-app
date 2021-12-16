@@ -17,15 +17,19 @@ import { useUserGroup } from "../utils/jabber";
 import GroupMessageRow from "../components/GroupRow";
 import GlobalStyle from "../Style";
 import HomeMenu from "../components/HomeMenu";
+import { GenericThread, IGroup } from "../types";
 
 export const ThreadScreen = () => {
   const isFocused = useIsFocused();
   const [refresh, setRefresh] = useState(false);
   const { wallet, walletLoaded } = useWallet();
-  const [threads] = useUserThread(refresh != isFocused);
+  const [threadsWithTime] = useUserThread(refresh != isFocused);
   const navigation = useNavigation<settingsScreenProp>();
   const archived = useGetAsyncCache<string[]>(CachePrefix.Archive, refresh);
-  const [groups] = useUserGroup(wallet?.publicKey, refresh != isFocused);
+  const [groupsWithTime] = useUserGroup(
+    wallet?.publicKey,
+    refresh != isFocused
+  );
 
   const handleOnRefresh = () => {
     setRefresh((prev) => !prev);
@@ -37,56 +41,64 @@ export const ThreadScreen = () => {
     }
   }, []);
 
-  const memoizedThread = useMemo(() => {
-    return (
-      <>
-        {threads?.map((thread) => {
-          const contact: PublicKey = wallet?.publicKey.equals(thread?.user1)
-            ? thread?.user2
-            : thread?.user1;
-          if (!thread) return null;
-          return (
-            <MessageRow
-              key={`thread-${thread.user1.toBase58()}-${thread.user2.toBase58()}`}
-              contact={contact}
-              currentCount={thread.msgCount}
-              archived={archived}
-              handleOnPressDisplayName={() =>
-                navigation.navigate("Message", { contact: contact.toBase58() })
-              }
-              setRefresh={setRefresh}
-            />
-          );
-        })}
-      </>
-    );
-  }, [threads?.length, archived?.length]);
+  const allThreadsWithTime: GenericThread[] | undefined =
+    groupsWithTime && threadsWithTime && groupsWithTime.concat(threadsWithTime);
 
-  const memoizeGroups = useMemo(() => {
+  const lastTime =
+    allThreadsWithTime && Math.max(...allThreadsWithTime?.map((e) => e.time));
+
+  const threads = useMemo(() => {
     return (
       <>
-        {groups?.map((group, idx) => {
-          return (
-            <GroupMessageRow
-              archived={archived}
-              picHash={group.groupData.groupPicHash}
-              groupName={group.groupData.groupName}
-              groupKey={group.address}
-              key={group.groupData.groupName + idx}
-              currentCount={group.groupData.msgCount}
-              setRefresh={setRefresh}
-              handleOnPressDisplayName={() =>
-                navigation.navigate("Group Messages", {
-                  group: group.address.toBase58(),
-                  name: group.groupData.groupName,
-                })
-              }
-            />
-          );
-        })}
+        {allThreadsWithTime
+          ?.sort((a, b) => b.time - a.time)
+          ?.map((genericThread, idx) => {
+            console.log(genericThread.time);
+            // Group thread
+            if ("groupData" in genericThread) {
+              const { groupData, address } = genericThread as IGroup;
+              return (
+                <GroupMessageRow
+                  archived={archived}
+                  picHash={groupData.groupPicHash}
+                  groupName={groupData.groupName}
+                  groupKey={address}
+                  key={groupData.groupName + idx}
+                  currentCount={groupData.msgCount}
+                  setRefresh={setRefresh}
+                  handleOnPressDisplayName={() =>
+                    navigation.navigate("Group Messages", {
+                      group: address.toBase58(),
+                      name: groupData.groupName,
+                    })
+                  }
+                />
+              );
+            }
+            // DM thread
+            const { thread } = genericThread;
+            const contact: PublicKey = wallet?.publicKey.equals(thread?.user1)
+              ? thread?.user2
+              : thread?.user1;
+            if (!thread) return null;
+            return (
+              <MessageRow
+                key={`thread-${thread.user1.toBase58()}-${thread.user2.toBase58()}`}
+                contact={contact}
+                currentCount={thread.msgCount}
+                archived={archived}
+                handleOnPressDisplayName={() =>
+                  navigation.navigate("Message", {
+                    contact: contact.toBase58(),
+                  })
+                }
+                setRefresh={setRefresh}
+              />
+            );
+          })}
       </>
     );
-  }, [groups?.length, archived?.length]);
+  }, [allThreadsWithTime?.length, archived?.length, lastTime]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -95,10 +107,7 @@ export const ThreadScreen = () => {
           <RefreshControl refreshing={false} onRefresh={handleOnRefresh} />
         }
       >
-        <View style={{ width: "100%" }}>
-          {memoizeGroups}
-          {memoizedThread}
-        </View>
+        <View style={{ width: "100%" }}>{threads}</View>
       </ScrollView>
       <View style={styles.menu}>
         <HomeMenu />

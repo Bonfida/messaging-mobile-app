@@ -24,7 +24,7 @@ export const ThreadScreen = () => {
   const [isGroup, setIsGroup] = useState(false);
   const isFocused = useIsFocused();
   const { wallet, connected, connect } = useWallet();
-  const [threads] = useUserThread(connected);
+  const [threadsWithTime] = useUserThread(connected);
   const archived = useGetAsyncCache<string[]>(
     CachePrefix.Archive,
     refresh !== isFocused
@@ -41,7 +41,10 @@ export const ThreadScreen = () => {
     isGroup ? selectedContact : undefined
   );
 
-  const [groups] = useUserGroup(wallet?.publicKey, refresh != isFocused);
+  const [groupsWithTime] = useUserGroup(
+    wallet?.publicKey,
+    refresh != isFocused
+  );
 
   const scrollViewRef = useRef() as React.MutableRefObject<ScrollView>;
 
@@ -78,7 +81,7 @@ export const ThreadScreen = () => {
   const memoizedThread = useMemo(() => {
     return (
       <>
-        {threads?.map((thread) => {
+        {threadsWithTime?.map(({ thread }) => {
           const contact: PublicKey = wallet?.publicKey.equals(thread?.user1)
             ? thread?.user2
             : thread?.user1;
@@ -101,31 +104,31 @@ export const ThreadScreen = () => {
         })}
       </>
     );
-  }, [threads?.length, archived?.length, selectedContact]);
+  }, [threadsWithTime?.length, archived?.length, selectedContact]);
 
   const memoizeGroups = useMemo(() => {
     return (
       <>
-        {groups?.map((group, idx) => {
+        {groupsWithTime?.map(({ groupData, address }, idx) => {
           return (
             <GroupMessageRow
-              picHash={group.groupData.groupPicHash}
-              selected={selectedContact === group.address.toBase58()}
-              groupName={group.groupData.groupName}
-              groupKey={group.address}
-              key={group.groupData.groupName + idx}
-              currentCount={group.groupData.msgCount}
+              picHash={groupData.groupPicHash}
+              selected={selectedContact === address.toBase58()}
+              groupName={groupData.groupName}
+              groupKey={address}
+              key={groupData.groupName + idx}
+              currentCount={groupData.msgCount}
               setRefresh={setRefresh}
               handleOnPressDisplayName={() => {
                 setIsGroup(true);
-                setSelectedContact(group.address.toBase58());
+                setSelectedContact(address.toBase58());
               }}
             />
           );
         })}
       </>
     );
-  }, [groups?.length, archived?.length, selectedContact]);
+  }, [groupsWithTime?.length, archived?.length, selectedContact]);
 
   const memoizedWarning = useMemo(() => {
     if (!selectedContact) {

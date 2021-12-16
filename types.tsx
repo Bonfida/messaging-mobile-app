@@ -1,6 +1,8 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "./App";
 import { EmitterSubscription } from "react-native";
+import { GroupThread, Thread } from "./utils/web3/jabber";
+import { PublicKey } from "@solana/web3.js";
 
 export type messagesScreenProp = StackNavigationProp<
   RootStackParamList,
@@ -90,3 +92,16 @@ export enum IStep {
 }
 
 export type keyBoardRef = React.MutableRefObject<EmitterSubscription | null>;
+
+export interface IGroup {
+  groupData: GroupThread;
+  address: PublicKey;
+  time: number;
+}
+
+export interface IThread {
+  thread: Thread;
+  time: number;
+}
+
+export type GenericThread = IGroup | IThread;
