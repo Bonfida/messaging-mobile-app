@@ -286,7 +286,7 @@ const GroupInfoScreen = ({
 
         {/* SOL fee */}
         <Row
-          label="SOL Fee"
+          label="SOL fee"
           value={
             `${
               groupData?.lamportsPerMessage
@@ -322,14 +322,7 @@ const GroupInfoScreen = ({
               />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              // onPress={() =>
-              //   navigation.navigate("Edit Admins", {
-              //     group: group,
-              //   })
-              // }
-              onPress={() => setManageAdminVisible(true)}
-            >
+            <TouchableOpacity onPress={() => setManageAdminVisible(true)}>
               <Row label="Manage admins" value={<BlueArrow />} />
               <ManageAdminBottomSheet
                 visible={manageAdminVisible}
@@ -338,7 +331,7 @@ const GroupInfoScreen = ({
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setFeeVisible(true)}>
-              <Row label="Edit Fee" value={<BlueArrow />} />
+              <Row label="Edit fee" value={<BlueArrow />} />
               <EditFeeBottomSheet
                 visible={feeVisible}
                 setVisible={setFeeVisible}
