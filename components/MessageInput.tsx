@@ -129,7 +129,9 @@ export const MessageInput = ({
         onSubmitEditing={handeleOnSubmit}
         placeholderTextColor="#C8CCD6"
         multiline={true}
-        onContentSizeChange={(e) => setHeight(e.nativeEvent.contentSize.height)}
+        onContentSizeChange={(e) =>
+          setHeight(1.5 * e.nativeEvent.contentSize.height)
+        }
       />
       <TouchableOpacity disabled={!message} onPress={handeleOnSubmit}>
         {loading ? (
