@@ -22,15 +22,28 @@ import axios from "axios";
 import { IPost } from "../types";
 import { balanceWarning } from "./BalanceWarning";
 import { Feather } from "@expo/vector-icons";
+import {
+  GroupThread,
+  GroupThreadIndex,
+  createGroupIndex,
+} from "../utils/web3/jabber";
+import { sendMessageGroup } from "@bonfida/jabber";
 
 const Clip = () => {
   return <Feather name="paperclip" size={24} color="#60C0CB" />;
 };
 
-const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
+const UploadIpfsButton = ({
+  receiver,
+  groupData,
+}: {
+  receiver: string;
+  groupData?: GroupThread | null;
+}) => {
   const [loading, setLoading] = useState(false);
   const connection = useConnection();
   const { wallet, sendTransaction, hasSol } = useWallet();
+  const isGroup = !!groupData;
 
   const upload = async (message: Buffer) => {
     if (!wallet) return;
@@ -39,25 +52,51 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
     }
     try {
       setLoading(true);
+
+      if (isGroup) {
+        const indexInfo = await connection.getAccountInfo(
+          await GroupThreadIndex.getKey(
+            groupData.groupName,
+            groupData.owner,
+            new PublicKey(receiver)
+          )
+        );
+        if (!indexInfo?.data) {
+          const createIndexInstruction = await createGroupIndex(
+            groupData.groupName,
+            groupData.owner,
+            new PublicKey(receiver)
+          );
+          const tx = await sendTransaction({
+            connection,
+            wallet,
+            instruction: [createIndexInstruction],
+          });
+          console.log(`Created a thread index account ${tx}`);
+        }
+      }
+
       const receiverAddress = new PublicKey(receiver);
-      const thread = await Thread.retrieve(
-        connection,
-        wallet.publicKey,
-        receiverAddress
-      );
+
+      const thread = await (isGroup
+        ? GroupThread.retrieve(connection, groupData.groupName, groupData.owner)
+        : Thread.retrieve(connection, wallet.publicKey, receiverAddress));
+
       const seeds = Message.generateSeeds(
         thread.msgCount,
-        wallet.publicKey,
+        isGroup ? new PublicKey(receiver) : wallet.publicKey,
         new PublicKey(receiver)
       );
       const [messageAccount] = await findProgramAddress(seeds, JABBER_ID);
 
-      const encrypted = encryptMessageToBuffer(
-        message,
-        wallet,
-        receiverAddress,
-        messageAccount
-      );
+      const encrypted = isGroup
+        ? message
+        : encryptMessageToBuffer(
+            message,
+            wallet,
+            receiverAddress,
+            messageAccount
+          );
 
       const formData = new FormData();
 
@@ -67,19 +106,41 @@ const UploadIpfsButton = ({ receiver }: { receiver: string }) => {
 
       const hash = data.Hash;
 
-      const instruction = await sendMessage(
-        connection,
-        wallet.publicKey,
-        receiverAddress,
-        Buffer.from(hash),
-        MessageType.EncryptedImage
-      );
+      let adminIndex: undefined | number = undefined;
+      if (groupData && isGroup) {
+        for (let i = 0; i < groupData.admins.length; i++) {
+          if (groupData.admins[i].equals(wallet.publicKey)) {
+            adminIndex = i;
+          }
+        }
+      }
+
+      const instruction = await (isGroup
+        ? sendMessageGroup(
+            MessageType.UnencryptedImage,
+            Buffer.from(hash),
+            groupData.groupName,
+            wallet.publicKey,
+            receiverAddress,
+            groupData.destinationWallet,
+            messageAccount,
+            adminIndex
+          )
+        : sendMessage(
+            connection,
+            wallet.publicKey,
+            receiverAddress,
+            Buffer.from(hash),
+            MessageType.EncryptedImage
+          ));
+
       const tx = await sendTransaction({
         connection,
         signers: [],
         wallet,
         instruction: [instruction],
       });
+
       console.log(tx);
     } catch (err) {
       console.log("Upload error", err);

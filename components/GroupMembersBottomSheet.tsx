@@ -40,7 +40,7 @@ const MemberRow = ({
   }
 
   const adminTag = isAdmin ? " - Admin" : "";
-  console.log(isAdmin);
+
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Profile", { contact: address })}

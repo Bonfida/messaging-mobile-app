@@ -344,7 +344,6 @@ export class Message {
     );
     const accountInfo = await connection.getAccountInfo(messageAccount);
     if (!accountInfo?.data) {
-      console.log("messageAccount", messageAccount.toBase58());
       throw new Error("Invalid message info");
     }
     return this.deserialize(accountInfo.data);

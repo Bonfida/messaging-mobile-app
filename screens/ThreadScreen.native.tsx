@@ -53,7 +53,6 @@ export const ThreadScreen = () => {
         {allThreadsWithTime
           ?.sort((a, b) => b.time - a.time)
           ?.map((genericThread, idx) => {
-            console.log(genericThread.time);
             // Group thread
             if ("groupData" in genericThread) {
               const { groupData, address } = genericThread as IGroup;

@@ -137,7 +137,6 @@ export const MessageBoxText = ({
 
       if (isGroup) {
         if (!groupData) return;
-        console.log(message.address.toBase58(), "message");
         const inst = await deleteGroupMessage(
           new PublicKey(groupKey),
           message.address,

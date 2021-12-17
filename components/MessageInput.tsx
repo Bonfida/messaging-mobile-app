@@ -11,7 +11,7 @@ import {
 import { useWallet } from "../utils/wallet";
 import { useConnection } from "../utils/connection";
 import { Ionicons } from "@expo/vector-icons";
-import UploadIpfsButton from "./UploadIpfsButton";
+import UploadIpfsButton from "./UploadIpfsButton.native";
 import { isWeb } from "../utils/utils";
 import {
   sendMessageToContact,
@@ -49,6 +49,7 @@ export const MessageInput = ({
 
   const isGroup = !!groupData;
   const keyboardOffset = useKeyBoardOffset();
+  const mediaEnabled = !!groupData?.mediaEnabled;
 
   useEffect(() => {
     scrollViewRef.current.scrollToEnd({ animated: true });
@@ -119,7 +120,9 @@ export const MessageInput = ({
 
   return (
     <View style={[styles.textInput, { marginBottom: keyboardOffset }]}>
-      {!isGroup && <UploadIpfsButton receiver={contact} />}
+      {((isGroup && mediaEnabled && !muted) || !isGroup) && (
+        <UploadIpfsButton receiver={contact} groupData={groupData} />
+      )}
       <TextInput
         editable={!muted}
         value={message}

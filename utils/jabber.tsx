@@ -301,7 +301,7 @@ export const decryptMediaFromBuffer = async (
           sender,
           true
         ) as Buffer)
-      : Buffer.from(dataBuffer);
+      : Buffer.from(JSON.parse(JSON.stringify(data))); // Hacky...
 
     const len = decrypted[0];
     const type = decrypted.slice(1, 1 + len).toString();
