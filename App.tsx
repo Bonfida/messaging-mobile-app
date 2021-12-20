@@ -20,6 +20,7 @@ import AppInformationScreen from "./screens/AppInformationScreen";
 import SelectDisplayDomainNameScreen from "./screens/SelectDisplayDomainNameScreen";
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
+import GalleryScreen from "./screens/GalleryScreen";
 
 import "./global";
 import "react-native-gesture-handler";
@@ -44,6 +45,7 @@ export type RootStackParamList = {
   "Group Members": { members: { address: string; isAdmin: boolean }[] };
   "Select Display Domain": { selectedDomain: string | undefined };
   "Change RPC endpoint": undefined;
+  Gallery: undefined;
 };
 
 const HeaderRightGroup = ({
@@ -106,6 +108,7 @@ function App() {
               name="Select Display Domain"
               component={SelectDisplayDomainNameScreen}
             />
+            <Stack.Screen name="Gallery" component={GalleryScreen} />
             <Stack.Group screenOptions={{ presentation: "modal" }}>
               <Stack.Screen name="Seed" component={EnterSeedScreen} />
             </Stack.Group>

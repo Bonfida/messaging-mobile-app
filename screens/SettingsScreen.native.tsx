@@ -129,6 +129,11 @@ const SettingsScreen = () => {
             <Row label="Display domain name" value={<BlueArrow />} />
           </TouchableOpacity>
 
+          {/* Gallery */}
+          <TouchableOpacity onPress={() => navigation.navigate("Gallery")}>
+            <Row label="Gallery" value={<BlueArrow />} />
+          </TouchableOpacity>
+
           {/* SOL per message fee */}
           <TouchableOpacity onPress={() => setFeeVisible(true)}>
             <Row label="Messaging fee" value={<BlueArrow />} />

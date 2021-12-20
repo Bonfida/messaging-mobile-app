@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { useProfileWs } from "../../utils/jabber";
 import { useDisplayName } from "../../utils/name-service";
 import ProfileCard from "./Card";
@@ -10,6 +10,8 @@ import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import TipBottomSheet from "./TipBottomSheet";
 import { useNavigation } from "@react-navigation/core";
 import { messageScreenProp } from "../../types";
+import { useNft } from "../../utils/nft/metadata";
+import { Nft } from "../Nft";
 
 const MessageButton = ({ contact }: { contact: string }) => {
   const navigation = useNavigation<messageScreenProp>();
@@ -65,6 +67,7 @@ const ButtonSection = ({ contact }: { contact: string }) => {
 const Profile = ({ contact }: { contact: string }) => {
   const profile = useProfileWs(new PublicKey(contact));
   const [displayName] = useDisplayName(contact);
+  const nfts = useNft(new PublicKey(contact));
 
   const favoriteDisplayName = profile?.name?.split(":fdn:")[1];
   const profilePicHash = profile?.name?.split(":fdn:")[0];
@@ -82,23 +85,39 @@ const Profile = ({ contact }: { contact: string }) => {
     : contact;
 
   return (
-    <View style={styles.container}>
-      <View>
-        <ProfileCard
-          domain={domain}
-          address={contact}
-          pic={pic}
-          feeMsg={feeMsg}
-        />
-        {!!profile?.bio && (
-          <View style={styles.profileContainer}>
-            <Text style={GlobalStyle.h1}>About</Text>
-            <Text style={GlobalStyle.text}>{profile?.bio}</Text>
-          </View>
-        )}
+    <ScrollView>
+      <View style={styles.container}>
+        <View>
+          <ProfileCard
+            domain={domain}
+            address={contact}
+            pic={pic}
+            feeMsg={feeMsg}
+          />
+          {!!profile?.bio && (
+            <View style={styles.profileContainer}>
+              <Text style={GlobalStyle.h1}>About</Text>
+              <Text style={GlobalStyle.text}>{profile?.bio}</Text>
+            </View>
+          )}
+          <ButtonSection contact={contact} />
+          {!!nfts && nfts.length > 0 && (
+            <>
+              <View style={styles.profileContainer}>
+                <Text style={GlobalStyle.h1}>Gallery</Text>
+                <View style={styles.nftRow}>
+                  {nfts.map((_, idx) => {
+                    return (
+                      <Nft metadata={nfts[idx].metadata} key={`nft-${idx}`} />
+                    );
+                  })}
+                </View>
+              </View>
+            </>
+          )}
+        </View>
       </View>
-      <ButtonSection contact={contact} />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -129,6 +148,16 @@ const styles = StyleSheet.create({
     marginRight: "5%",
   },
   profileContainer: {
+    marginTop: 20,
+  },
+  nftRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    flex: 1,
+    flexWrap: "wrap",
+    marginBottom: 20,
     marginTop: 20,
   },
 });
