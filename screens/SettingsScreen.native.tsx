@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Linking,
+  Share,
 } from "react-native";
 import { useWallet, useBalanceWs } from "../utils/wallet.native";
 import EnterSeedScreen from "./EnterSeedScreen";
@@ -71,6 +72,17 @@ const SettingsScreen = () => {
     alert("Cache cleared");
   };
 
+  const onShare = async () => {
+    try {
+      await Share.share({
+        message: `Let's chat on Jabber! It's a fast, simple, encrypted and decentralized messaging app built on Solana. My address is ${wallet?.publicKey.toBase58()}`,
+      });
+    } catch (error) {
+      // @ts-ignore
+      alert(error.message);
+    }
+  };
+
   // Hacky
   // The storage size used it 100 for the name and an IPFS hash is 64 max.
   // Using the rest to store the favourite domain name of the user i.e
@@ -132,6 +144,11 @@ const SettingsScreen = () => {
           {/* Gallery */}
           <TouchableOpacity onPress={() => navigation.navigate("Gallery")}>
             <Row label="Gallery" value={<BlueArrow />} />
+          </TouchableOpacity>
+
+          {/* Share */}
+          <TouchableOpacity onPress={onShare}>
+            <Row label="Share" value={<BlueArrow />} />
           </TouchableOpacity>
 
           {/* SOL per message fee */}

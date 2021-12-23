@@ -9,6 +9,7 @@ import {
   Image,
   ScrollView,
   Text,
+  Share,
 } from "react-native";
 import { useGetIpfsData, useGroupData, useGroupMembers } from "../utils/jabber";
 import { RouteProp } from "@react-navigation/native";
@@ -229,6 +230,17 @@ const GroupInfoScreen = ({
     }
   };
 
+  const onShare = async () => {
+    try {
+      await Share.share({
+        message: `Join the ${groupData?.groupName} group chat on Jabber: ${group}`,
+      });
+    } catch (error) {
+      // @ts-ignore
+      alert(error.message);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <ScrollView>
@@ -265,6 +277,16 @@ const GroupInfoScreen = ({
                 {abbreviateAddress(group)}{" "}
                 {copied && <Feather name="check" size={15} color="green" />}
               </>
+            }
+          />
+        </TouchableOpacity>
+
+        {/* Share button */}
+        <TouchableOpacity onPress={onShare}>
+          <Row
+            label="Share"
+            value={
+              <MaterialIcons name="arrow-forward-ios" size={15} color="black" />
             }
           />
         </TouchableOpacity>

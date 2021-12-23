@@ -14,6 +14,7 @@ import {
   KeyboardEvent,
 } from "react-native";
 import { keyBoardRef } from "../types";
+import axios from "axios";
 
 export const TWFWrapper = ({ children }: { children: React.ReactNode }) => {
   if (Platform.OS === "web") {
@@ -196,4 +197,11 @@ export const abbreviateBio = (bio: string | undefined | null) => {
     return bio.slice(0, max) + "...";
   }
   return bio;
+};
+
+export const shortUrl = async (longUrl: string) => {
+  const response = await axios.get(
+    `https://tinyurl.com/api-create.php?url=${longUrl}`
+  );
+  return response.data;
 };

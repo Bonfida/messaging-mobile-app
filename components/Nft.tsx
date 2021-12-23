@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
   TouchableOpacity,
-  Alert,
+  Share,
 } from "react-native";
 import { Metadata } from "../utils/nft/metadata";
 import axios from "axios";
@@ -21,6 +21,8 @@ import { setUserProfile, createProfile } from "@bonfida/jabber";
 import { useConnection } from "../utils/connection";
 import { useWallet } from "../utils/wallet.native";
 import { balanceWarning } from "./BalanceWarning";
+import { shortUrl } from "../utils/utils.native";
+import { PublicKey } from "@solana/web3.js";
 
 const Title = ({ title }: { title: string }) => {
   return (
@@ -137,6 +139,21 @@ export const Nft = ({
     }
   };
 
+  const onShare = async () => {
+    try {
+      const longUrl = `https://explorer.solana.com/address/${new PublicKey(
+        metadata.mint
+      ).toBase58()}/metadata`;
+      const url = await shortUrl(longUrl);
+      await Share.share({
+        message: `Checkout my new NFT: ${metadata.data.name} ${url}`,
+      });
+    } catch (error) {
+      // @ts-ignore
+      alert(error.message);
+    }
+  };
+
   return (
     <>
       <TouchableOpacity disabled={!touchable} onPress={handleOnPress}>
@@ -175,10 +192,10 @@ export const Nft = ({
                 borderRadius={28}
                 width={120}
                 height={56}
-                onPress={() => setVisible(false)}
+                onPress={onShare}
               >
                 <Text style={{ ...styles.buttonText, color: "#60C0CB" }}>
-                  Back
+                  Share
                 </Text>
               </BlueButtonWhiteBg>
               <BlueButton
