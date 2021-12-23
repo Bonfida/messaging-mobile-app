@@ -9,6 +9,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Any content produced by the Bonfida Foundation, or developer resources that the Bonfida Foundation provides, are for educational and inspiration purposes only. Bonfida does not encourage, induce or sanction the deployment of any such applications in violation of applicable laws or regulations.
 
+## Downlaod
+
+- iOS: [https://apps.apple.com/hk/app/jabber-bonfida/id1593196027?l=en](https://apps.apple.com/hk/app/jabber-bonfida/id1593196027?l=en)
+- Android: [https://play.google.com/store/apps/details?id=com.bonfida.jabber](https://play.google.com/store/apps/details?id=com.bonfida.jabber)
+
 ## Local environment
 
 The app is built with [Expo](https://docs.expo.dev/)
