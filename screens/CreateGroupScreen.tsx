@@ -77,6 +77,7 @@ const CreateGroupScreen = () => {
         [] as PublicKey[],
         wallet.publicKey,
         mediaEnabled,
+        false, // TODO change
         wallet.publicKey,
         false
       );

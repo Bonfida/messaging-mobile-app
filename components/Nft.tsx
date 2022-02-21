@@ -105,11 +105,14 @@ export const Nft = ({
           connection,
           wallet.publicKey
         );
+
         const instruction = await setUserProfile(
-          wallet.publicKey,
           hash,
+          currentProfile.displayDomainName,
           currentProfile.bio,
-          currentProfile.lamportsPerMessage.toNumber()
+          currentProfile.lamportsPerMessage.toNumber(),
+          currentProfile.allowDm,
+          wallet.publicKey
         );
         await sendTransaction({
           connection,
@@ -120,6 +123,7 @@ export const Nft = ({
       } catch {
         const createInstruction = await createProfile(
           wallet.publicKey,
+          "",
           hash,
           "",
           0

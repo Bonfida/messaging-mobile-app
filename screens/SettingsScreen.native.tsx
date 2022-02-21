@@ -87,8 +87,8 @@ const SettingsScreen = () => {
   // The storage size used it 100 for the name and an IPFS hash is 64 max.
   // Using the rest to store the favourite domain name of the user i.e
   // the domain name he wants other people to see.
-  const favoriteDisplayName = profile?.name?.split(":fdn:")[1];
-  const profilePicHash = profile?.name?.split(":fdn:")[0];
+  const favoriteDisplayName = profile?.displayDomainName;
+  const profilePicHash = profile?.pictureHash;
 
   useEffect(() => {
     if (!copied) return;

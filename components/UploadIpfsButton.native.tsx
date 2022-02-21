@@ -131,7 +131,8 @@ const UploadIpfsButton = ({
             wallet.publicKey,
             receiverAddress,
             Buffer.from(hash),
-            MessageType.EncryptedImage
+            MessageType.EncryptedImage,
+            PublicKey.default // TODO change
           ));
 
       const tx = await sendTransaction({

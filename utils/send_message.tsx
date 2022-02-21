@@ -34,7 +34,8 @@ export const sendMessageToContact = async (
     wallet.publicKey,
     receiver,
     encrypted,
-    MessageType.Encrypted
+    MessageType.Encrypted,
+    PublicKey.default // TODO change
   );
 
   return instruction;

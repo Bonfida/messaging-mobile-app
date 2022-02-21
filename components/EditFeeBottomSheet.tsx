@@ -42,15 +42,18 @@ const updateFeeIndividual = async (
   try {
     const currentProfile = await Profile.retrieve(connection, address);
     const instruction = await setUserProfile(
-      address,
-      currentProfile.name,
+      currentProfile.pictureHash,
+      currentProfile.displayDomainName,
       currentProfile.bio,
-      LAMPORTS_PER_SOL * amount
+      LAMPORTS_PER_SOL * amount,
+      currentProfile.allowDm,
+      address
     );
     return instruction;
   } catch {
     const createInstruction = await createProfile(
       address,
+      "",
       "",
       "",
       LAMPORTS_PER_SOL * amount
@@ -71,6 +74,7 @@ const updateFeeGroup = async (
     mediaEnabled,
     adminOnly,
     groupPicHash,
+    visible,
   } = await GroupThread.retrieveFromKey(connection, groupKey);
   const instruction = await editGroupThread(
     groupName,
@@ -79,7 +83,8 @@ const updateFeeGroup = async (
     new BN(LAMPORTS_PER_SOL * amount),
     mediaEnabled,
     adminOnly,
-    groupPicHash
+    groupPicHash,
+    visible
   );
   return instruction;
 };

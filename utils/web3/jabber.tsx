@@ -1,20 +1,75 @@
 import { PublicKey, Connection } from "@solana/web3.js";
 import BN from "bn.js";
 import { Schema, deserializeUnchecked, deserialize } from "borsh";
-import {
-  JABBER_ID,
-  SendMessage,
-  SetUserProfile,
-  CreateThread,
-  CreateProfile,
-  Tag,
-  CreateGroupThread,
-  CreateGroupIndex,
-  EditGroupThread,
-} from "@bonfida/jabber";
 import { orderKeys } from "@bonfida/jabber";
 import { findProgramAddress } from "./program-address";
+import {
+  createProfileInstruction,
+  createThreadInstruction,
+  setUserProfileInstruction,
+  sendMessageInstruction,
+  createGroupThreadInstruction,
+  editGroupThreadInstruction,
+  addAdminToGroupInstruction,
+  removeAdminFromGroupInstruction,
+  createGroupIndexInstruction,
+  sendMessageGroupInstruction,
+  deleteMessageInstruction,
+  deleteGroupMessageInstruction,
+  createSubscriptionInstruction,
+} from "@bonfida/jabber";
+import { MemcmpFilter, SystemProgram } from "@solana/web3.js";
 
+export const JABBER_ID = new PublicKey(
+  "2iKLjPgcL3cwEGwJeXj3bEbYFkWEPQ4UqpueL1iSXZZ9"
+);
+export const SOL_VAULT = new PublicKey(
+  "GcWEQ9K78FV7LEHteFVciYApERk5YvQuFDQPk1yYJVXi"
+);
+
+/**
+ *
+ * @param profileOwner Owner of the profile
+ * @param displayDomainName Domain name to display on the profile
+ * @param pictureHash The IPFS hash of the profile pic
+ * @param bio Bio to display on the profile
+ * @param lamportsPerMessage Amount of lamports the user wants to receive (i.e be paid) per message
+ * @returns
+ */
+export const createProfile = async (
+  profileOwner: PublicKey,
+  displayDomainName: string,
+  pictureHash: string,
+  bio: string,
+  lamportsPerMessage: number
+) => {
+  const [profile] = await findProgramAddress(
+    Profile.generateSeeds(profileOwner),
+    JABBER_ID
+  );
+  const instruction = new createProfileInstruction({
+    displayDomainName,
+    bio,
+    pictureHash,
+    lamportsPerMessage: new BN(lamportsPerMessage),
+  }).getInstruction(
+    JABBER_ID,
+    SystemProgram.programId,
+    profile,
+    profileOwner,
+    profileOwner
+  );
+
+  return instruction;
+};
+
+/**
+ *
+ * @param sender User 1 of the thread
+ * @param receiver User 2 of the thread
+ * @param feePayer Fee payer of the instruction
+ * @returns
+ */
 export const createThread = async (
   sender: PublicKey,
   receiver: PublicKey,
@@ -25,20 +80,65 @@ export const createThread = async (
     JABBER_ID
   );
 
-  const instruction = new CreateThread({
-    sender: sender.toBuffer(),
-    receiver: receiver.toBuffer(),
-  }).getInstruction(thread, feePayer);
+  const instruction = new createThreadInstruction({
+    senderKey: sender.toBuffer(),
+    receiverKey: receiver.toBuffer(),
+  }).getInstruction(JABBER_ID, SystemProgram.programId, thread, feePayer);
 
   return instruction;
 };
 
+/**
+ *
+ * @param pictureHash IPFS hash of the profile pic
+ * @param displayDomainName Display domain name
+ * @param bio User bio
+ * @param lamportsPerMessage lamports per message
+ * @param allowDm If the user allows DM
+ * @param profileOwner Profile owner
+ * @returns
+ */
+export const setUserProfile = async (
+  pictureHash: string,
+  displayDomainName: string,
+  bio: string,
+  lamportsPerMessage: number,
+  allowDm: boolean,
+  profileOwner: PublicKey
+) => {
+  const [profile] = await findProgramAddress(
+    Profile.generateSeeds(profileOwner),
+    JABBER_ID
+  );
+
+  const instruction = new setUserProfileInstruction({
+    pictureHash,
+    displayDomainName,
+    bio,
+    lamportsPerMessage: new BN(lamportsPerMessage),
+    allowDm: allowDm ? 1 : 0,
+  }).getInstruction(JABBER_ID, profileOwner, profile);
+
+  return instruction;
+};
+
+/**
+ *
+ * @param connection The RPC connection object
+ * @param sender The message sender account
+ * @param receiver The message receiver account
+ * @param message The message
+ * @param kind The message kind
+ * @param repliesTo If the message is a replie to another message (if not PublicKey.default())
+ * @returns
+ */
 export const sendMessage = async (
   connection: Connection,
   sender: PublicKey,
   receiver: PublicKey,
   message: Uint8Array,
-  kind: MessageType
+  kind: MessageType,
+  repliesTo: PublicKey
 ) => {
   const [receiverProfile] = await findProgramAddress(
     Profile.generateSeeds(receiver),
@@ -56,58 +156,396 @@ export const sendMessage = async (
     JABBER_ID
   );
 
-  const instruction = new SendMessage({
+  const instruction = new sendMessageInstruction({
     kind: kind,
-    message: message,
+    message: Array.from(message),
+    repliesTo: repliesTo.toBuffer(),
   }).getInstruction(
+    JABBER_ID,
+    SystemProgram.programId,
     sender,
     receiver,
     threadAccount,
     receiverProfile,
-    messageAccount
+    messageAccount,
+    SOL_VAULT
   );
 
   return instruction;
 };
 
-export const createProfile = async (
-  profileOwner: PublicKey,
-  name: string,
-  bio: string,
-  lamportsPerMessage: number
+/**
+ *
+ * @param connection The solana connection object to the RPC node
+ * @param user The user to fetch threads for
+ * @returns
+ */
+export const retrieveUserThread = async (
+  connection: Connection,
+  user: PublicKey
 ) => {
-  const [profile] = await findProgramAddress(
-    Profile.generateSeeds(profileOwner),
-    JABBER_ID
-  );
-  const instruction = new CreateProfile({
-    name: name,
-    bio: bio,
-    lamportsPerMessage: new BN(lamportsPerMessage),
-  }).getInstruction(profile, profileOwner, profileOwner);
-
-  return instruction;
+  const filters_1 = [
+    {
+      memcmp: {
+        offset: 1 + 4,
+        bytes: user.toBase58(),
+      },
+    },
+  ];
+  const filters_2 = [
+    {
+      memcmp: {
+        offset: 1 + 4 + 32,
+        bytes: user.toBase58(),
+      },
+    },
+  ];
+  const result_1 = await connection.getProgramAccounts(JABBER_ID, {
+    filters: filters_1,
+  });
+  const result_2 = await connection.getProgramAccounts(JABBER_ID, {
+    filters: filters_2,
+  });
+  return result_1.concat(result_2);
 };
 
-export const setUserProfile = async (
-  profileOwner: PublicKey,
-  name: string,
-  bio: string,
-  lamportsPerMessage: number
+/**
+ *
+ * @param groupName Name of the group
+ * @param destinationWallet Wallet that will receive the fees
+ * @param lamportsPerMessage SOL fee per message
+ * @param admins Admins of the group
+ * @param owner Owner of the group (only address that will be able to edit the group)
+ * @param mediaEnabled Is it possible to send media (images, videos and audios)?
+ * @param feePayer Fee payer of the instruction
+ * @param visible If the group can be visible for others to join. Only used for the app, at the end of the day everything is visible on-chain
+ * @returns
+ */
+export const createGroupThread = async (
+  groupName: string,
+  destinationWallet: PublicKey,
+  lamportsPerMessage: BN,
+  admins: PublicKey[],
+  owner: PublicKey,
+  mediaEnabled: boolean,
+  adminOnly: boolean,
+  feePayer: PublicKey,
+  visible: boolean
 ) => {
-  const [profile] = await findProgramAddress(
-    Profile.generateSeeds(profileOwner),
-    JABBER_ID
-  );
+  const groupThread = await GroupThread.getKey(groupName, owner);
 
-  const instruction = new SetUserProfile({
-    name: name,
-    bio: bio,
-    lamportsPerMessage: new BN(lamportsPerMessage),
-  }).getInstruction(profileOwner, profile);
+  const instruction = new createGroupThreadInstruction({
+    groupName,
+    destinationWallet: destinationWallet.toBuffer(),
+    lamportsPerMessage,
+    admins: admins.map((e) => e.toBuffer()),
+    owner: owner.toBuffer(),
+    mediaEnabled: mediaEnabled ? 1 : 0,
+    adminOnly: adminOnly ? 1 : 0,
+    visible: visible ? 1 : 0,
+  }).getInstruction(JABBER_ID, SystemProgram.programId, groupThread, feePayer);
 
   return instruction;
 };
+
+/**
+ *
+ * @param groupName Name of the group
+ * @param owner Owner of the group
+ * @param destinationWallet allet that will receive the fees
+ * @param lamportsPerMessage SOL fee per message
+ * @param mediaEnabled Is it possible to send media (images, videos and audios)?
+ * @returns
+ */
+export const editGroupThread = async (
+  groupName: string,
+  owner: PublicKey,
+  destinationWallet: PublicKey,
+  lamportsPerMessage: BN,
+  mediaEnabled: boolean,
+  adminOnly: boolean,
+  groupPicHash: string,
+  visible: boolean
+) => {
+  const groupThread = await GroupThread.getKey(groupName, owner);
+
+  const instruction = new editGroupThreadInstruction({
+    destinationWallet: destinationWallet.toBuffer(),
+    lamportsPerMessage,
+    owner: owner.toBuffer(),
+    mediaEnabled: mediaEnabled ? 1 : 0,
+    adminOnly: adminOnly ? 1 : 0,
+    groupPicHash,
+    visible: visible ? 1 : 0,
+  }).getInstruction(JABBER_ID, owner, groupThread);
+
+  return instruction;
+};
+
+/**
+ *
+ * @param groupKey Address of the group thread
+ * @param adminToAdd Address of the admin to add
+ * @param groupOwner Owner of the group
+ * @returns
+ */
+export const addAdminToGroup = (
+  groupKey: PublicKey,
+  adminToAdd: PublicKey,
+  groupOwner: PublicKey
+) => {
+  const instruction = new addAdminToGroupInstruction({
+    adminAddress: adminToAdd.toBuffer(),
+  }).getInstruction(JABBER_ID, groupKey, groupOwner);
+
+  return instruction;
+};
+
+/**
+ *
+ * @param groupKey Address of the group thread
+ * @param adminToRemove Address of the admin to remove
+ * @param adminIndex Index of the admin in the Vec<Pubkey> of admins (cf GroupThread state)
+ * @param groupOwner Owner of the group
+ * @returns
+ */
+export const removeAdminFromGroup = (
+  groupKey: PublicKey,
+  adminToRemove: PublicKey,
+  adminIndex: number,
+  groupOwner: PublicKey
+) => {
+  const instruction = new removeAdminFromGroupInstruction({
+    adminAddress: adminToRemove.toBuffer(),
+    adminIndex: new BN(adminIndex),
+  }).getInstruction(JABBER_ID, groupKey, groupOwner);
+
+  return instruction;
+};
+
+export const createGroupIndex = async (
+  groupName: string,
+  owner: PublicKey,
+  groupThread: PublicKey
+) => {
+  const groupIndex = await GroupThreadIndex.getKey(
+    groupName,
+    owner,
+    groupThread
+  );
+  const instruction = new createGroupIndexInstruction({
+    groupName,
+    groupThreadKey: groupThread.toBuffer(),
+    owner: owner.toBuffer(),
+  }).getInstruction(JABBER_ID, SystemProgram.programId, groupIndex, owner);
+
+  return instruction;
+};
+
+/**
+ *
+ * @param kind Message type
+ * @param message Message to send
+ * @param groupName Name of the group
+ * @param sender User sending the message
+ * @param groupThread Key of the group thread
+ * @param destinationWallet Destination wallet of the group
+ * @param messageAccount Account of the message
+ * @param adminIndex Admin index
+ */
+export const sendMessageGroup = async (
+  kind: MessageType,
+  message: Uint8Array,
+  groupName: string,
+  sender: PublicKey,
+  groupThread: PublicKey,
+  destinationWallet: PublicKey,
+  messageAccount: PublicKey,
+  adminIndex?: number,
+  repliesTo?: PublicKey
+) => {
+  const instruction = new sendMessageGroupInstruction({
+    kind: kind as number,
+    message: Array.from(message),
+    groupName,
+    adminIndex: adminIndex ? new BN(adminIndex) : undefined,
+    repliesTo: repliesTo ? repliesTo.toBuffer() : PublicKey.default.toBuffer(),
+  }).getInstruction(
+    JABBER_ID,
+    SystemProgram.programId,
+    sender,
+    groupThread,
+    destinationWallet,
+    messageAccount,
+    SOL_VAULT
+  );
+
+  return instruction;
+};
+
+/**
+ *
+ * @param connection The solana connection object to the RPC node
+ * @param user The user to fetch the groups for
+ * @returns
+ */
+export const retrieveUserGroups = async (
+  connection: Connection,
+  user: PublicKey
+) => {
+  const filters: MemcmpFilter[] = [
+    {
+      memcmp: {
+        offset: 1 + 32,
+        bytes: user.toBase58(),
+      },
+    },
+    {
+      memcmp: {
+        offset: 0,
+        bytes: "7",
+      },
+    },
+  ];
+  const result = await connection.getProgramAccounts(JABBER_ID, { filters });
+
+  return result;
+};
+
+/**
+ *
+ * @param sender Original sender of the message
+ * @param receiver Original receiver of the message
+ * @param message Account of the message to delete
+ * @param messageIndex Index of the message in the thread
+ * @returns
+ */
+export const deleteMessage = async (
+  sender: PublicKey,
+  receiver: PublicKey,
+  message: PublicKey,
+  messageIndex: number
+) => {
+  const instruction = new deleteMessageInstruction({
+    messageIndex,
+  }).getInstruction(JABBER_ID, sender, receiver, message);
+
+  return instruction;
+};
+
+/**
+ *
+ * @param groupThread Group thread address
+ * @param message Account of the message to delete
+ * @param feePayer Fee payer (either owner, admin or original sender)
+ * @param messageIndex Index of the message in the thread
+ * @param owner Owner of the group
+ * @param groupName Name of the group
+ * @param adminIndex The index of the admin in the list of admins (if feePayer is an admin) | undefined
+ * @returns
+ */
+export const deleteGroupMessage = async (
+  groupThread: PublicKey,
+  message: PublicKey,
+  feePayer: PublicKey,
+  messageIndex: number,
+  owner: PublicKey,
+  groupName: string,
+  adminIndex: number
+) => {
+  const instruction = new deleteGroupMessageInstruction({
+    messageIndex,
+    owner: owner.toBuffer(),
+    adminIndex: adminIndex ? new BN(adminIndex) : undefined,
+    groupName,
+  }).getInstruction(JABBER_ID, groupThread, message, feePayer);
+
+  return instruction;
+};
+
+/**
+ *
+ * @param subscribedTo The key to which the user is subscribing
+ * @param subscriber The user subscribing to the key
+ * @returns
+ */
+export const createSubscription = async (
+  subscribedTo: PublicKey,
+  subscriber: PublicKey
+) => {
+  const subscription = await Subscription.getKey(subscriber, subscribedTo);
+  const ix = new createSubscriptionInstruction({
+    subscribedTo: subscribedTo.toBuffer(),
+  }).getInstruction(
+    JABBER_ID,
+    subscription,
+    subscriber,
+    SystemProgram.programId
+  );
+  return ix;
+};
+
+export const retrieveGroupMembers = async (
+  connection: Connection,
+  group: PublicKey
+) => {
+  const filters: MemcmpFilter[] = [
+    {
+      memcmp: {
+        offset: 1,
+        bytes: group.toBase58(),
+      },
+    },
+    {
+      memcmp: {
+        offset: 0,
+        bytes: "7",
+      },
+    },
+  ];
+  const result = await connection.getProgramAccounts(JABBER_ID, { filters });
+
+  return result.map(
+    (acc) => GroupThreadIndex.deserialize(acc.account.data).owner
+  );
+};
+
+export const retrieveUserSubscription = async (
+  connection: Connection,
+  user: PublicKey
+) => {
+  const filters: MemcmpFilter[] = [
+    {
+      memcmp: {
+        offset: 1,
+        bytes: user.toBase58(),
+      },
+    },
+    {
+      memcmp: {
+        offset: 0,
+        bytes: "8",
+      },
+    },
+  ];
+  const result = await connection.getProgramAccounts(JABBER_ID, { filters });
+  return result.map((acc) => Subscription.deserialize(acc.account.data));
+};
+
+/**
+ * State
+ */
+
+export enum Tag {
+  Uninitialized = 0,
+  Profile = 1,
+  Thread = 2,
+  Message = 3,
+  Jabber = 4,
+  GroupThread = 5,
+  GroupThreadIndex = 6,
+  Subscription = 7,
+}
 
 export enum MessageType {
   Encrypted = 0,
@@ -118,10 +556,14 @@ export enum MessageType {
 
 export class Profile {
   tag: Tag;
-  name: string;
+  bump: number;
+  pictureHash: string;
+  displayDomainName: string;
   bio: string;
   lamportsPerMessage: BN;
-  bump: number;
+  allowDm: boolean;
+  tipsSent: number;
+  tipsReceived: number;
 
   static schema: Schema = new Map([
     [
@@ -130,38 +572,43 @@ export class Profile {
         kind: "struct",
         fields: [
           ["tag", "u8"],
-          ["name", "string"],
+          ["bump", "u8"],
+          ["pictureHash", "string"],
+          ["displayDomainName", "string"],
           ["bio", "string"],
           ["lamportsPerMessage", "u64"],
-          ["bump", "u8"],
+          ["allowDm", "u8"],
+          ["tipsSent", "u64"],
+          ["tipsReceived", "u64"],
         ],
       },
     ],
   ]);
 
   constructor(obj: {
-    name: string;
+    tag: Tag;
+    bump: number;
+    pictureHash: string;
+    displayDomainName: string;
     bio: string;
     lamportsPerMessage: BN;
-    bump: number;
+    allowDm: boolean;
+    tipsSent: number;
+    tipsReceived: number;
   }) {
     this.tag = Tag.Profile;
-    this.name = obj.name;
+    this.bump = obj.bump;
+    this.pictureHash = obj.pictureHash;
+    this.displayDomainName = obj.displayDomainName;
     this.bio = obj.bio;
     this.lamportsPerMessage = obj.lamportsPerMessage;
-    this.bump = obj.bump;
+    this.allowDm = obj.allowDm;
+    this.tipsSent = obj.tipsSent;
+    this.tipsReceived = obj.tipsReceived;
   }
 
-  static deserialize(data: Buffer) {
-    return deserializeUnchecked(this.schema, Profile, data) as Profile;
-  }
-
-  static async getKey(owner: PublicKey) {
-    const [profile] = await findProgramAddress(
-      Profile.generateSeeds(owner),
-      JABBER_ID
-    );
-    return profile;
+  static deserialize(data: Buffer): Profile {
+    return deserializeUnchecked(this.schema, Profile, data);
   }
 
   static async retrieve(connection: Connection, owner: PublicKey) {
@@ -182,6 +629,14 @@ export class Profile {
   static generateSeeds(profileOwner: PublicKey) {
     return [Buffer.from("profile"), profileOwner.toBuffer()];
   }
+
+  static async getKey(profileOwner: PublicKey) {
+    const [profile] = await findProgramAddress(
+      Profile.generateSeeds(profileOwner),
+      JABBER_ID
+    );
+    return profile;
+  }
 }
 
 export class Thread {
@@ -189,6 +644,7 @@ export class Thread {
   msgCount: number;
   user1: PublicKey;
   user2: PublicKey;
+  lastMessageTime: BN;
   bump: number;
 
   static schema: Schema = new Map([
@@ -201,6 +657,7 @@ export class Thread {
           ["msgCount", "u32"],
           ["user1", [32]],
           ["user2", [32]],
+          ["lastMessageTime", "u64"],
           ["bump", "u8"],
         ],
       },
@@ -211,12 +668,14 @@ export class Thread {
     msgCount: number;
     user1: Uint8Array;
     user2: Uint8Array;
+    lastMessageTime: BN;
     bump: number;
   }) {
     this.tag = Tag.Thread;
     this.msgCount = obj.msgCount;
     this.user1 = new PublicKey(obj.user1);
     this.user2 = new PublicKey(obj.user2);
+    this.lastMessageTime = obj.lastMessageTime;
     this.bump = obj.bump;
   }
 
@@ -229,11 +688,7 @@ export class Thread {
     return [Buffer.from("thread"), key1.toBuffer(), key2.toBuffer()];
   }
 
-  static async getKeys(
-    sender: PublicKey | undefined,
-    receiver: PublicKey | undefined
-  ) {
-    if (!sender || !receiver) return;
+  static async getKeys(sender: PublicKey, receiver: PublicKey) {
     const [thread] = await findProgramAddress(
       Thread.generateSeeds(sender, receiver),
       JABBER_ID
@@ -274,8 +729,11 @@ export class Message {
   tag: Tag;
   kind: MessageType;
   timestamp: BN;
-  msg: Uint8Array;
   sender: PublicKey;
+  repliesTo: PublicKey;
+  likesCount: number;
+  dislikesCount: number;
+  msg: Uint8Array;
 
   static schema: Schema = new Map([
     [
@@ -286,28 +744,38 @@ export class Message {
           ["tag", "u8"],
           ["kind", "u8"],
           ["timestamp", "u64"],
-          ["msg", ["u8"]],
           ["sender", [32]],
+          ["repliesTo", [32]],
+          ["likesCount", "u16"],
+          ["dislikesCount", "u16"],
+          ["msg", ["u8"]],
         ],
       },
     ],
   ]);
 
   constructor(obj: {
+    tag: Tag;
     kind: MessageType;
     timestamp: BN;
-    msg: Uint8Array;
     sender: Uint8Array;
+    repliesTo: Uint8Array;
+    likesCount: number;
+    dislikesCount: number;
+    msg: Uint8Array;
   }) {
     this.tag = Tag.Message;
     this.kind = obj.kind;
     this.timestamp = obj.timestamp;
-    this.msg = obj.msg;
     this.sender = new PublicKey(obj.sender);
+    this.repliesTo = new PublicKey(obj.repliesTo);
+    this.likesCount = obj.likesCount;
+    this.dislikesCount = obj.dislikesCount;
+    this.msg = obj.msg;
   }
 
   static deserialize(data: Buffer) {
-    return deserializeUnchecked(this.schema, Message, data) as Message;
+    return deserializeUnchecked(this.schema, Message, data);
   }
 
   static generateSeeds(
@@ -322,14 +790,6 @@ export class Message {
       key1.toBuffer(),
       key2.toBuffer(),
     ];
-  }
-
-  static async getKey(index: number, receiver: PublicKey, sender: PublicKey) {
-    const [messageAccount] = await findProgramAddress(
-      this.generateSeeds(index, sender, receiver),
-      JABBER_ID
-    );
-    return messageAccount;
   }
 
   static async retrieveFromIndex(
@@ -349,6 +809,36 @@ export class Message {
     return this.deserialize(accountInfo.data);
   }
 
+  static async retrieveFromIndexes(
+    connection: Connection,
+    indexes: number[],
+    senderAddress: PublicKey,
+    receiverAddress: PublicKey
+  ) {
+    const messageAccounts: PublicKey[] = [];
+    for (const i of indexes) {
+      const [acc] = await findProgramAddress(
+        this.generateSeeds(i, senderAddress, receiverAddress),
+        JABBER_ID
+      );
+      messageAccounts.push(acc);
+    }
+    const accountInfos = await connection.getMultipleAccountsInfo(
+      messageAccounts
+    );
+    return accountInfos.map((info, i) =>
+      info?.data
+        ? deserializeMessage(
+            info?.data as Buffer,
+            messageAccounts[i],
+            indexes[i],
+            receiverAddress,
+            senderAddress
+          )
+        : undefined
+    );
+  }
+
   static async retrieveFromThread(
     connection: Connection,
     sender: PublicKey,
@@ -358,7 +848,7 @@ export class Message {
     const thread = await Thread.retrieve(connection, sender, receiver);
     const messageAccounts: PublicKey[] = [];
     const start = limit ? limit : thread.msgCount;
-    for (let i = thread.msgCount - start; i < thread.msgCount; i++) {
+    for (let i = 0; i < thread.msgCount; i++) {
       const [acc] = await findProgramAddress(
         this.generateSeeds(i, sender, receiver),
         JABBER_ID
@@ -371,7 +861,7 @@ export class Message {
     return accountInfos.map((info, i) =>
       info?.data
         ? deserializeMessage(
-            info?.data,
+            info?.data as Buffer,
             messageAccounts[i],
             thread.msgCount - start + i,
             receiver,
@@ -380,75 +870,22 @@ export class Message {
         : undefined
     );
   }
-
-  static async retrieveFromIndexes(
-    connection: Connection,
-    indexes: number[],
-    receiver: PublicKey,
-    sender: PublicKey
-  ) {
-    const messageAccounts: PublicKey[] = [];
-    for (const i of indexes) {
-      const [acc] = await findProgramAddress(
-        this.generateSeeds(i, sender, receiver),
-        JABBER_ID
-      );
-      messageAccounts.push(acc);
-    }
-    const accountInfos = await connection.getMultipleAccountsInfo(
-      messageAccounts
-    );
-    return accountInfos.map((info, i) =>
-      info?.data
-        ? deserializeMessage(
-            info?.data,
-            messageAccounts[i],
-            indexes[i],
-            receiver,
-            sender
-          )
-        : undefined
-    );
-  }
 }
-
-interface IDeserialize {
-  message: Message;
-  address: PublicKey;
-  index: number;
-  receiver: PublicKey;
-  sender: PublicKey;
-}
-
-const deserializeMessage = (
-  data: Buffer,
-  address: PublicKey,
-  index: number,
-  receiver: PublicKey,
-  sender: PublicKey
-): IDeserialize => {
-  const result = {
-    message: Message.deserialize(data),
-    address: address,
-    index: index,
-    receiver: receiver,
-    sender: sender,
-  };
-  return result;
-};
 
 export class GroupThread {
   tag: Tag;
-  groupName: string;
-  msgCount: number;
-  destinationWallet: PublicKey;
-  lamportsPerMessage: BN;
   bump: number;
-  admins: PublicKey[];
+  visible: boolean;
   owner: PublicKey;
+  lastMessageTime: BN;
+  destinationWallet: PublicKey;
+  msgCount: number;
+  lamportsPerMessage: BN;
   mediaEnabled: boolean;
   adminOnly: boolean;
   groupPicHash: string;
+  groupName: string;
+  admins: PublicKey[];
 
   static schema: Schema = new Map([
     [
@@ -457,14 +894,16 @@ export class GroupThread {
         kind: "struct",
         fields: [
           ["tag", "u8"],
+          ["bump", "u8"],
+          ["visible", "u8"],
           ["owner", [32]],
+          ["lastMessageTime", "u64"],
           ["destinationWallet", [32]],
           ["msgCount", "u32"],
           ["lamportsPerMessage", "u64"],
-          ["bump", "u8"],
           ["mediaEnabled", "u8"],
           ["adminOnly", "u8"],
-          ["groupPicHash", { kind: "option", type: "string" }],
+          ["groupPicHash", "string"],
           ["groupName", "string"],
           ["admins", [[32]]],
         ],
@@ -473,28 +912,33 @@ export class GroupThread {
   ]);
 
   constructor(obj: {
-    groupName: string;
-    msgCount: number;
-    destinationWallet: Uint8Array;
-    lamportsPerMessage: BN;
+    tag: Tag;
     bump: number;
-    admins: Uint8Array[];
-    owner: Uint8Array;
-    mediaEnabled: number;
-    adminOnly: number;
+    visible: boolean;
+    owner: PublicKey;
+    lastMessageTime: BN;
+    destinationWallet: PublicKey;
+    msgCount: number;
+    lamportsPerMessage: BN;
+    mediaEnabled: boolean;
+    adminOnly: boolean;
     groupPicHash: string;
+    groupName: string;
+    admins: PublicKey[];
   }) {
     this.tag = Tag.GroupThread;
-    this.groupName = obj.groupName;
-    this.msgCount = obj.msgCount;
-    this.destinationWallet = new PublicKey(obj.destinationWallet);
-    this.lamportsPerMessage = obj.lamportsPerMessage;
     this.bump = obj.bump;
-    this.admins = obj.admins.map((e) => new PublicKey(e));
+    this.visible = obj.visible;
     this.owner = new PublicKey(obj.owner);
+    this.lastMessageTime = obj.lastMessageTime;
+    this.destinationWallet = new PublicKey(obj.destinationWallet);
+    this.msgCount = obj.msgCount;
+    this.lamportsPerMessage = obj.lamportsPerMessage;
     this.mediaEnabled = !!obj.mediaEnabled;
     this.adminOnly = !!obj.adminOnly;
     this.groupPicHash = obj.groupPicHash;
+    this.groupName = obj.groupName;
+    this.admins = obj.admins.map((e) => new PublicKey(e));
   }
 
   static deserialize(data: Buffer) {
@@ -530,7 +974,7 @@ export class GroupThread {
       throw new Error("Group thread not found");
     }
 
-    return this.deserialize(accountInfo.data) as GroupThread;
+    return this.deserialize(accountInfo.data);
   }
 
   static async retrieveFromKey(connection: Connection, key: PublicKey) {
@@ -540,40 +984,15 @@ export class GroupThread {
       throw new Error("Group thread not found");
     }
 
-    return this.deserialize(accountInfo.data) as GroupThread;
+    return this.deserialize(accountInfo.data);
   }
 }
 
-export const createGroupThread = async (
-  groupName: string,
-  destinationWallet: PublicKey,
-  lamportsPerMessage: BN,
-  admins: PublicKey[],
-  owner: PublicKey,
-  mediaEnabled: boolean,
-  feePayer: PublicKey,
-  adminOnly
-) => {
-  const groupThread = await GroupThread.getKey(groupName, owner);
-
-  const instruction = new CreateGroupThread({
-    groupName,
-    destinationWallet: destinationWallet.toBuffer(),
-    lamportsPerMessage,
-    admins: admins.map((e) => e.toBuffer()),
-    owner: owner.toBuffer(),
-    mediaEnabled,
-    adminOnly,
-  }).getInstruction(groupThread, feePayer);
-
-  return instruction;
-};
-
 export class GroupThreadIndex {
   tag: number;
-  groupName: string;
   groupThreadKey: Uint8Array;
   owner: Uint8Array;
+  groupName: string;
 
   static schema: Schema = new Map([
     [
@@ -662,44 +1081,73 @@ export class GroupThreadIndex {
   }
 }
 
-export const createGroupIndex = async (
-  groupName: string,
-  owner: PublicKey,
-  groupThread: PublicKey
-) => {
-  const groupIndex = await GroupThreadIndex.getKey(
-    groupName,
-    owner,
-    groupThread
-  );
-  const instruction = new CreateGroupIndex({
-    groupName,
-    groupThreadKey: groupThread.toBuffer(),
-    owner: owner.toBuffer(),
-  }).getInstruction(groupIndex, owner);
+export class Subscription {
+  tag: number;
+  subscriber: Uint8Array;
+  subscribedTo: Uint8Array;
 
-  return instruction;
-};
+  static schema: Schema = new Map([
+    [
+      Subscription,
+      {
+        kind: "struct",
+        fields: [
+          ["tag", "u8"],
+          ["subscriber", [32]],
+          ["subscribedTo", [32]],
+        ],
+      },
+    ],
+  ]);
 
-export const editGroupThread = async (
-  groupName: string,
-  owner: PublicKey,
-  destinationWallet: PublicKey,
-  lamportsPerMessage: BN,
-  mediaEnabled: boolean,
-  adminOnly: boolean,
-  groupPicHash?: string
-) => {
-  const groupThread = await GroupThread.getKey(groupName, owner);
+  constructor(obj: { subscriber: Uint8Array; subscribedTo: Uint8Array }) {
+    this.tag = Tag.Subscription;
+    this.subscriber = obj.subscriber;
+    this.subscribedTo = obj.subscribedTo;
+  }
 
-  const instruction = new EditGroupThread({
-    destinationWallet: destinationWallet.toBuffer(),
-    lamportsPerMessage,
-    owner: owner.toBuffer(),
-    mediaEnabled: mediaEnabled,
-    adminOnly,
-    groupPicHash,
-  }).getInstruction(owner, groupThread);
+  static deserialize(data: Buffer) {
+    return deserializeUnchecked(this.schema, Subscription, data);
+  }
 
-  return instruction;
+  static generateSeeds(subscriber: PublicKey, subscribedTo: PublicKey) {
+    return [
+      Buffer.from("subscription"),
+      subscriber.toBuffer(),
+      subscribedTo.toBuffer(),
+    ];
+  }
+
+  static async getKey(subscriber: PublicKey, subscribedTo: PublicKey) {
+    const [subscriptionKey] = await findProgramAddress(
+      Subscription.generateSeeds(subscriber, subscribedTo),
+      JABBER_ID
+    );
+    return subscriptionKey;
+  }
+}
+
+interface IDeserialize {
+  message: Message;
+  address: PublicKey;
+  index: number;
+  receiver: PublicKey;
+  sender: PublicKey;
+}
+
+const deserializeMessage = (
+  data: Buffer,
+  address: PublicKey,
+  index: number,
+  receiver: PublicKey,
+  sender: PublicKey
+): IDeserialize => {
+  const result = {
+    message: Message.deserialize(data),
+    address: address,
+    index: index,
+    receiver: receiver,
+    sender: sender,
+  };
+  return result;
 };

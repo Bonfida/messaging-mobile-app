@@ -56,10 +56,12 @@ const EditBioBottomSheet = ({
           wallet.publicKey
         );
         const instruction = await setUserProfile(
-          wallet?.publicKey,
-          currentProfile.name,
+          currentProfile.pictureHash,
+          currentProfile.displayDomainName,
           bio,
-          currentProfile.lamportsPerMessage.toNumber()
+          currentProfile.lamportsPerMessage.toNumber(),
+          currentProfile.allowDm,
+          wallet.publicKey
         );
 
         await sendTransaction({
@@ -71,6 +73,7 @@ const EditBioBottomSheet = ({
       } catch {
         const createInstruction = await createProfile(
           wallet.publicKey,
+          "",
           "",
           bio,
           0

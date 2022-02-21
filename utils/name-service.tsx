@@ -27,7 +27,7 @@ export const findDisplayName = async (
         connection,
         new PublicKey(receiver)
       );
-      favoriteDisplayName = profile.name.split(":fdn:")[1];
+      favoriteDisplayName = profile.displayDomainName;
       if (favoriteDisplayName) {
         allNames.push(favoriteDisplayName);
       }

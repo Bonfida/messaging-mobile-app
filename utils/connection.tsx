@@ -1,9 +1,9 @@
-import { RPC_URL } from "@env";
+// import { RPC_URL } from "@env";
 import { Connection } from "@solana/web3.js";
 import React, { useContext, useMemo, useState } from "react";
 import "react-native-url-polyfill/auto";
 
-export const DEFAULT_RPC_URL = RPC_URL;
+export const DEFAULT_RPC_URL = "https://api.devnet.rpcpool.com/";
 
 if (!DEFAULT_RPC_URL) {
   throw new Error("RPC URL not found");
@@ -23,7 +23,7 @@ export const ConnectionProvider = ({
   children: React.ReactNode;
 }) => {
   const [url, setUrl] = useState(DEFAULT_RPC_URL);
-
+  console.log("URL", url);
   const connection = useMemo(
     () =>
       new Connection(url, {

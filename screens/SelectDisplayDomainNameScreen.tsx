@@ -34,18 +34,18 @@ const SelectDisplayDomainNameScreen = ({
     if (!wallet) return;
     try {
       setLoading(true);
-      const { name, bio, lamportsPerMessage } = await Profile.retrieve(
+      const currentProfile = await Profile.retrieve(
         connection,
         wallet.publicKey
       );
 
-      const stripped = name.split(":fdn:")[0];
-
       const instruction = await setUserProfile(
-        wallet.publicKey,
-        stripped + ":fdn:" + domain,
-        bio,
-        lamportsPerMessage.toNumber()
+        currentProfile.pictureHash,
+        domain,
+        currentProfile.bio,
+        currentProfile.lamportsPerMessage.toNumber(),
+        currentProfile.allowDm,
+        wallet.publicKey
       );
 
       const tx = await sendTransaction({

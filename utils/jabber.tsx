@@ -437,7 +437,7 @@ export const useContactFees = (contact: string) => {
     return () => {
       mountedRef.current = false;
     };
-  }, [contact, profile?.name]);
+  }, [contact, profile?.displayDomainName]);
 
   return fee;
 };
@@ -473,11 +473,11 @@ export const useProfilePic = (profileOwner: PublicKey) => {
         return setPic(cached);
       }
 
-      if (!profile.name || profile.name === "") return;
+      if (!profile.pictureHash || profile.pictureHash === "") return;
       try {
         //  prettier-ignore
         const { data }: { data: Object } = await axios.get( // eslint-disable-line
-        URL_HASH + profile.name
+        URL_HASH + profile.pictureHash
       );
 
         const dataBuffer = Buffer.from(Object.values(data));
@@ -499,7 +499,7 @@ export const useProfilePic = (profileOwner: PublicKey) => {
     return () => {
       mountedRef.current = false;
     };
-  }, [profileOwner.toBase58(), profile?.name]);
+  }, [profileOwner.toBase58(), profile?.pictureHash]);
 
   return pic;
 };
@@ -521,7 +521,7 @@ export const useUserGroup = (
       .map((info, idx) => {
         return info?.data
           ? {
-              groupData: GroupThread.deserialize(info?.data),
+              groupData: GroupThread.deserialize(info?.data as Buffer),
               address: groupKeys[idx],
             }
           : undefined;

@@ -268,6 +268,7 @@ const NewChatBottomSheet = ({
         [wallet.publicKey],
         wallet.publicKey,
         media,
+        false,
         wallet.publicKey,
         false
       );

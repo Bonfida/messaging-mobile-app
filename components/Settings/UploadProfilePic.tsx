@@ -82,11 +82,14 @@ const UploadProfilePic = ({
             connection,
             wallet.publicKey
           );
+
           const instruction = await setUserProfile(
-            wallet.publicKey,
             hash,
+            currentProfile.displayDomainName,
             currentProfile.bio,
-            currentProfile.lamportsPerMessage.toNumber()
+            currentProfile.lamportsPerMessage.toNumber(),
+            currentProfile.allowDm,
+            wallet.publicKey
           );
           await sendTransaction({
             connection,
@@ -97,6 +100,7 @@ const UploadProfilePic = ({
         } catch {
           const createInstruction = await createProfile(
             wallet.publicKey,
+            "",
             hash,
             "",
             0

@@ -76,6 +76,7 @@ const GroupInfoScreen = ({
         mediaEnabled,
         adminOnly,
         groupPicHash,
+        visible,
       } = await GroupThread.retrieveFromKey(connection, new PublicKey(group));
 
       const instruction = await editGroupThread(
@@ -85,7 +86,8 @@ const GroupInfoScreen = ({
         lamportsPerMessage,
         !mediaEnabled,
         adminOnly,
-        groupPicHash
+        groupPicHash,
+        visible
       );
 
       const tx = await sendTransaction({
@@ -120,6 +122,7 @@ const GroupInfoScreen = ({
         mediaEnabled,
         adminOnly,
         groupPicHash,
+        visible,
       } = await GroupThread.retrieveFromKey(connection, new PublicKey(group));
 
       const instruction = await editGroupThread(
@@ -129,7 +132,8 @@ const GroupInfoScreen = ({
         lamportsPerMessage,
         mediaEnabled,
         !adminOnly,
-        groupPicHash
+        groupPicHash,
+        visible
       );
 
       const tx = await sendTransaction({
@@ -200,6 +204,7 @@ const GroupInfoScreen = ({
           lamportsPerMessage,
           mediaEnabled,
           adminOnly,
+          visible,
         } = await GroupThread.retrieveFromKey(connection, new PublicKey(group));
 
         const instruction = await editGroupThread(
@@ -209,7 +214,8 @@ const GroupInfoScreen = ({
           lamportsPerMessage,
           mediaEnabled,
           adminOnly,
-          hash
+          hash,
+          visible
         );
 
         const tx = await sendTransaction({

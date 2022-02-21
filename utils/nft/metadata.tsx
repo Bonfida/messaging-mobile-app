@@ -191,7 +191,10 @@ export const useNft = (owner: PublicKey | undefined | null) => {
     const metadata = (await getMultipleAccountsInfo(connection, metadataKeys))
       .map((e, idx) => {
         if (!e?.data) return;
-        return { key: metadataKeys[idx], metadata: decodeMetadata(e?.data) };
+        return {
+          key: metadataKeys[idx],
+          metadata: decodeMetadata(e?.data as Buffer),
+        };
       })
       .filter((e) => !!e) as { key: PublicKey; metadata: Metadata }[];
 

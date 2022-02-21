@@ -69,8 +69,8 @@ const Profile = ({ contact }: { contact: string }) => {
   const [displayName] = useDisplayName(contact);
   const nfts = useNft(new PublicKey(contact));
 
-  const favoriteDisplayName = profile?.name?.split(":fdn:")[1];
-  const profilePicHash = profile?.name?.split(":fdn:")[0];
+  const favoriteDisplayName = profile?.displayDomainName;
+  const profilePicHash = profile?.pictureHash;
 
   const feeMsg = profile?.lamportsPerMessage.toNumber()
     ? profile?.lamportsPerMessage.toNumber() / LAMPORTS_PER_SOL
