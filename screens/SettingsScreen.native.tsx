@@ -116,6 +116,8 @@ const SettingsScreen = () => {
     <SafeAreaView style={GlobalStyle.container}>
       <ScrollView style={styles.scrollView}>
         <SettingsCard
+          tipsReceived={profile?.tipsReceived}
+          tipsSent={profile?.tipsSent}
           profilePicHash={profilePicHash}
           address={wallet.publicKey.toBase58()}
           name={nameToDisplay}

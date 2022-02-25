@@ -5,13 +5,27 @@ import UploadProfilePic from "./UploadProfilePic";
 import { useGetIpfsData } from "../../utils/jabber";
 import * as Clipboard from "expo-clipboard";
 
-const FeeAndBalance = ({ fee, balance }: { fee: number; balance: number }) => {
+const FeeAndBalance = ({
+  fee,
+  balance,
+  tipsReceived,
+  tipsSent,
+}: {
+  fee: number;
+  balance: number;
+  tipsReceived: number;
+  tipsSent: number;
+}) => {
   return (
     <View style={styles.feeAndBalanceContainer}>
       <Text style={styles.greyText}>Balance</Text>
       <Text style={styles.whiteBoldText}>{balance}</Text>
       <Text style={styles.greyText}>Messaging fee</Text>
       <Text style={styles.whiteBoldText}>{fee}</Text>
+      <Text style={styles.greyText}>Tips received/sent</Text>
+      <Text style={styles.whiteBoldText}>
+        {tipsReceived}/{tipsSent}
+      </Text>
     </View>
   );
 };
@@ -20,16 +34,25 @@ const Top = ({
   profilePicHash,
   balance,
   fee,
+  tipsReceived,
+  tipsSent,
 }: {
   profilePicHash: string | undefined;
   balance: number;
   fee: number;
+  tipsReceived: number;
+  tipsSent: number;
 }) => {
   const pic = useGetIpfsData(profilePicHash);
   return (
     <View style={styles.topContainer}>
       <UploadProfilePic profilePic={pic} />
-      <FeeAndBalance fee={fee} balance={balance} />
+      <FeeAndBalance
+        fee={fee}
+        balance={balance}
+        tipsReceived={tipsReceived}
+        tipsSent={tipsSent}
+      />
     </View>
   );
 };
@@ -54,17 +77,27 @@ const SettingsCard = ({
   address,
   balance,
   fee,
+  tipsReceived,
+  tipsSent,
 }: {
   profilePicHash: string | undefined;
   name: string;
   address: string;
   balance: number;
   fee: number;
+  tipsReceived: number | null | undefined;
+  tipsSent: number | null | undefined;
 }) => {
   return (
     <GradientCard borderRadius={12} height={221} width={"100%"}>
       <View style={styles.innerContainer}>
-        <Top profilePicHash={profilePicHash} balance={balance} fee={fee} />
+        <Top
+          profilePicHash={profilePicHash}
+          balance={balance}
+          fee={fee}
+          tipsReceived={tipsReceived || 0}
+          tipsSent={tipsSent || 0}
+        />
         <Bottom name={name} address={address} />
       </View>
     </GradientCard>

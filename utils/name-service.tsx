@@ -7,7 +7,7 @@ import {
 } from "./web3/name-auctionning";
 import { getHandleAndRegistryKey } from "./web3/name-service";
 import { useConnection } from "./connection";
-import { useWallet } from "./wallet";
+import { useWallet } from "./wallet.native";
 import { Profile } from "./web3/jabber";
 
 export const SOL_TLD_AUTHORITY = new PublicKey(

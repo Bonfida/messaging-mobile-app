@@ -12,11 +12,19 @@ export const Circle = ({ name }: { name: string }) => {
   );
 };
 
-const Fee = ({ fee }: { fee: number | null }) => {
+const FeeAndTips = ({
+  fee,
+  tips,
+}: {
+  fee: number | null;
+  tips: number | null | undefined;
+}) => {
   return (
     <View style={styles.feeContainer}>
       <Text style={styles.fee}>Fee/msg</Text>
       <Text style={styles.whiteBoldText}>{fee || 0} SOL</Text>
+      <Text style={styles.fee}>Tips received</Text>
+      <Text style={styles.whiteBoldText}>{tips || 0}</Text>
     </View>
   );
 };
@@ -25,14 +33,16 @@ const BottomCard = ({
   domain,
   address,
 }: {
-  domain: string;
+  domain: string | null;
   address: string;
 }) => {
   return (
     <View style={styles.bottomCard}>
-      <View>
-        <Text style={styles.blueText}>{domain}</Text>
-      </View>
+      {domain && (
+        <View>
+          <Text style={styles.blueText}>{domain}</Text>
+        </View>
+      )}
       <View>
         <TouchableOpacity onPress={() => Clipboard.setString(address)}>
           <Text style={styles.addressText}>{address}</Text>
@@ -47,11 +57,13 @@ const ProfileCard = ({
   address,
   pic,
   feeMsg,
+  tips,
 }: {
-  domain: string;
+  domain: string | null;
   address: string;
   pic: IData | null;
   feeMsg: number;
+  tips: number | null | undefined;
 }) => {
   return (
     <GradientCard borderRadius={12} width="100%" height={211}>
@@ -63,9 +75,9 @@ const ProfileCard = ({
               source={{ uri: `data:${pic.type};base64,${pic.media}` }}
             />
           ) : (
-            <Circle name={domain.slice(0, 2)} />
+            <Circle name={domain ? domain.slice(0, 2) : address.slice(0, 2)} />
           )}
-          <Fee fee={feeMsg} />
+          <FeeAndTips fee={feeMsg} tips={tips} />
         </View>
         <BottomCard domain={domain} address={address} />
       </View>

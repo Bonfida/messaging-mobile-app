@@ -17,8 +17,10 @@ import {
   deleteMessageInstruction,
   deleteGroupMessageInstruction,
   createSubscriptionInstruction,
+  sendTipInstruction,
 } from "@bonfida/jabber";
 import { MemcmpFilter, SystemProgram } from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export const JABBER_ID = new PublicKey(
   "2iKLjPgcL3cwEGwJeXj3bEbYFkWEPQ4UqpueL1iSXZZ9"
@@ -481,6 +483,34 @@ export const createSubscription = async (
     subscription,
     subscriber,
     SystemProgram.programId
+  );
+  return ix;
+};
+
+export const sendTip = async (
+  amount: number,
+  sender: PublicKey,
+  receiver: PublicKey,
+  tokenSource: PublicKey,
+  tokenDestination: PublicKey
+) => {
+  const [senderProfile] = await findProgramAddress(
+    Profile.generateSeeds(sender),
+    JABBER_ID
+  );
+  const [receiverProfile] = await findProgramAddress(
+    Profile.generateSeeds(receiver),
+    JABBER_ID
+  );
+  const ix = new sendTipInstruction({ amount: new BN(amount) }).getInstruction(
+    JABBER_ID,
+    TOKEN_PROGRAM_ID,
+    senderProfile,
+    sender,
+    receiverProfile,
+    receiver,
+    tokenSource,
+    tokenDestination
   );
   return ix;
 };

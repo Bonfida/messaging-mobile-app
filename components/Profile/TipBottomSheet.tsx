@@ -11,13 +11,18 @@ import {
 import { BottomSheet } from "react-native-btr";
 import GlobalStyle from "../../Style";
 import HelpsUrls from "../../utils/HelpUrls";
-import { useFidaBalance } from "../../utils/tokens";
+import { FIDA_MINT, useFidaBalance } from "../../utils/tokens";
 import { useWallet } from "../../utils/wallet.native";
 import BlueButton from "./../Buttons/BlueGradient";
-import { tip } from "../../utils/tokens";
+import {
+  Token,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { useConnection } from "../../utils/connection";
 import { PublicKey } from "@solana/web3.js";
 import { useKeyBoardOffset } from "../../utils/utils.native";
+import { sendTip } from "../../utils/web3/jabber";
 
 const Button = ({
   amount,
@@ -104,15 +109,29 @@ const TipBottomSheet = ({
 
     try {
       setLoading(true);
-      const instructions = await tip(
-        connection,
+      const tokenSource = await Token.getAssociatedTokenAddress(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        FIDA_MINT,
+        wallet.publicKey
+      );
+      const tokenDestination = await Token.getAssociatedTokenAddress(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        FIDA_MINT,
+        new PublicKey(contact)
+      );
+
+      const ix = await sendTip(
+        parsedAmount,
         wallet.publicKey,
         new PublicKey(contact),
-        parsedAmount
+        tokenSource,
+        tokenDestination
       );
       const tx = await sendTransaction({
         connection,
-        instruction: instructions,
+        instruction: [ix],
         signers: [],
         wallet,
       });

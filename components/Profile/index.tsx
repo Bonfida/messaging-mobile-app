@@ -82,7 +82,7 @@ const Profile = ({ contact }: { contact: string }) => {
     ? favoriteDisplayName
     : displayName
     ? displayName[0]
-    : contact;
+    : null;
 
   return (
     <ScrollView>
@@ -93,6 +93,7 @@ const Profile = ({ contact }: { contact: string }) => {
             address={contact}
             pic={pic}
             feeMsg={feeMsg}
+            tips={profile?.tipsSent}
           />
           {!!profile?.bio && (
             <View style={styles.profileContainer}>
