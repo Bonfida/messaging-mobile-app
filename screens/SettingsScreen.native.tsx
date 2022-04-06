@@ -12,7 +12,7 @@ import {
 import { useWallet, useBalanceWs } from "../utils/wallet.native";
 import EnterSeedScreen from "./EnterSeedScreen";
 import { roundToDecimal } from "../utils/utils.native";
-import { useProfileWs } from "../utils/jabber";
+import { useProfileWs } from "../utils/jab";
 import { useNavigation } from "@react-navigation/core";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -75,7 +75,7 @@ const SettingsScreen = () => {
   const onShare = async () => {
     try {
       await Share.share({
-        message: `Let's chat on Jabber! It's a fast, simple, encrypted and decentralized messaging app built on Solana. My address is ${wallet?.publicKey.toBase58()}`,
+        message: `Let's chat on Jab! It's a fast, simple, encrypted and decentralized messaging app built on Solana. My address is ${wallet?.publicKey.toBase58()}`,
       });
     } catch (error) {
       // @ts-ignore

@@ -2,7 +2,7 @@ import React from "react";
 import GradientCard from "../Cards/GradientCard";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import UploadProfilePic from "./UploadProfilePic";
-import { useGetIpfsData } from "../../utils/jabber";
+import { useGetIpfsData } from "../../utils/jab";
 import * as Clipboard from "expo-clipboard";
 
 const FeeAndBalance = ({ fee, balance }: { fee: number; balance: number }) => {

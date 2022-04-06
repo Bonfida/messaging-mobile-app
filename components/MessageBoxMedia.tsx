@@ -1,7 +1,7 @@
 import React from "react";
 import { useWallet } from "../utils/wallet";
-import { useLoadMedia, IMessage, MediaType } from "../utils/jabber";
-import { findType } from "../utils/jabber";
+import { useLoadMedia, IMessage, MediaType } from "../utils/jab";
+import { findType } from "../utils/jab";
 import {
   View,
   Image,

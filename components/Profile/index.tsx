@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
-import { useProfileWs } from "../../utils/jabber";
+import { useProfileWs } from "../../utils/jab";
 import { useDisplayName } from "../../utils/name-service";
 import ProfileCard from "./Card";
-import { useGetIpfsData } from "../../utils/jabber";
+import { useGetIpfsData } from "../../utils/jab";
 import GlobalStyle from "../../Style";
 import BlueButton, { BlueButtonWhiteBg } from "../Buttons/BlueGradient";
 import TipBottomSheet from "./TipBottomSheet";

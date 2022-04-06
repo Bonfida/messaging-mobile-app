@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { IData } from "../../utils/jabber";
+import { IData } from "../../utils/jab";
 import { useWallet } from "../../utils/wallet.native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -16,8 +16,8 @@ import { URL_UPLOAD } from "../../utils/ipfs";
 import { encode } from "../../utils/utils.native";
 import mime from "mime";
 import { IPost } from "../../types";
-import { Profile } from "../../utils/web3/jabber";
-import { setUserProfile, createProfile } from "@bonfida/jabber";
+import { Profile } from "../../utils/web3/jab";
+import { setUserProfile, createProfile } from "@bonfida/jab";
 import { useConnection } from "../../utils/connection";
 
 const Circle = () => {

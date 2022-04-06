@@ -15,12 +15,12 @@ const AppInformationScreen = () => {
     <SafeAreaView style={GlobalStyle.container}>
       <Row label="App version" value={version} />
 
-      <TouchableOpacity onPress={() => Linking.openURL(HelpsUrls.jabberGithub)}>
+      <TouchableOpacity onPress={() => Linking.openURL(HelpsUrls.jabGithub)}>
         <Row label="Smart contract repository" value={<Github />} />
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => Linking.openURL(HelpsUrls.jabberMobileGithub)}
+        onPress={() => Linking.openURL(HelpsUrls.jabMobileGithub)}
       >
         <Row label="App repository" value={<Github />} />
       </TouchableOpacity>

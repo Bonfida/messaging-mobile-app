@@ -1,4 +1,4 @@
-# Jabber mobile app
+# Jab mobile app
 
 <p align="center">
 <img src="https://bafybeifyenkk6oytiurf6cikmostgoa23l5snc24e4zz4vbfkgpnfy5wxu.ipfs.infura-ipfs.io/"/>
@@ -11,8 +11,8 @@ Any content produced by the Bonfida Foundation, or developer resources that the 
 
 ## Download
 
-- iOS: [https://apps.apple.com/hk/app/jabber-bonfida/id1593196027?l=en](https://apps.apple.com/hk/app/jabber-bonfida/id1593196027?l=en)
-- Android: [https://play.google.com/store/apps/details?id=com.bonfida.jabber](https://play.google.com/store/apps/details?id=com.bonfida.jabber)
+- iOS: [https://apps.apple.com/hk/app/jab-bonfida/id1593196027?l=en](https://apps.apple.com/hk/app/jab-bonfida/id1593196027?l=en)
+- Android: [https://play.google.com/store/apps/details?id=com.bonfida.jab](https://play.google.com/store/apps/details?id=com.bonfida.jab)
 
 ## Local environment
 
@@ -32,7 +32,7 @@ yarn && yarn start
 
 ## Smart contract
 
-The smart contract can be found here: [Jabber smart contract](https://github.com/Bonfida/jabber)
+The smart contract can be found here: [Jab smart contract](https://github.com/Bonfida/jab)
 
 ## Secret key 🚨
 

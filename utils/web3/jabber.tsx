@@ -2,7 +2,7 @@ import { PublicKey, Connection } from "@solana/web3.js";
 import BN from "bn.js";
 import { Schema, deserializeUnchecked, deserialize } from "borsh";
 import {
-  JABBER_ID,
+  JAB_ID,
   SendMessage,
   SetUserProfile,
   CreateThread,
@@ -11,8 +11,8 @@ import {
   CreateGroupThread,
   CreateGroupIndex,
   EditGroupThread,
-} from "@bonfida/jabber";
-import { orderKeys } from "@bonfida/jabber";
+} from "@bonfida/jab";
+import { orderKeys } from "@bonfida/jab";
 import { findProgramAddress } from "./program-address";
 
 export const createThread = async (
@@ -22,7 +22,7 @@ export const createThread = async (
 ) => {
   const [thread] = await findProgramAddress(
     Thread.generateSeeds(sender, receiver),
-    JABBER_ID
+    JAB_ID
   );
 
   const instruction = new CreateThread({
@@ -42,18 +42,18 @@ export const sendMessage = async (
 ) => {
   const [receiverProfile] = await findProgramAddress(
     Profile.generateSeeds(receiver),
-    JABBER_ID
+    JAB_ID
   );
   const [threadAccount] = await findProgramAddress(
     Thread.generateSeeds(sender, receiver),
-    JABBER_ID
+    JAB_ID
   );
 
   const thread = await Thread.retrieve(connection, sender, receiver);
 
   const [messageAccount] = await findProgramAddress(
     Message.generateSeeds(thread.msgCount, sender, receiver),
-    JABBER_ID
+    JAB_ID
   );
 
   const instruction = new SendMessage({
@@ -78,7 +78,7 @@ export const createProfile = async (
 ) => {
   const [profile] = await findProgramAddress(
     Profile.generateSeeds(profileOwner),
-    JABBER_ID
+    JAB_ID
   );
   const instruction = new CreateProfile({
     name: name,
@@ -97,7 +97,7 @@ export const setUserProfile = async (
 ) => {
   const [profile] = await findProgramAddress(
     Profile.generateSeeds(profileOwner),
-    JABBER_ID
+    JAB_ID
   );
 
   const instruction = new SetUserProfile({
@@ -159,7 +159,7 @@ export class Profile {
   static async getKey(owner: PublicKey) {
     const [profile] = await findProgramAddress(
       Profile.generateSeeds(owner),
-      JABBER_ID
+      JAB_ID
     );
     return profile;
   }
@@ -167,7 +167,7 @@ export class Profile {
   static async retrieve(connection: Connection, owner: PublicKey) {
     const [profile] = await findProgramAddress(
       Profile.generateSeeds(owner),
-      JABBER_ID
+      JAB_ID
     );
 
     const accountInfo = await connection.getAccountInfo(profile);
@@ -236,7 +236,7 @@ export class Thread {
     if (!sender || !receiver) return;
     const [thread] = await findProgramAddress(
       Thread.generateSeeds(sender, receiver),
-      JABBER_ID
+      JAB_ID
     );
     return thread;
   }
@@ -248,7 +248,7 @@ export class Thread {
   ) {
     const [thread] = await findProgramAddress(
       Thread.generateSeeds(sender, receiver),
-      JABBER_ID
+      JAB_ID
     );
     const accountInfo = await connection.getAccountInfo(thread);
 
@@ -327,7 +327,7 @@ export class Message {
   static async getKey(index: number, receiver: PublicKey, sender: PublicKey) {
     const [messageAccount] = await findProgramAddress(
       this.generateSeeds(index, sender, receiver),
-      JABBER_ID
+      JAB_ID
     );
     return messageAccount;
   }
@@ -340,7 +340,7 @@ export class Message {
   ) {
     const [messageAccount] = await findProgramAddress(
       this.generateSeeds(index, sender, receiver),
-      JABBER_ID
+      JAB_ID
     );
     const accountInfo = await connection.getAccountInfo(messageAccount);
     if (!accountInfo?.data) {
@@ -361,7 +361,7 @@ export class Message {
     for (let i = thread.msgCount - start; i < thread.msgCount; i++) {
       const [acc] = await findProgramAddress(
         this.generateSeeds(i, sender, receiver),
-        JABBER_ID
+        JAB_ID
       );
       messageAccounts.push(acc);
     }
@@ -391,7 +391,7 @@ export class Message {
     for (const i of indexes) {
       const [acc] = await findProgramAddress(
         this.generateSeeds(i, sender, receiver),
-        JABBER_ID
+        JAB_ID
       );
       messageAccounts.push(acc);
     }
@@ -512,7 +512,7 @@ export class GroupThread {
   static async getKey(groupName: string, owner: PublicKey) {
     const [groupThread] = await findProgramAddress(
       GroupThread.generateSeeds(groupName, owner),
-      JABBER_ID
+      JAB_ID
     );
     return groupThread;
   }
@@ -625,7 +625,7 @@ export class GroupThreadIndex {
   ) {
     const [groupThreadIndex] = await findProgramAddress(
       GroupThreadIndex.generateSeeds(groupName, owner, groupThreadKey),
-      JABBER_ID
+      JAB_ID
     );
     return groupThreadIndex;
   }

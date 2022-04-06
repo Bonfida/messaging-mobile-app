@@ -1,6 +1,6 @@
 import { useWallet } from "./wallet";
 import { useConnection } from "./connection";
-import { Thread, Message, Profile, GroupThread } from "./web3/jabber";
+import { Thread, Message, Profile, GroupThread } from "./web3/jab";
 import { useRef, useState, useEffect, useCallback } from "react";
 import {
   Keypair,
@@ -14,7 +14,7 @@ import {
   encryptMessage,
   retrieveUserGroups,
   retrieveGroupMembers,
-} from "@bonfida/jabber";
+} from "@bonfida/jab";
 import { generateDiffieHelllman } from "./diffie-hellman";
 import { Buffer } from "buffer";
 import axios from "axios";

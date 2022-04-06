@@ -11,7 +11,7 @@
     "lint": "set -ex; yarn pretty; eslint '**/*.{ts,tsx}' --ext .js,.ts"
   },
   "dependencies": {
-    "@bonfida/jabber": "file:../jabber/js",
+    "@bonfida/jab": "file:../jab/js",
     "@bonfida/spl-name-service": "^0.1.21",
     "@ethersproject/hdnode": "^5.5.0",
     "@expo/vector-icons": "^12.0.0",

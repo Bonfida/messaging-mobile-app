@@ -1,8 +1,8 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { sendMessage, Thread, Message, GroupThread } from "./web3/jabber";
+import { sendMessage, Thread, Message, GroupThread } from "./web3/jab";
 import { findProgramAddress } from "./web3/program-address";
-import { encryptMessageToBuffer } from "./jabber";
-import { JABBER_ID, MessageType, sendMessageGroup } from "@bonfida/jabber";
+import { encryptMessageToBuffer } from "./jab";
+import { JAB_ID, MessageType, sendMessageGroup } from "@bonfida/jab";
 
 export const sendMessageToContact = async (
   connection: Connection,
@@ -20,7 +20,7 @@ export const sendMessageToContact = async (
     receiver,
     wallet.publicKey
   );
-  const [messageAccount] = await findProgramAddress(seeds, JABBER_ID);
+  const [messageAccount] = await findProgramAddress(seeds, JAB_ID);
 
   const encrypted = encryptMessageToBuffer(
     message,
@@ -52,7 +52,7 @@ export const sendMessageToGroup = async (
   const groupThread = await GroupThread.retrieveFromKey(connection, groupKey);
   const seeds = Message.generateSeeds(groupThread.msgCount, groupKey, groupKey);
 
-  const [messageAccount] = await findProgramAddress(seeds, JABBER_ID);
+  const [messageAccount] = await findProgramAddress(seeds, JAB_ID);
 
   const instruction = await sendMessageGroup(
     MessageType.Unencrypted,

@@ -1,8 +1,8 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useContactFees } from "../utils/jabber";
-import { GroupThread } from "../utils/web3/jabber";
+import { useContactFees } from "../utils/jab";
+import { GroupThread } from "../utils/web3/jab";
 
 export const FeeWarning = ({ contact }: { contact: string }) => {
   const contactFee = useContactFees(contact);

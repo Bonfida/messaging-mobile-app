@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import GradientCard from "../Cards/GradientCard";
-import { IData } from "../../utils/jabber";
+import { IData } from "../../utils/jab";
 import * as Clipboard from "expo-clipboard";
 
 export const Circle = ({ name }: { name: string }) => {

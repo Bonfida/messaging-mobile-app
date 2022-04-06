@@ -11,7 +11,7 @@ import {
   Text,
   Share,
 } from "react-native";
-import { useGetIpfsData, useGroupData, useGroupMembers } from "../utils/jabber";
+import { useGetIpfsData, useGroupData, useGroupMembers } from "../utils/jab";
 import { RouteProp } from "@react-navigation/native";
 import { Row } from "../components/Profile/Row";
 import { RootStackParamList } from "../App";
@@ -20,7 +20,7 @@ import { abbreviateAddress } from "../utils/utils.native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWallet } from "../utils/wallet.native";
 import { useConnection } from "../utils/connection";
-import { editGroupThread, GroupThread } from "../utils/web3/jabber";
+import { editGroupThread, GroupThread } from "../utils/web3/jab";
 import { Feather, Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { editAdminScreenProp, messageScreenProp } from "../types";
@@ -233,7 +233,7 @@ const GroupInfoScreen = ({
   const onShare = async () => {
     try {
       await Share.share({
-        message: `Join the ${groupData?.groupName} group chat on Jabber: ${group}`,
+        message: `Join the ${groupData?.groupName} group chat on Jab: ${group}`,
       });
     } catch (error) {
       // @ts-ignore

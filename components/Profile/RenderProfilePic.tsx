@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Circle } from "../ContactRow";
-import { useGetIpfsData } from "../../utils/jabber";
+import { useGetIpfsData } from "../../utils/jab";
 import { useNavigation } from "@react-navigation/native";
 import { mediaScreenProp } from "../../types";
 

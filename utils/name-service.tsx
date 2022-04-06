@@ -8,7 +8,7 @@ import {
 import { getHandleAndRegistryKey } from "./web3/name-service";
 import { useConnection } from "./connection";
 import { useWallet } from "./wallet";
-import { Profile } from "./web3/jabber";
+import { Profile } from "./web3/jab";
 
 export const SOL_TLD_AUTHORITY = new PublicKey(
   "58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx"

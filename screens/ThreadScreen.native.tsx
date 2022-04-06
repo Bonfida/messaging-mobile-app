@@ -6,14 +6,14 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { useUserThread } from "../utils/jabber";
+import { useUserThread } from "../utils/jab";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import MessageRow from "../components/ContactRow";
 import { useWallet } from "../utils/wallet.native";
 import { CachePrefix, useGetAsyncCache } from "../utils/cache";
 import { settingsScreenProp } from "../types";
 import { PublicKey } from "@solana/web3.js";
-import { useUserGroup } from "../utils/jabber";
+import { useUserGroup } from "../utils/jab";
 import GroupMessageRow from "../components/GroupRow";
 import GlobalStyle from "../Style";
 import HomeMenu from "../components/HomeMenu";

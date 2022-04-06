@@ -27,7 +27,7 @@ import {
   GroupThreadIndex,
   createGroupIndex,
   createGroupThread,
-} from "../utils/web3/jabber";
+} from "../utils/web3/jab";
 import { useNavigation } from "@react-navigation/core";
 import { profileScreenProp } from "../types";
 import { getHashedName, getNameAccountKey } from "../utils/web3/name-service";

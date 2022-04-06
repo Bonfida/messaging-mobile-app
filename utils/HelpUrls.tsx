@@ -1,8 +1,8 @@
 const HelpsUrls = {
   buyDomain: "https://naming.bonfida.org/#/auctions",
   verifyTwitter: "https://naming.bonfida.org/#/twitter-registration",
-  jabberGithub: "https://github.com/Bonfida/jabber",
-  jabberMobileGithub: "https://github.com/Bonfida/jabber-mobile-app",
+  jabGithub: "https://github.com/Bonfida/jab",
+  jabMobileGithub: "https://github.com/Bonfida/jab-mobile-app",
 
   fidaLogo: "https://bonfida.org/static/media/fida.b16d451b.svg",
 

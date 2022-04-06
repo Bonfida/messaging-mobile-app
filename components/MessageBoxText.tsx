@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  IMessage,
-  decrytMessageFromBuffer,
-  useGroupData,
-} from "../utils/jabber";
+import { IMessage, decrytMessageFromBuffer, useGroupData } from "../utils/jab";
 import {
   Text,
   View,
@@ -23,7 +19,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { profileScreenProp } from "../types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { deleteGroupMessage, deleteMessage } from "@bonfida/jabber";
+import { deleteGroupMessage, deleteMessage } from "@bonfida/jab";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { sendTransaction } from "../utils/send";
 import { useConnection } from "../utils/connection";

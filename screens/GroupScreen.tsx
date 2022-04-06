@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useEffect } from "react";
-import { useGroupData, useGroupMessage } from "../utils/jabber";
+import { useGroupData, useGroupMessage } from "../utils/jab";
 import { View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import { RenderMessage } from "../components/RenderMessage";
 import { RouteProp } from "@react-navigation/core";

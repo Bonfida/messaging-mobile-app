@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Profile } from "../../utils/web3/jabber";
+import { Profile } from "../../utils/web3/jab";
 
 export const RenderBio = ({ profile }: { profile: Profile | null }) => {
   return (

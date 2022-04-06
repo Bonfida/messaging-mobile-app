@@ -17,7 +17,7 @@ import {
   createProfile,
   GroupThread,
   editGroupThread,
-} from "../utils/web3/jabber";
+} from "../utils/web3/jab";
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
 import { useConnection } from "../utils/connection";

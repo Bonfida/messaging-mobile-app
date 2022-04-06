@@ -30,7 +30,7 @@ npm manifest:
       "lint": "set -ex; yarn pretty; eslint '**/*.{ts,tsx}' --ext .js,.ts"
     },
     "dependencies": {
-      "@bonfida/jabber": "file:../jabber/js",
+      "@bonfida/jab": "file:../jab/js",
       "@bonfida/spl-name-service": "^0.1.21",
       "@ethersproject/hdnode": "^5.5.0",
       "@expo/vector-icons": "^12.0.0",
@@ -1284,7 +1284,7 @@ Lockfile:
       eip1193-provider "^1.0.1"
       js-sha3 "^0.8.0"
   
-  "@bonfida/jabber@file:../jabber/js":
+  "@bonfida/jab@file:../jab/js":
     version "0.0.1"
     dependencies:
       "@solana/spl-token" "0.1.5"

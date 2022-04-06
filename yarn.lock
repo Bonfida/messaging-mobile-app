@@ -1158,7 +1158,7 @@
     eip1193-provider "^1.0.1"
     js-sha3 "^0.8.0"
 
-"@bonfida/jabber@file:../jabber/js":
+"@bonfida/jab@file:../jab/js":
   version "0.0.1"
   dependencies:
     "@solana/spl-token" "0.1.5"

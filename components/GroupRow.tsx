@@ -8,7 +8,7 @@ import { isWeb } from "../utils/utils";
 import { useIsFocused } from "@react-navigation/core";
 import { useNavigation } from "@react-navigation/native";
 import { groupInfoScreenProp } from "../types";
-import { useGetIpfsData } from "../utils/jabber";
+import { useGetIpfsData } from "../utils/jab";
 
 const COLORS = [
   "#e44f74",

@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useEffect } from "react";
-import { useMessageDataWs } from "../utils/jabber";
+import { useMessageDataWs } from "../utils/jab";
 import { View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import { useWallet } from "../utils/wallet";
 import { RenderMessage } from "../components/RenderMessage";
@@ -9,7 +9,7 @@ import { MessageInput } from "../components/MessageInput";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../App";
 import { asyncCache, CachePrefix } from "../utils/cache";
-import { Thread } from "../utils/web3/jabber";
+import { Thread } from "../utils/web3/jab";
 import { PublicKey } from "@solana/web3.js";
 import { useConnection } from "../utils/connection";
 import GlobalStyle from "../Style";

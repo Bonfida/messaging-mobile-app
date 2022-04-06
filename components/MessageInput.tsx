@@ -22,7 +22,7 @@ import {
   createGroupIndex,
   GroupThread,
   GroupThreadIndex,
-} from "../utils/web3/jabber";
+} from "../utils/web3/jab";
 import { PublicKey } from "@solana/web3.js";
 import { sleep, useKeyBoardOffset } from "../utils/utils.native";
 

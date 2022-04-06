@@ -9,12 +9,12 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Buffer } from "buffer";
 import mime from "mime";
-import { Thread, Message, sendMessage } from "../utils/web3/jabber";
+import { Thread, Message, sendMessage } from "../utils/web3/jab";
 import { useConnection } from "../utils/connection";
 import { useWallet } from "../utils/wallet";
 import { PublicKey } from "@solana/web3.js";
-import { JABBER_ID, MessageType } from "@bonfida/jabber";
-import { encryptMessageToBuffer } from "../utils/jabber";
+import { JAB_ID, MessageType } from "@bonfida/jab";
+import { encryptMessageToBuffer } from "../utils/jab";
 import { encode } from "../utils/utils.native";
 import { findProgramAddress } from "../utils/web3/program-address";
 import { URL_UPLOAD } from "../utils/ipfs";
@@ -26,8 +26,8 @@ import {
   GroupThread,
   GroupThreadIndex,
   createGroupIndex,
-} from "../utils/web3/jabber";
-import { sendMessageGroup } from "@bonfida/jabber";
+} from "../utils/web3/jab";
+import { sendMessageGroup } from "@bonfida/jab";
 
 const Clip = () => {
   return <Feather name="paperclip" size={24} color="#60C0CB" />;
@@ -87,7 +87,7 @@ const UploadIpfsButton = ({
         isGroup ? new PublicKey(receiver) : wallet.publicKey,
         new PublicKey(receiver)
       );
-      const [messageAccount] = await findProgramAddress(seeds, JABBER_ID);
+      const [messageAccount] = await findProgramAddress(seeds, JAB_ID);
 
       const encrypted = isGroup
         ? message

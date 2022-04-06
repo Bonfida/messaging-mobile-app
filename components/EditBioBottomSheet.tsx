@@ -11,7 +11,7 @@ import { BottomSheet } from "react-native-btr";
 import GlobalStyle from "../Style";
 import { useKeyBoardOffset } from "../utils/utils.native";
 import BlueButton from "./Buttons/BlueGradient";
-import { Profile, setUserProfile, createProfile } from "../utils/web3/jabber";
+import { Profile, setUserProfile, createProfile } from "../utils/web3/jab";
 import { useConnection } from "../utils/connection";
 import { useWallet } from "../utils/wallet.native";
 import { balanceWarning } from "../components/BalanceWarning";

@@ -6,15 +6,15 @@ import {
   View,
   Button,
 } from "react-native";
-import { useGroupData, useGroupMessage, useUserThread } from "../utils/jabber";
+import { useGroupData, useGroupMessage, useUserThread } from "../utils/jab";
 import MessageRow from "../components/ContactRow";
 import { useWallet } from "../utils/wallet";
 import { RenderMessage } from "../components/RenderMessage";
-import { useMessageDataWs } from "../utils/jabber";
+import { useMessageDataWs } from "../utils/jab";
 import { PublicKey } from "@solana/web3.js";
 import { FeeWarning } from "../components/FeeWarning";
 import { MessageInput } from "../components/MessageInput";
-import { useUserGroup } from "../utils/jabber";
+import { useUserGroup } from "../utils/jab";
 import GroupMessageRow from "../components/GroupRow";
 import { CachePrefix, useGetAsyncCache } from "../utils/cache";
 import { useIsFocused } from "@react-navigation/core";

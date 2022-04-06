@@ -16,7 +16,7 @@ import GlobalStyle from "../Style";
 import { useKeyBoardOffset } from "../utils/utils.native";
 import { useWallet } from "../utils/wallet.native";
 import BlueButton from "./Buttons/BlueGradient";
-import { useGroupData } from "../utils/jabber";
+import { useGroupData } from "../utils/jab";
 import { balanceWarning } from "../components/BalanceWarning";
 import { isWeb } from "../utils/utils";
 import { PublicKey } from "@solana/web3.js";
@@ -28,7 +28,7 @@ import {
   NameRegistryState,
 } from "@bonfida/spl-name-service";
 import { useConnection } from "../utils/connection";
-import { addAdminToGroup, removeAdminFromGroup } from "@bonfida/jabber";
+import { addAdminToGroup, removeAdminFromGroup } from "@bonfida/jab";
 import { useNavigation } from "@react-navigation/native";
 import { useDisplayName } from "../utils/name-service";
 import { abbreviateAddress } from "../utils/utils.native";

@@ -1,7 +1,7 @@
 import React from "react";
-import { IMessage } from "../utils/jabber";
+import { IMessage } from "../utils/jab";
 import { MessageBoxText } from "./MessageBoxText";
-import { MessageType } from "@bonfida/jabber";
+import { MessageType } from "@bonfida/jab";
 import { MessageBoxMedia } from "./MessageBoxMedia";
 
 export const RenderMessage = ({
