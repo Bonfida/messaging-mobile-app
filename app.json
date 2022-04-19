@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "jab",
-    "slug": "jab",
+    "name": "jabber",
+    "slug": "jabber",
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,14 +17,14 @@
     "ios": {
       "supportsTablet": true,
       "usesIcloudStorage": true,
-      "bundleIdentifier": "com.bonfida.jab"
+      "bundleIdentifier": "com.bonfida.jabber"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.bonfida.jab",
+      "package": "com.bonfida.jabber",
       "permissions": [],
       "versionCode": 7
     },

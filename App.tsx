@@ -25,6 +25,8 @@ import GalleryScreen from "./screens/GalleryScreen";
 import "./global";
 import "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 
 import { Feather } from "@expo/vector-icons";
 
